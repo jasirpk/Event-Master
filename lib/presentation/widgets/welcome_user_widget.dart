@@ -2,6 +2,7 @@ import 'package:event_master/common/style.dart';
 import 'package:event_master/presentation/widgets/back_arrow_button.dart';
 import 'package:event_master/presentation/widgets/pushable_button.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class WelcomeUserWidget extends StatelessWidget {
   final String image;
@@ -34,7 +35,11 @@ class WelcomeUserWidget extends StatelessWidget {
               ),
             ),
           ),
-          BackArrowButton(),
+          BackArrowButton(
+            onpressed: () {
+              Get.back();
+            },
+          ),
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(colors: [
@@ -44,7 +49,7 @@ class WelcomeUserWidget extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(8.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -61,8 +66,8 @@ class WelcomeUserWidget extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 8.0),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                   child: Text(
                     subTitle,
                     style: TextStyle(

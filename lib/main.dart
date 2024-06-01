@@ -1,6 +1,6 @@
 import 'package:event_master/common/style.dart';
 import 'package:event_master/logic/bloc/manage_bloc.dart';
-import 'package:event_master/presentation/pages/welcome_pages/splash_screen.dart';
+import 'package:event_master/presentation/pages/onboarding/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';

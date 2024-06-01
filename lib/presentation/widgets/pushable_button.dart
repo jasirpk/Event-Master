@@ -13,7 +13,7 @@ class PushableButton_Widget extends StatelessWidget {
     return PushableButton(
       elevation: 8,
       hslColor: HSLColor.fromColor(myColor),
-      height: 60,
+      height: 50,
       shadow: BoxShadow(),
       onPressed: onpressed,
       child: Text(

@@ -40,7 +40,12 @@ dependencies:
   get: ^4.6.6
   carousel_slider: ^4.2.1
   pushable_button: ^0.0.4
-  page_view_dot_indicator: ^2.3.0
+  firebase_core: ^2.32.0
+  firebase_auth: ^4.20.0
+  cloud_firestore: ^4.17.5
+  shared_preferences: ^2.2.3
+  google_sign_in: ^6.2.1
+  
 
 dev_dependencies:
   flutter_test:

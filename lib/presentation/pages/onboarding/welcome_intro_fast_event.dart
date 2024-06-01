@@ -1,5 +1,5 @@
 import 'package:event_master/presentation/widgets/welcome_user_widget.dart';
-import 'package:event_master/presentation/pages/welcome_pages/welocme_intro_delicious.dart';
+import 'package:event_master/presentation/pages/onboarding/welocme_intro_delicious.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

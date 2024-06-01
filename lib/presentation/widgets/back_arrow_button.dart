@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class BackArrowButton extends StatelessWidget {
-  BackArrowButton({super.key});
+  final VoidCallback onpressed;
 
+  const BackArrowButton({super.key, required this.onpressed});
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(left: 18, top: 40),
       child: IconButton(
-          onPressed: () {
-            Get.back();
-          },
+          onPressed: onpressed,
           icon: Icon(
             Icons.arrow_back_ios,
             color: Colors.white,

@@ -1,5 +1,5 @@
 import 'package:event_master/logic/bloc/manage_bloc.dart';
-import 'package:event_master/presentation/pages/welcome_pages/welcome_intro_evernt_track.dart';
+import 'package:event_master/presentation/pages/onboarding/welcome_intro_evernt_track.dart';
 import 'package:event_master/presentation/widgets/welcome_user_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,7 +16,7 @@ class SplashScreen extends StatelessWidget {
       body: BlocListener<ManageBloc, ManageState>(
         listener: (context, state) {
           if (state is NavigateToWelcomeScreen) {
-            Get.off(() => WelcomeUserWidget(
+            Get.offAll(() => WelcomeUserWidget(
                 image: 'assets/images/welcome_img1.webp',
                 title: 'Welcome to\nEvent Master',
                 subTitle:

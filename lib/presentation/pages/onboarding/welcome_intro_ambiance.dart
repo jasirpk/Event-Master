@@ -1,5 +1,7 @@
+import 'package:event_master/presentation/pages/auth/google_auth.dart';
 import 'package:event_master/presentation/widgets/welcome_user_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class WelcomeIntroAmbiance extends StatelessWidget {
   const WelcomeIntroAmbiance({super.key});
@@ -11,7 +13,9 @@ class WelcomeIntroAmbiance extends StatelessWidget {
         title: 'Ambiance Creators',
         subTitle:
             '''Elevate your event with stunning decor options. Create memorable atmospheres.''',
-        onpressed: () {},
+        onpressed: () {
+          Get.to(() => GoogleAuthScreen());
+        },
         buttonText: 'Next');
   }
 }
