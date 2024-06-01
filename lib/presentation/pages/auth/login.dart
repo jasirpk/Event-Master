@@ -31,7 +31,7 @@ class LoginScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.07),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                   BackArrowButton(
                     onpressed: () {
                       Get.back();

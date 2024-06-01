@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:event_master/common/style.dart';
 import 'package:event_master/presentation/pages/auth/login.dart';
-import 'package:event_master/presentation/pages/screens/dashboard.dart';
 import 'package:event_master/presentation/widgets/alread_have_account.dart';
 import 'package:event_master/presentation/widgets/back_arrow_button.dart';
 import 'package:event_master/presentation/widgets/pasword_field.dart';
@@ -35,13 +34,10 @@ class SignupScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: BackArrowButton(
-                      onpressed: () {
-                        Get.back();
-                      },
-                    ),
+                  BackArrowButton(
+                    onpressed: () {
+                      Get.back();
+                    },
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.24),
                   Padding(

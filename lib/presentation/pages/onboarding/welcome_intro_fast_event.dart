@@ -16,6 +16,9 @@ class WelcomeIntroFastEvent extends StatelessWidget {
         onpressed: () {
           Get.to(() => WelocmeIntroDelicious());
         },
+        buutonPressed: () {
+          Get.back();
+        },
         buttonText: 'Next');
   }
 }

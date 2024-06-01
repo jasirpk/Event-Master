@@ -16,6 +16,9 @@ class WelocmeIntroDelicious extends StatelessWidget {
         onpressed: () {
           Get.to(() => WelcomeIntroAmbiance());
         },
+        buutonPressed: () {
+          Get.back();
+        },
         buttonText: 'Next');
   }
 }

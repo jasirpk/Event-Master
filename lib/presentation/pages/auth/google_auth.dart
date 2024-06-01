@@ -32,14 +32,13 @@ class GoogleAuthScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-                  Padding(
-                    padding: EdgeInsets.only(left: 16.0),
-                    child: BackArrowButton(
-                      onpressed: () {
-                        Get.back();
-                      },
-                    ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.05,
+                  ),
+                  BackArrowButton(
+                    onpressed: () {
+                      Get.back();
+                    },
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.18),
                   Text(

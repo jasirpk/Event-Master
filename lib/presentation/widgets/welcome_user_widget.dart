@@ -1,4 +1,5 @@
 import 'package:event_master/common/style.dart';
+import 'package:event_master/presentation/pages/auth/google_auth.dart';
 import 'package:event_master/presentation/widgets/back_arrow_button.dart';
 import 'package:event_master/presentation/widgets/pushable_button.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ class WelcomeUserWidget extends StatelessWidget {
   final String buttonText;
   final String subTitle;
   final VoidCallback onpressed;
+  final VoidCallback buutonPressed;
 
   const WelcomeUserWidget(
       {super.key,
@@ -17,7 +19,8 @@ class WelcomeUserWidget extends StatelessWidget {
       required this.title,
       required this.subTitle,
       required this.onpressed,
-      required this.buttonText});
+      required this.buttonText,
+      required this.buutonPressed});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,9 +39,7 @@ class WelcomeUserWidget extends StatelessWidget {
             ),
           ),
           BackArrowButton(
-            onpressed: () {
-              Get.back();
-            },
+            onpressed: buutonPressed,
           ),
           Container(
             decoration: BoxDecoration(
@@ -77,11 +78,24 @@ class WelcomeUserWidget extends StatelessWidget {
                   ),
                 ),
                 sizedbox,
+                PushableButton_Widget(
+                    buttonText: buttonText, onpressed: onpressed),
+                SizedBox(height: 10),
                 Padding(
-                  padding: EdgeInsets.only(bottom: 60),
-                  child: PushableButton_Widget(
-                      buttonText: buttonText, onpressed: onpressed),
-                ),
+                  padding: EdgeInsets.only(bottom: 20),
+                  child: TextButton(
+                      onPressed: () {
+                        Get.to(() => GoogleAuthScreen());
+                      },
+                      child: Text(
+                        'Not now',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1),
+                      )),
+                )
               ],
             ),
           ),

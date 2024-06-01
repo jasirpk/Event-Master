@@ -24,6 +24,9 @@ class SplashScreen extends StatelessWidget {
                 onpressed: () {
                   Get.to(() => WelcomeIntroEverntTrack());
                 },
+                buutonPressed: () {
+                  Get.back();
+                },
                 buttonText: 'Get Started'));
           }
         },

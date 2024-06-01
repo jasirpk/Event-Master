@@ -6,14 +6,22 @@ class BackArrowButton extends StatelessWidget {
   const BackArrowButton({super.key, required this.onpressed});
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(left: 18, top: 40),
-      child: IconButton(
-          onPressed: onpressed,
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: Colors.white,
-          )),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.05,
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 16),
+          child: IconButton(
+              onPressed: onpressed,
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.white,
+              )),
+        ),
+      ],
     );
   }
 }
