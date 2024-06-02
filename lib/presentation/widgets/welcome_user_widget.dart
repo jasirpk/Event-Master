@@ -1,5 +1,5 @@
 import 'package:event_master/common/style.dart';
-import 'package:event_master/presentation/pages/auth/google_auth.dart';
+import 'package:event_master/presentation/pages/auth/login.dart';
 import 'package:event_master/presentation/widgets/back_arrow_button.dart';
 import 'package:event_master/presentation/widgets/pushable_button.dart';
 import 'package:flutter/material.dart';

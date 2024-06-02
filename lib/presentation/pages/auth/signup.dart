@@ -5,7 +5,7 @@ import 'package:event_master/entities/user_data.dart';
 import 'package:event_master/logic/bloc/manage_bloc.dart';
 import 'package:event_master/presentation/pages/auth/login.dart';
 import 'package:event_master/presentation/pages/screens/dashboard.dart';
-import 'package:event_master/presentation/widgets/alread_have_account.dart';
+import 'package:event_master/presentation/widgets/auth_bottom_text.dart';
 import 'package:event_master/presentation/widgets/back_arrow_button.dart';
 import 'package:event_master/presentation/widgets/pasword_field.dart';
 import 'package:event_master/presentation/widgets/pushable_button.dart';
@@ -163,9 +163,13 @@ class SignupScreen extends StatelessWidget {
                                         }),
                                   ),
                                   SizedBox(height: 10),
-                                  AlreadyHaveAccount(onpressed: () {
-                                    Get.to(() => LoginScreen());
-                                  })
+                                  AuthBottomText(
+                                    onpressed: () {
+                                      Get.to(() => GoogleAuthScreen());
+                                    },
+                                    text: '''Already have an account?''',
+                                    subText: 'Login',
+                                  )
                                 ],
                               ),
                             ),

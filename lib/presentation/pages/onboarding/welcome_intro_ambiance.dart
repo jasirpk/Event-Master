@@ -1,4 +1,4 @@
-import 'package:event_master/presentation/pages/auth/google_auth.dart';
+import 'package:event_master/presentation/pages/auth/login.dart';
 import 'package:event_master/presentation/widgets/welcome_user_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
