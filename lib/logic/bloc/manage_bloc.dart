@@ -117,7 +117,7 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
               subTitle:
                   '''Your all-in-one solution for seamless event planning. Let's create unforgettable moments together''',
               onpressed: () {
-                WelcomeIntroEverntTrack();
+                Get.to(() => WelcomeIntroEverntTrack());
               },
               buttonText: 'Get Started',
               backButtonPressed: () {
