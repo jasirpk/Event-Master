@@ -63,6 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '334593508928',
     projectId: 'event-master-2bf93',
     storageBucket: 'event-master-2bf93.appspot.com',
+    androidClientId: '334593508928-gvtah6ct4mmeuq1pa6n5oq0eqmrv8tfm.apps.googleusercontent.com',
+    iosClientId: '334593508928-4tscr6nn0t4nqen2h76epdqikfjm3dff.apps.googleusercontent.com',
     iosBundleId: 'com.example.eventMaster',
   );
 
@@ -72,6 +74,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '334593508928',
     projectId: 'event-master-2bf93',
     storageBucket: 'event-master-2bf93.appspot.com',
+    androidClientId: '334593508928-gvtah6ct4mmeuq1pa6n5oq0eqmrv8tfm.apps.googleusercontent.com',
+    iosClientId: '334593508928-4tscr6nn0t4nqen2h76epdqikfjm3dff.apps.googleusercontent.com',
     iosBundleId: 'com.example.eventMaster',
   );
 
@@ -83,4 +87,5 @@ class DefaultFirebaseOptions {
     authDomain: 'event-master-2bf93.firebaseapp.com',
     storageBucket: 'event-master-2bf93.appspot.com',
   );
+
 }

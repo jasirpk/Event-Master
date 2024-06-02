@@ -12,10 +12,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(BlocProvider(
-    create: (context) => ManageBloc(),
-    child: EventMaster(),
-  ));
+  runApp(EventMaster());
 }
 
 class EventMaster extends StatelessWidget {
@@ -23,18 +20,21 @@ class EventMaster extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        textTheme: TextTheme(
-          bodyLarge: TextStyle(color: Colors.white),
-          bodyMedium: TextStyle(color: Colors.white),
+    return MultiBlocProvider(
+      providers: [BlocProvider(create: (context) => ManageBloc())],
+      child: GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          textTheme: TextTheme(
+            bodyLarge: TextStyle(color: Colors.white),
+            bodyMedium: TextStyle(color: Colors.white),
+          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: myColor),
+        ).copyWith(
+          scaffoldBackgroundColor: Colors.black,
         ),
-        colorScheme: ColorScheme.fromSeed(seedColor: myColor),
-      ).copyWith(
-        scaffoldBackgroundColor: Colors.black,
+        home: SplashScreen(),
       ),
-      home: SplashScreen(),
     );
   }
 }
