@@ -11,7 +11,7 @@ class WelcomeUserWidget extends StatelessWidget {
   final String buttonText;
   final String subTitle;
   final VoidCallback onpressed;
-  final VoidCallback buutonPressed;
+  final VoidCallback backButtonPressed;
 
   const WelcomeUserWidget(
       {super.key,
@@ -20,7 +20,7 @@ class WelcomeUserWidget extends StatelessWidget {
       required this.subTitle,
       required this.onpressed,
       required this.buttonText,
-      required this.buutonPressed});
+      required this.backButtonPressed});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +39,7 @@ class WelcomeUserWidget extends StatelessWidget {
             ),
           ),
           BackArrowButton(
-            onpressed: buutonPressed,
+            onpressed: backButtonPressed,
           ),
           Container(
             decoration: BoxDecoration(

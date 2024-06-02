@@ -17,7 +17,7 @@ class WelcomeIntroEverntTrack extends StatelessWidget {
         onpressed: () {
           Get.to(() => WelcomeIntroFastEvent());
         },
-        buutonPressed: () {
+        backButtonPressed: () {
           Get.back();
         },
         buttonText: 'Continue',

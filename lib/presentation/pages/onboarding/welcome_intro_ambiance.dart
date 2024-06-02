@@ -16,7 +16,7 @@ class WelcomeIntroAmbiance extends StatelessWidget {
         onpressed: () {
           Get.to(() => GoogleAuthScreen());
         },
-        buutonPressed: () {
+        backButtonPressed: () {
           Get.back();
         },
         buttonText: 'continue');
