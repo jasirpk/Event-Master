@@ -80,75 +80,72 @@ class GoogleAuthScreen extends StatelessWidget {
                           width: MediaQuery.of(context).size.width * 0.9,
                           height: MediaQuery.of(context).size.height * 0.47,
                           child: Form(
-                              key: formKey,
-                              child: Center(
-                                child: Column(
-                                  children: [
-                                    TextFieldWidget(
-                                        Controller: userEmailController,
-                                        hintText: 'Email',
-                                        obscureText: false),
-                                    SizedBox(height: 10),
-                                    PasswordField(
-                                        controller: userPasswordController,
-                                        hintText: 'Password'),
-                                    SizedBox(height: 10),
-                                    PushableButton_Widget(
-                                        buttonText: 'Continue',
+                            key: formKey,
+                            child: Center(
+                              child: Column(
+                                children: [
+                                  TextFieldWidget(
+                                      Controller: userEmailController,
+                                      hintText: 'Email',
+                                      obscureText: false),
+                                  SizedBox(height: 10),
+                                  PasswordField(
+                                      controller: userPasswordController,
+                                      hintText: 'Password'),
+                                  SizedBox(height: 10),
+                                  PushableButton_Widget(
+                                      buttonText: 'Continue',
+                                      onpressed: () {
+                                        final email = userEmailController.text;
+                                        final password =
+                                            userPasswordController.text;
+                                        if (email.isEmpty || password.isEmpty) {
+                                          Get.snackbar('Error',
+                                              'Please fill all fields');
+                                          return;
+                                        }
+                                        authBloc.add(LoginEvent(
+                                            email: email, password: password));
+                                      }),
+                                  SizedBox(height: 10),
+                                  Text('Or',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
+                                  SizedBox(height: 8),
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SqureTile(
                                         onpressed: () {
-                                          final email =
-                                              userEmailController.text;
-                                          final password =
-                                              userPasswordController.text;
-                                          if (email.isEmpty ||
-                                              password.isEmpty) {
-                                            Get.snackbar('Error',
-                                                'Please fill all fields');
-                                            return;
-                                          }
-                                          authBloc.add(LoginEvent(
-                                              email: email,
-                                              password: password));
-                                        }),
-                                    SizedBox(height: 10),
-                                    Text('Or',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold)),
-                                    SizedBox(height: 8),
-                                    Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        SqureTile(
+                                          context
+                                              .read<ManageBloc>()
+                                              .add(GoogleAuth());
+                                        },
+                                        imagePath: 'assets/images/google.png',
+                                        title: 'Continue with Google',
+                                      ),
+                                      SizedBox(height: 10),
+                                      AuthBottomText(
                                           onpressed: () {
-                                            context
-                                                .read<ManageBloc>()
-                                                .add(GoogleAuth());
+                                            Get.to(() => SignupScreen());
                                           },
-                                          imagePath: 'assets/images/google.png',
-                                          title: 'Continue with Google',
-                                        ),
-                                        SizedBox(height: 10),
-                                        AuthBottomText(
-                                            onpressed: () {
-                                              Get.to(() => SignupScreen());
-                                            },
-                                            text: 'Don\'t have an account?',
-                                            subText: 'Sign Up'),
-                                        SizedBox(height: 10),
-                                        AuthBottomText(
-                                            onpressed: () {
-                                              Get.to(() => ForgotPassword());
-                                            },
-                                            text: 'Forgot Password?',
-                                            subText: 'click'),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              )),
+                                          text: 'Don\'t have an account?',
+                                          subText: 'Sign Up'),
+                                      SizedBox(height: 10),
+                                      AuthBottomText(
+                                          onpressed: () {
+                                            Get.to(() => ForgotPassword());
+                                          },
+                                          text: 'Forgot Password?',
+                                          subText: 'click'),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     )

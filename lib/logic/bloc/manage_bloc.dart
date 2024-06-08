@@ -29,10 +29,21 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
         final UserCredential = await auth.signInWithEmailAndPassword(
             email: event.email, password: event.password);
         final user = UserCredential.user!;
-        await saveAuthState(user.uid, user.email!);
-        print('Account is Authenticated');
-        emit(Authenticated(
-            UserModel(email: user.email!, password: '', uid: user.uid)));
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+        String platform = userDoc['platform'];
+        if (platform == 'mobile') {
+          await saveAuthState(user.uid, user.email!);
+          print('Account is authenticated');
+          emit(Authenticated(
+              UserModel(email: user.email!, password: '', uid: user.uid)));
+        } else {
+          emit(AuthenticatedErrors(
+              message: 'Not Authenticated for this platform'));
+          print('Authentication Failed: Not Authenticated for this platform');
+        }
       } catch (e) {
         emit(AuthenticatedErrors(message: 'Not Authenticated'));
         print('Authentication Failed $e');
@@ -56,8 +67,12 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
             'uid': user.uid,
             'email': user.email,
             'password': event.userModel.password,
+            'platform': 'mobile',
             'createdAt': DateTime.now()
           });
+          await FirebaseAuth.instance.currentUser!.getIdToken(true);
+          await FirebaseAuth.instance.currentUser!.updateDisplayName('mobile');
+
           await saveAuthState(user.uid, user.email!);
           print('Account is authenticated');
           print('Current FirebaseAuth user UID: ${user.uid}');
@@ -106,7 +121,7 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
             backButtonPressed: () {
               Get.back();
             }));
-        emit(UnAuthenticated());
+
         final user = auth.currentUser;
         if (user != null) {
           print('User Found in FirebaseAuth');
@@ -114,6 +129,7 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
           emit(Authenticated(
               UserModel(uid: user.uid, email: user.email, password: '')));
         } else {
+          emit(UnAuthenticated());
           print('User Not found in FirebaseAuth');
           Get.offAll(() => WelcomeUserWidget(
               image: 'assets/images/welcome_img1.webp',
@@ -127,7 +143,6 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
               backButtonPressed: () {
                 Get.back();
               }));
-          emit(UnAuthenticated());
         }
       }
     });
