@@ -1,5 +1,5 @@
 import 'package:event_master/presentation/pages/onboarding/welcome_intro_ambiance.dart';
-import 'package:event_master/presentation/widgets/welcome_user_widget.dart';
+import 'package:event_master/presentation/components/ui/welcome_user_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

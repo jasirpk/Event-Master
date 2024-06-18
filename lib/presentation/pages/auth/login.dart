@@ -1,15 +1,15 @@
 import 'dart:ui';
 
-import 'package:event_master/logic/bloc/manage_bloc.dart';
+import 'package:event_master/data_layer/auth_bloc/manage_bloc.dart';
 import 'package:event_master/presentation/pages/auth/signup.dart';
-import 'package:event_master/presentation/pages/screens/dashboard.dart';
-import 'package:event_master/presentation/widgets/auth_bottom_text.dart';
-import 'package:event_master/presentation/widgets/back_arrow_button.dart';
+import 'package:event_master/presentation/pages/dashboard/home.dart';
+import 'package:event_master/presentation/components/auth/auth_bottom_text.dart';
+import 'package:event_master/presentation/components/ui/back_arrow_button.dart';
 import 'package:event_master/presentation/pages/auth/forgot_password.dart';
-import 'package:event_master/presentation/widgets/pasword_field.dart';
-import 'package:event_master/presentation/widgets/pushable_button.dart';
-import 'package:event_master/presentation/widgets/squre_tile.dart';
-import 'package:event_master/presentation/widgets/text_field.dart';
+import 'package:event_master/presentation/components/auth/pasword_field.dart';
+import 'package:event_master/presentation/components/ui/pushable_button.dart';
+import 'package:event_master/presentation/components/auth/squre_tile.dart';
+import 'package:event_master/presentation/components/auth/text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';

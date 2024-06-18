@@ -1,4 +1,4 @@
-import 'package:event_master/logic/bloc/manage_bloc.dart';
+import 'package:event_master/data_layer/auth_bloc/manage_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
