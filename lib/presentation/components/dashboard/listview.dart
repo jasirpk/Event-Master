@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_master/common/style.dart';
+import 'package:event_master/data_layer/services/database.dart';
 import 'package:flutter/material.dart';
 
 class ListViewWidget extends StatelessWidget {
-  const ListViewWidget({
+  ListViewWidget({
     super.key,
     required this.screenHeight,
     required this.screenWidth,
@@ -10,56 +12,110 @@ class ListViewWidget extends StatelessWidget {
 
   final double screenHeight;
   final double screenWidth;
+  final DatabaseMethods databaseMethods = DatabaseMethods();
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: screenHeight * 0.24,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: 30,
-        itemBuilder: (context, index) {
-          return Container(
-            margin: EdgeInsets.symmetric(horizontal: 5),
-            width: screenWidth * 0.50,
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: myColor, width: 1.5),
-                  borderRadius: BorderRadius.circular(10),
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/wedding_img_card.jpg'),
-                    fit: BoxFit.cover,
-                    colorFilter: ColorFilter.mode(
-                      Colors.black.withOpacity(0.2),
-                      BlendMode.darken,
-                    ),
-                  ),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        'hello',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+    String selectedCategory = 'Client';
+    return StreamBuilder<QuerySnapshot>(
+      stream: databaseMethods.getVendorDetail(selectedCategory),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          print('Stream error: ${snapshot.error}');
+          return Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        }
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          print('No data available or no documents found');
+          return Center(
+            child: Text('No Templates Found'),
+          );
+        }
+        var documents = snapshot.data!.docs;
+        documents.forEach((doc) {
+          print('Document: ${doc.data()}');
+        });
+        return SizedBox(
+          height: screenHeight * 0.24,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: documents.length,
+            itemBuilder: (context, index) {
+              var data = documents[index].data() as Map<String, dynamic>;
+              String imagePath =
+                  data['imagePath'] ?? 'assets/images/venue_decoration_img.jpg';
+              String documentId = documents[index].id;
+
+              return FutureBuilder<DocumentSnapshot>(
+                future: databaseMethods.getCategoryDetailById(documentId),
+                builder: (context, detailSnapshot) {
+                  if (detailSnapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  if (detailSnapshot.hasError) {
+                    return Center(
+                      child: Text('Error: ${detailSnapshot.error}'),
+                    );
+                  }
+                  if (!detailSnapshot.hasData) {
+                    return Center(
+                      child: Text('Details Not Found'),
+                    );
+                  }
+                  var detailData =
+                      detailSnapshot.data!.data() as Map<String, dynamic>;
+                  return Container(
+                    margin: EdgeInsets.symmetric(horizontal: 5),
+                    width: screenWidth * 0.50,
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: myColor, width: 1.5),
+                          borderRadius: BorderRadius.circular(10),
+                          image: DecorationImage(
+                            image: imagePath.startsWith('http')
+                                ? NetworkImage(imagePath)
+                                : AssetImage(imagePath) as ImageProvider,
+                            fit: BoxFit.cover,
+                            colorFilter: ColorFilter.mode(
+                              Colors.black.withOpacity(0.2),
+                              BlendMode.darken,
+                            ),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                detailData['categoryName'],
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
