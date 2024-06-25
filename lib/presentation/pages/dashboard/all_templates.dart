@@ -10,23 +10,6 @@ class AllTemplatesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> items = [
-      {
-        'text': 'Wedding',
-        'subText': 'hello',
-        'image': 'assets/images/wedding_img_card.jpg'
-      },
-      {
-        'text': 'Wedding',
-        'subText': 'hello',
-        'image': 'assets/images/wedding_img_card.jpg'
-      },
-      {
-        'text': 'Wedding',
-        'subText': 'hello',
-        'image': 'assets/images/wedding_img_card.jpg'
-      },
-    ];
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -45,9 +28,9 @@ class AllTemplatesScreen extends StatelessWidget {
       body: CustomScrollView(
         slivers: [
           CategoryListWidget(
-              items: items,
-              screenHeight: screenHeight,
-              screenWidth: screenWidth)
+            screenHeight: screenHeight,
+            screenWidth: screenWidth,
+          ),
         ],
       ),
     );

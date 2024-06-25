@@ -1,19 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_master/common/style.dart';
+import 'package:event_master/data_layer/services/subcategory.dart';
 import 'package:event_master/presentation/components/ui/custom_appbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SubEventTemplatesScreen extends StatelessWidget {
-  const SubEventTemplatesScreen({Key? key}) : super(key: key);
+  final String categoryId;
+  final String categoryName;
 
+  const SubEventTemplatesScreen(
+      {super.key, required this.categoryId, required this.categoryName});
   @override
   Widget build(BuildContext context) {
+    final subDatabaseMethods subdatabaseMethods = subDatabaseMethods();
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: CustomAppBarWithDivider(
-        title: 'Venues',
+        title: categoryName,
         actions: [
           IconButton(
             icon: Icon(Icons.search),
@@ -30,73 +36,127 @@ class SubEventTemplatesScreen extends StatelessWidget {
           sizedBoxWidth
         ],
       ),
-      body: ListView.builder(
-        itemCount: 30,
-        itemBuilder: (context, index) {
-          return Container(
-            margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-            decoration: BoxDecoration(
-              border:
-                  Border.all(color: Colors.white.withOpacity(0.5), width: 0.5),
-              borderRadius: BorderRadius.circular(10),
-              // color: Colors.grey,
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: screenWidth * 0.30, // Adjust the width as needed
-                  height: screenHeight * 0.15,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    image: DecorationImage(
-                      image:
-                          AssetImage('assets/images/venue_decoration_img.jpg'),
-                      fit: BoxFit.cover,
+      body: StreamBuilder<QuerySnapshot>(
+        stream: subdatabaseMethods.getSubcategories(categoryId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Center(
+              child: Text(
+                'No Templates Found for $categoryId',
+                style: TextStyle(color: Colors.white),
+              ),
+            );
+          }
+
+          var documents = snapshot.data!.docs;
+          return ListView.builder(
+            shrinkWrap: true,
+            itemCount: documents.length,
+            itemBuilder: (context, index) {
+              var document = documents[index];
+              var data = document.data() as Map<String, dynamic>;
+              String subimagePath = data['imagePath'];
+              String subCategoryId = document.id;
+              return FutureBuilder<DocumentSnapshot>(
+                future: subdatabaseMethods.getSubCategoryId(
+                    categoryId, subCategoryId),
+                builder: (context, subdetailSnapshot) {
+                  if (subdetailSnapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
+                  if (!subdetailSnapshot.hasData ||
+                      subdetailSnapshot.data == null ||
+                      subdetailSnapshot.data!.data() == null) {
+                    return Center(
+                      child: Text(
+                        'Details not found for $subCategoryId',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    );
+                  }
+                  var subDetailData =
+                      subdetailSnapshot.data!.data() as Map<String, dynamic>;
+                  return Container(
+                    margin:
+                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                          color: Colors.white.withOpacity(0.5), width: 0.5),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                  ),
-                ),
-                SizedBox(width: 8.0), // Adjust the spacing as needed
-                Expanded(
-                  child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-                    child: Column(
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Live Hello',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
+                        Container(
+                          width: screenWidth * 0.30,
+                          height: screenHeight * 0.15,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            image: DecorationImage(
+                              image: subimagePath.startsWith('http')
+                                  ? NetworkImage(subimagePath)
+                                  : AssetImage(subimagePath) as ImageProvider,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
-                        SizedBox(height: 4.0), // Adjust the spacing as needed
-                        Text(
-                          'Live BandsLive BandsLive BandsLive BandsLive BandsLive BandsLive BandsLive BandsLive Bands',
-                          style: TextStyle(fontSize: 14.0),
+                        SizedBox(width: 8.0),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  subDetailData['subCategoryName'] ?? 'No Name',
+                                  style: TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 4.0),
+                                Text(
+                                  subDetailData['about'],
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 4,
+                                  style: TextStyle(fontSize: 14.0),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            IconButton(
+                              onPressed: () {},
+                              icon: Icon(Icons.favorite_border),
+                              color: Colors.grey,
+                            ),
+                            IconButton(
+                              onPressed: () {},
+                              icon: Icon(CupertinoIcons.forward),
+                              color: Colors.grey,
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.favorite_border),
-                      color: Colors.grey,
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(CupertinoIcons.forward),
-                      color: Colors.grey,
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                  );
+                },
+              );
+            },
           );
         },
       ),

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_master/common/style.dart';
-import 'package:event_master/data_layer/services/database.dart';
+import 'package:event_master/data_layer/services/category.dart';
 import 'package:flutter/material.dart';
 
 class ListViewWidget extends StatelessWidget {
