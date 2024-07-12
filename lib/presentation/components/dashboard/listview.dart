@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/services/category.dart';
+import 'package:event_master/presentation/components/shimmer/shimmer_home_list.dart';
+import 'package:event_master/presentation/pages/dashboard/sub_templates.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ListViewWidget extends StatelessWidget {
   ListViewWidget({
@@ -22,7 +25,8 @@ class ListViewWidget extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           print('Stream error: ${snapshot.error}');
-          return Center(child: CircularProgressIndicator());
+          return ShimmerHomeList(
+              screenHeight: screenHeight, screenWidth: screenWidth);
         }
         if (snapshot.hasError) {
           return Center(
@@ -55,7 +59,8 @@ class ListViewWidget extends StatelessWidget {
                 builder: (context, detailSnapshot) {
                   if (detailSnapshot.connectionState ==
                       ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return ShimmerHomeList(
+                        screenHeight: screenHeight, screenWidth: screenWidth);
                   }
                   if (detailSnapshot.hasError) {
                     return Center(
@@ -69,42 +74,56 @@ class ListViewWidget extends StatelessWidget {
                   }
                   var detailData =
                       detailSnapshot.data!.data() as Map<String, dynamic>;
-                  return Container(
-                    margin: EdgeInsets.symmetric(horizontal: 5),
-                    width: screenWidth * 0.50,
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                  return InkWell(
+                    onTap: () {
+                      Get.to(() => SubEventTemplatesScreen(
+                          categoryId: documentId,
+                          categoryName: detailData['categoryName']));
+                    },
+                    child: InkWell(
+                      onTap: () {
+                        Get.to(() => SubEventTemplatesScreen(
+                            categoryId: documentId,
+                            categoryName: detailData['categoryName']));
+                      },
                       child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: myColor, width: 1.5),
-                          borderRadius: BorderRadius.circular(10),
-                          image: DecorationImage(
-                            image: imagePath.startsWith('http')
-                                ? NetworkImage(imagePath)
-                                : AssetImage(imagePath) as ImageProvider,
-                            fit: BoxFit.cover,
-                            colorFilter: ColorFilter.mode(
-                              Colors.black.withOpacity(0.2),
-                              BlendMode.darken,
-                            ),
+                        margin: EdgeInsets.symmetric(horizontal: 5),
+                        width: screenWidth * 0.50,
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                detailData['categoryName'],
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: myColor, width: 1.5),
+                              borderRadius: BorderRadius.circular(10),
+                              image: DecorationImage(
+                                image: imagePath.startsWith('http')
+                                    ? NetworkImage(imagePath)
+                                    : AssetImage(imagePath) as ImageProvider,
+                                fit: BoxFit.cover,
+                                colorFilter: ColorFilter.mode(
+                                  Colors.black.withOpacity(0.2),
+                                  BlendMode.darken,
                                 ),
                               ),
-                            ],
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    detailData['categoryName'],
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ),

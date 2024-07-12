@@ -1,4 +1,5 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/dashboard/dashboard_bloc.dart';
 import 'package:event_master/presentation/components/dashboard/favorite.dart';
 import 'package:event_master/presentation/components/dashboard/home.dart';
@@ -18,13 +19,14 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Colors.black,
+        backgroundColor: myColor,
+        color: Colors.black,
         animationDuration: Duration(milliseconds: 400),
         items: <Widget>[
-          Icon(Icons.home, size: 30),
-          Icon(Icons.search, size: 30),
-          Icon(Icons.receipt, size: 30),
-          Icon(Icons.favorite, size: 30),
+          Icon(Icons.home, size: 30, color: Colors.white),
+          Icon(Icons.search, size: 30, color: Colors.white),
+          Icon(Icons.receipt, size: 30, color: Colors.white),
+          Icon(Icons.favorite, size: 30, color: Colors.white),
         ],
         onTap: (index) {
           context.read<DashboardBloc>().add(TabChanged(index));

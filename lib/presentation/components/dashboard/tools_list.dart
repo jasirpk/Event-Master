@@ -31,7 +31,7 @@ class ToolsListWidget extends StatelessWidget {
               ),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Colors.grey,
                   border: Border.all(color: myColor, width: 1.5),
                   borderRadius: BorderRadius.circular(10),
                 ),

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_master/data_layer/services/category.dart';
 import 'package:event_master/data_layer/services/subcategory.dart';
 import 'package:event_master/presentation/components/dashboard/subcategory.dart';
+import 'package:event_master/presentation/components/shimmer/shimmer_all_templates.dart';
 import 'package:event_master/presentation/components/ui/custom_text.dart';
 import 'package:event_master/presentation/pages/dashboard/sub_templates.dart';
 import 'package:flutter/material.dart';
@@ -27,9 +28,8 @@ class CategoryListWidget extends StatelessWidget {
         stream: databaseMethods.getVendorDetail(selectedCategory),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
+            return ShimmerAllTemplates(
+                screenHeight: screenHeight, screenWidth: screenWidth);
           }
           if (snapshot.hasError) {
             return Center(
@@ -53,9 +53,8 @@ class CategoryListWidget extends StatelessWidget {
                 builder: (context, detailSnapshot) {
                   if (detailSnapshot.connectionState ==
                       ConnectionState.waiting) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
+                    return ShimmerAllTemplates(
+                        screenHeight: screenHeight, screenWidth: screenWidth);
                   }
                   if (detailSnapshot.hasError) {
                     return Center(

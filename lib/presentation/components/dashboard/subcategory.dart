@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_master/data_layer/services/subcategory.dart';
+import 'package:event_master/presentation/components/shimmer/shimmer_subcategory.dart';
 import 'package:flutter/material.dart';
 
 class SubCategoryList extends StatelessWidget {
@@ -22,9 +23,8 @@ class SubCategoryList extends StatelessWidget {
       stream: subdatabaseMethods.getSubcategories(documentId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
+          return ShimmerSubCategoryItem(
+              screenHeight: screenHeight, screenWidth: screenWidth);
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -53,9 +53,8 @@ class SubCategoryList extends StatelessWidget {
                 builder: (context, subdetailSnapshot) {
                   if (subdetailSnapshot.connectionState ==
                       ConnectionState.waiting) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
+                    return ShimmerSubCategoryItem(
+                        screenHeight: screenHeight, screenWidth: screenWidth);
                   }
 
                   if (!subdetailSnapshot.hasData ||

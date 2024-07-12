@@ -1,6 +1,9 @@
+import 'package:event_master/bussiness_layer.dart/fullscreen_snackbar.dart';
 import 'package:event_master/common/style.dart';
+import 'package:event_master/presentation/pages/dashboard/profile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class StackAppBar extends StatelessWidget {
   const StackAppBar({
@@ -12,6 +15,7 @@ class StackAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FullscreenSnackbar fullscreenSnackbar = FullscreenSnackbar();
     return Stack(
       children: <Widget>[
         // Background image container
@@ -63,9 +67,14 @@ class StackAppBar extends StatelessWidget {
                   width: 2.0,
                 ),
               ),
-              child: CircleAvatar(
-                maxRadius: 30,
-                backgroundImage: AssetImage('assets/images/download.jpeg'),
+              child: InkWell(
+                onTap: () {
+                  Get.to(() => ProfileScreen());
+                },
+                child: CircleAvatar(
+                  maxRadius: 30,
+                  backgroundImage: AssetImage('assets/images/download.jpeg'),
+                ),
               ),
             ),
             title: Container(
@@ -143,7 +152,9 @@ class StackAppBar extends StatelessWidget {
                         ),
                         color: myColor),
                     child: IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          fullscreenSnackbar.showFullScreenSnackbar(context);
+                        },
                         icon: Icon(
                           CupertinoIcons.forward,
                           color: Colors.black,
