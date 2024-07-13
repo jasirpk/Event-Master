@@ -43,7 +43,7 @@ class FieldsWidget extends StatelessWidget {
             margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
             decoration: BoxDecoration(
               border:
-                  Border.all(color: Colors.white.withOpacity(0.5), width: 0.5),
+                  Border.all(color: Colors.white.withOpacity(0.5), width: 1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Row(
@@ -137,7 +137,7 @@ class FieldsWidget extends StatelessWidget {
                         Get.to(() => VendorListScreen(uid: documentId));
                       },
                       icon: Icon(CupertinoIcons.forward),
-                      color: Colors.grey,
+                      color: Colors.white,
                     ),
                   ],
                 ),

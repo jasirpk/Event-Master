@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_master/common/style.dart';
+import 'package:event_master/data_layer/services/favorites.dart';
 import 'package:event_master/data_layer/services/subcategory.dart';
 import 'package:event_master/presentation/components/search/sub_list.dart';
 import 'package:event_master/presentation/components/shimmer/shimmer_all_subcategories.dart';
 import 'package:event_master/presentation/components/ui/custom_appbar.dart';
 import 'package:event_master/presentation/pages/dashboard/entrepreneurs.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,7 +19,12 @@ class SubEventTemplatesScreen extends StatelessWidget {
       {super.key, required this.categoryId, required this.categoryName});
   @override
   Widget build(BuildContext context) {
+    var user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      return Center(child: Text('User not logged in'));
+    }
     final subDatabaseMethods subdatabaseMethods = subDatabaseMethods();
+    final FavoritesMethods favoritesMethods = FavoritesMethods();
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -26,7 +33,10 @@ class SubEventTemplatesScreen extends StatelessWidget {
         title: categoryName,
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
+            icon: Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
             onPressed: () {
               showSearch(
                   context: context,
@@ -151,17 +161,41 @@ class SubEventTemplatesScreen extends StatelessWidget {
                           Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              IconButton(
-                                onPressed: () {},
-                                icon: Icon(Icons.favorite_border),
-                                color: Colors.grey,
-                              ),
+                              StreamBuilder<DocumentSnapshot?>(
+                                  stream: favoritesMethods.getFavoritesStatus(
+                                      user.uid, subCategoryId),
+                                  builder: (context, snapshot) {
+                                    bool isFavorite =
+                                        snapshot.data?.exists ?? false;
+                                    return IconButton(
+                                      onPressed: () {
+                                        if (isFavorite) {
+                                          favoritesMethods.removeFavorite(
+                                              user.uid, subCategoryId);
+                                        } else {
+                                          favoritesMethods.addFavorite(user.uid,
+                                              categoryId, subCategoryId, {
+                                            'categoryId': categoryId,
+                                            'subCategoryId': subCategoryId,
+                                            'subCategoryName': subDetailData[
+                                                'subCategoryName'],
+                                            'imagePath': subimagePath,
+                                            'about': subDetailData['about'],
+                                          });
+                                        }
+                                      },
+                                      icon: Icon(isFavorite
+                                          ? Icons.favorite
+                                          : Icons.favorite),
+                                      color: isFavorite ? myColor : Colors.grey,
+                                    );
+                                  }),
                               IconButton(
                                 onPressed: () {
                                   Get.to(() => EntrepreneursListScreen());
                                 },
                                 icon: Icon(CupertinoIcons.forward),
-                                color: Colors.grey,
+                                color: Colors.white,
                               ),
                             ],
                           ),

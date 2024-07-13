@@ -31,7 +31,7 @@ class ToolsListWidget extends StatelessWidget {
               ),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.grey,
+                  color: Colors.white38,
                   border: Border.all(color: myColor, width: 1.5),
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -50,8 +50,8 @@ class ToolsListWidget extends StatelessWidget {
                         child: Center(
                           child: Icon(
                             data['icon'],
-                            color: Colors.black, // Optional: set icon color
-                            size: 24, // Optional: set icon size
+                            color: Colors.black,
+                            size: 24,
                           ),
                         ),
                       ),

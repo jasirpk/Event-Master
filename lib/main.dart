@@ -29,9 +29,6 @@ class EventMaster extends StatelessWidget {
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-            iconButtonTheme: IconButtonThemeData(
-                style: ButtonStyle(
-                    iconColor: WidgetStateProperty.all<Color>(Colors.white))),
             textTheme: TextTheme(
                 bodyLarge: TextStyle(color: Colors.white),
                 bodyMedium: TextStyle(color: Colors.white)),

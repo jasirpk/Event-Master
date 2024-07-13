@@ -1,26 +1,17 @@
 import 'package:event_master/common/assigns.dart';
 import 'package:event_master/common/style.dart';
+import 'package:event_master/data_layer/dashboard/dashboard_bloc.dart';
 import 'package:event_master/data_layer/services/entrepreneur_profile/profile.dart';
 import 'package:event_master/data_layer/services/entrepreneur_profile/vendor.dart';
 import 'package:event_master/presentation/components/entrepreneur_profile/list/list_stream.dart';
 import 'package:event_master/presentation/components/ui/custom_appbar.dart';
 import 'package:event_master/presentation/pages/dashboard/all_templates.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
-class EntrepreneursListScreen extends StatefulWidget {
+class EntrepreneursListScreen extends StatelessWidget {
   const EntrepreneursListScreen({super.key});
-
-  @override
-  _EntrepreneursListScreenState createState() =>
-      _EntrepreneursListScreenState();
-}
-
-class _EntrepreneursListScreenState extends State<EntrepreneursListScreen> {
-  final UserProfile userProfile = UserProfile();
-  final VendorRequest vendorRequest = VendorRequest();
-  final TextEditingController _searchController = TextEditingController();
-  String searchTerm = '';
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +23,10 @@ class _EntrepreneursListScreenState extends State<EntrepreneursListScreen> {
         title: 'Entrepreneurs',
         actions: [
           IconButton(
-            icon: Icon(Icons.source),
+            icon: Icon(
+              Icons.source,
+              color: Colors.white,
+            ),
             onPressed: () {
               Get.to(() => AllTemplatesScreen());
             },
@@ -66,7 +60,6 @@ class _EntrepreneursListScreenState extends State<EntrepreneursListScreen> {
             Padding(
               padding: EdgeInsets.only(left: 8, right: 8),
               child: TextField(
-                controller: _searchController,
                 decoration: InputDecoration(
                   labelText: 'Search',
                   border: OutlineInputBorder(
@@ -80,30 +73,45 @@ class _EntrepreneursListScreenState extends State<EntrepreneursListScreen> {
                     borderRadius: BorderRadius.circular(30),
                   ),
                   suffixIcon: IconButton(
-                    icon: Icon(Icons.clear),
+                    icon: Icon(
+                      Icons.clear,
+                      color: Colors.white,
+                    ),
                     onPressed: () {
-                      setState(() {
-                        _searchController.clear();
-                        searchTerm = '';
-                      });
+                      context.read<DashboardBloc>().add(SearchTermChanged(''));
                     },
                   ),
                 ),
                 onChanged: (value) {
-                  setState(() {
-                    searchTerm = value;
-                  });
+                  context.read<DashboardBloc>().add(SearchTermChanged(value));
                 },
               ),
             ),
             SizedBox(height: 10.0),
             Expanded(
-              child: ListOfStreamWidget(
-                userProfile: userProfile,
-                screenHeight: screenHeight,
-                screenWidth: screenWidth,
-                vendorRequest: vendorRequest,
-                searchTerm: searchTerm,
+              child: BlocBuilder<DashboardBloc, DashboardState>(
+                builder: (context, state) {
+                  if (state is SearchLoading) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (state is SearchLoaded) {
+                    return ListOfStreamWidget(
+                      userProfile: UserProfile(),
+                      screenHeight: screenHeight,
+                      screenWidth: screenWidth,
+                      vendorRequest: VendorRequest(),
+                      searchTerm: state.searchTerm,
+                    );
+                  } else if (state is SearchError) {
+                    return Center(child: Text(state.message));
+                  }
+                  return ListOfStreamWidget(
+                    userProfile: UserProfile(),
+                    screenHeight: screenHeight,
+                    screenWidth: screenWidth,
+                    vendorRequest: VendorRequest(),
+                    searchTerm: '',
+                  );
+                },
               ),
             ),
           ],

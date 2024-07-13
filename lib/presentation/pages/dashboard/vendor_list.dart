@@ -3,6 +3,7 @@ import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/services/entrepreneur_profile/vendor.dart';
 import 'package:event_master/presentation/components/shimmer/shimmer_subcategory.dart';
 import 'package:event_master/presentation/components/ui/custom_appbar.dart';
+import 'package:event_master/presentation/pages/dashboard/all_templates.dart';
 import 'package:event_master/presentation/pages/dashboard/vendor_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -29,13 +30,15 @@ class _VendorListScreenState extends State<VendorListScreen> {
         title: 'Available Vendors',
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {},
+            icon: Icon(
+              Icons.source,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Get.to(() => AllTemplatesScreen());
+            },
           ),
-          IconButton(
-            icon: Icon(Icons.source),
-            onPressed: () {},
-          ),
+          sizedBoxWidth,
         ],
       ),
       body: StreamBuilder<QuerySnapshot>(
