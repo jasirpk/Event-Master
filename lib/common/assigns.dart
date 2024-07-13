@@ -14,4 +14,8 @@ class Assigns {
   static String otherLinks = 'Other Media Links';
   static String media = 'Media';
   static String website = 'Website:';
+  static String component = 'Components';
+  static String location = 'Location';
+  static String budget = 'Budget';
+  static String vendorName = 'VendorName:';
 }
