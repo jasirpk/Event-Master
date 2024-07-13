@@ -2,30 +2,27 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_master/data_layer/services/entrepreneur_profile/profile.dart';
 import 'package:event_master/data_layer/services/entrepreneur_profile/vendor.dart';
 import 'package:event_master/presentation/components/entrepreneur_profile/list/fields.dart';
-import 'package:event_master/presentation/components/search/entrepreneur_empty.dart';
 import 'package:event_master/presentation/components/shimmer/shimmer_all_subcategories.dart';
 import 'package:flutter/material.dart';
 
-class ListOfStreamWidget extends StatelessWidget {
-  const ListOfStreamWidget({
+class EmptyEntrepreneurListWidget extends StatelessWidget {
+  const EmptyEntrepreneurListWidget({
     super.key,
     required this.userProfile,
     required this.screenHeight,
     required this.screenWidth,
     required this.vendorRequest,
-    required this.searchTerm,
   });
 
   final UserProfile userProfile;
   final double screenHeight;
   final double screenWidth;
   final VendorRequest vendorRequest;
-  final String searchTerm;
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: userProfile.searchEntrepreneurs(searchTerm),
+      stream: userProfile.getUserProfile(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return ShimmerAllSubcategories(
@@ -44,11 +41,12 @@ class ListOfStreamWidget extends StatelessWidget {
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return EmptyEntrepreneurListWidget(
-              userProfile: userProfile,
-              screenHeight: screenHeight,
-              screenWidth: screenWidth,
-              vendorRequest: vendorRequest);
+          return Center(
+            child: Text(
+              'No Templates Found',
+              style: TextStyle(color: Colors.white),
+            ),
+          );
         }
 
         var documents = snapshot.data!.docs;
@@ -102,7 +100,12 @@ class ListOfStreamWidget extends StatelessWidget {
                     }
                     if (!vendorSnapshot.hasData ||
                         vendorSnapshot.data!.docs.isEmpty) {
-                      return SizedBox();
+                      return Center(
+                        child: Text(
+                          'Vendor Details not found',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      );
                     }
                     var vendorDetail = vendorSnapshot.data!.docs.first.data()
                         as Map<String, dynamic>;

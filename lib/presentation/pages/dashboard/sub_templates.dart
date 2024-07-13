@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/services/subcategory.dart';
+import 'package:event_master/presentation/components/search/sub_list.dart';
 import 'package:event_master/presentation/components/shimmer/shimmer_all_subcategories.dart';
 import 'package:event_master/presentation/components/ui/custom_appbar.dart';
 import 'package:event_master/presentation/pages/dashboard/entrepreneurs.dart';
@@ -26,7 +27,12 @@ class SubEventTemplatesScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.search),
-            onPressed: () {},
+            onPressed: () {
+              showSearch(
+                  context: context,
+                  useRootNavigator: true,
+                  delegate: DataSearch(categoryId: categoryId));
+            },
           ),
           ClipRRect(
             borderRadius: BorderRadius.circular(6),

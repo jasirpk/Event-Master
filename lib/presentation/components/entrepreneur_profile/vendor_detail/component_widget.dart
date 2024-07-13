@@ -13,16 +13,15 @@ class componentsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: List.generate(
-        images.length,
-        (index) {
-          var data = images[index];
-          return Container(
-            decoration: BoxDecoration(
-                color: Colors.white38, borderRadius: BorderRadius.circular(10)),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
+    return Card(
+      color: Colors.white38,
+      child: Column(
+        children: List.generate(
+          images.length,
+          (index) {
+            var data = images[index];
+            return Padding(
+              padding: EdgeInsets.all(8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -50,9 +49,9 @@ class componentsWidget extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

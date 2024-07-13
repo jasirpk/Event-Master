@@ -1,17 +1,29 @@
 import 'package:event_master/common/assigns.dart';
+import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/services/entrepreneur_profile/profile.dart';
 import 'package:event_master/data_layer/services/entrepreneur_profile/vendor.dart';
 import 'package:event_master/presentation/components/entrepreneur_profile/list/list_stream.dart';
 import 'package:event_master/presentation/components/ui/custom_appbar.dart';
+import 'package:event_master/presentation/pages/dashboard/all_templates.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class EntrepreneursListScreen extends StatelessWidget {
+class EntrepreneursListScreen extends StatefulWidget {
   const EntrepreneursListScreen({super.key});
 
   @override
+  _EntrepreneursListScreenState createState() =>
+      _EntrepreneursListScreenState();
+}
+
+class _EntrepreneursListScreenState extends State<EntrepreneursListScreen> {
+  final UserProfile userProfile = UserProfile();
+  final VendorRequest vendorRequest = VendorRequest();
+  final TextEditingController _searchController = TextEditingController();
+  String searchTerm = '';
+
+  @override
   Widget build(BuildContext context) {
-    final UserProfile userProfile = UserProfile();
-    final VendorRequest vendorRequest = VendorRequest();
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -20,13 +32,12 @@ class EntrepreneursListScreen extends StatelessWidget {
         title: 'Entrepreneurs',
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {},
-          ),
-          IconButton(
             icon: Icon(Icons.source),
-            onPressed: () {},
+            onPressed: () {
+              Get.to(() => AllTemplatesScreen());
+            },
           ),
+          sizedBoxWidth,
         ],
       ),
       body: Padding(
@@ -52,11 +63,49 @@ class EntrepreneursListScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 10.0),
-            ListOfStreamWidget(
+            Padding(
+              padding: EdgeInsets.only(left: 8, right: 8),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  labelText: 'Search',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30)),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.clear),
+                    onPressed: () {
+                      setState(() {
+                        _searchController.clear();
+                        searchTerm = '';
+                      });
+                    },
+                  ),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    searchTerm = value;
+                  });
+                },
+              ),
+            ),
+            SizedBox(height: 10.0),
+            Expanded(
+              child: ListOfStreamWidget(
                 userProfile: userProfile,
                 screenHeight: screenHeight,
                 screenWidth: screenWidth,
-                vendorRequest: vendorRequest),
+                vendorRequest: vendorRequest,
+                searchTerm: searchTerm,
+              ),
+            ),
           ],
         ),
       ),

@@ -181,7 +181,18 @@ class _VendorListScreenState extends State<VendorListScreen> {
                                 PopupMenuButton(
                                   onSelected: (value) async {
                                     if (value == 'View Detail') {
-                                      // View Detail action
+                                      Get.to(() => ReadVendorScreen(
+                                          vendorName:
+                                              vendorDetail['categoryName'],
+                                          vendorImage: imagePath,
+                                          location: vendorDetail['location'],
+                                          description:
+                                              vendorDetail['description'],
+                                          images:
+                                              List<Map<String, dynamic>>.from(
+                                                  vendorDetail['images']),
+                                          budget: Map<String, double>.from(
+                                              vendorDetail['budget'])));
                                     }
                                   },
                                   itemBuilder: (context) {
@@ -195,12 +206,7 @@ class _VendorListScreenState extends State<VendorListScreen> {
                                 ),
                                 Checkbox(
                                     value: selectedVendors[documentId] ?? false,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        selectedVendors[documentId] =
-                                            value ?? false;
-                                      });
-                                    })
+                                    onChanged: (bool? value) {})
                               ],
                             ),
                           ],

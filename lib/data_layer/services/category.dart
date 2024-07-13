@@ -23,4 +23,21 @@ class DatabaseMethods {
       rethrow;
     }
   }
+
+  Stream<QuerySnapshot> searchcategories(String categoryId, String searchTerm) {
+    if (searchTerm.isEmpty) {
+      return FirebaseFirestore.instance.collection('Categories').snapshots();
+    }
+
+    try {
+      return FirebaseFirestore.instance
+          .collection('Categories')
+          .where('categoryName', isGreaterThanOrEqualTo: searchTerm)
+          .where('categoryName', isLessThanOrEqualTo: searchTerm + '\uf8ff')
+          .snapshots();
+    } catch (e) {
+      print('Error executing query: $e');
+      return Stream.empty();
+    }
+  }
 }

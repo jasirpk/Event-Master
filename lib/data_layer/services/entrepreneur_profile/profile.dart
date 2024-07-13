@@ -23,4 +23,20 @@ class UserProfile {
       rethrow;
     }
   }
+
+  Stream<QuerySnapshot> searchEntrepreneurs(String searchTerm) {
+    if (searchTerm.isEmpty) {
+      return FirebaseFirestore.instance.collection('entrepreneurs').snapshots();
+    }
+    try {
+      return FirebaseFirestore.instance
+          .collection('entrepreneurs')
+          .where('companyName', isGreaterThanOrEqualTo: searchTerm)
+          .where('companyName', isLessThanOrEqualTo: searchTerm + '\uf8ff')
+          .snapshots();
+    } catch (e) {
+      print('Error executing qurey $e');
+      return Stream.empty();
+    }
+  }
 }
