@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseMethods {
-  Stream<QuerySnapshot> getVendorDetail(String Client) {
+  Stream<QuerySnapshot> geCategoryDetail(String Client) {
     return FirebaseFirestore.instance
         .collection('Categories')
         .where('value', isEqualTo: Client)

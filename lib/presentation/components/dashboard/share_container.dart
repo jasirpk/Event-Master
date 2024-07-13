@@ -34,8 +34,8 @@ class ShareContainerWidget extends StatelessWidget {
                 child: Center(
                   child: Icon(
                     Icons.share,
-                    color: Colors.black, // Optional: set icon color
-                    size: 24, // Optional: set icon size
+                    color: Colors.black,
+                    size: 24,
                   ),
                 ),
               ),

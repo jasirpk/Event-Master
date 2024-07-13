@@ -21,7 +21,7 @@ class ListViewWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     String selectedCategory = 'Client';
     return StreamBuilder<QuerySnapshot>(
-      stream: databaseMethods.getVendorDetail(selectedCategory),
+      stream: databaseMethods.geCategoryDetail(selectedCategory),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           print('Stream error: ${snapshot.error}');

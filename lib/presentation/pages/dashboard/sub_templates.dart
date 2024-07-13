@@ -151,7 +151,9 @@ class SubEventTemplatesScreen extends StatelessWidget {
                                 color: Colors.grey,
                               ),
                               IconButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Get.to(() => EntrepreneursListScreen());
+                                },
                                 icon: Icon(CupertinoIcons.forward),
                                 color: Colors.grey,
                               ),

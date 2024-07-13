@@ -25,7 +25,7 @@ class CategoryListWidget extends StatelessWidget {
     String selectedCategory = 'Client';
     return SliverToBoxAdapter(
       child: StreamBuilder<QuerySnapshot>(
-        stream: databaseMethods.getVendorDetail(selectedCategory),
+        stream: databaseMethods.geCategoryDetail(selectedCategory),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return ShimmerAllTemplates(

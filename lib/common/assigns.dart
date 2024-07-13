@@ -6,4 +6,12 @@ class Assigns {
   static String selectOne = 'Selecte One!';
   static String selecteDetail =
       '''To select the right event management company, consider your specific event needs. Each company specializes in different aspects such as corporate events, parties, or festivals. Review their portfolios to see past events and client feedback''';
+  static String popular = 'Top Popular Templates';
+  static String selectedValue = 'Client';
+  static String aboutUs = 'About Us';
+  static String moreDetail = 'More Details';
+  static String phoneNumber = 'Phone Number';
+  static String otherLinks = 'Other Media Links';
+  static String media = 'Media';
+  static String website = 'Website:';
 }
