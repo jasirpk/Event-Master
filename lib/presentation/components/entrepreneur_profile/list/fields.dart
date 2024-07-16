@@ -14,6 +14,9 @@ class FieldsWidget extends StatelessWidget {
     required this.imagePath,
     required this.userDetail,
     required this.vendorDetail,
+    this.subImagePath,
+    this.subCategoryName,
+    this.subdescripion,
   });
 
   final String documentId;
@@ -22,12 +25,20 @@ class FieldsWidget extends StatelessWidget {
   final String imagePath;
   final Map<String, dynamic> userDetail;
   final Map<String, dynamic> vendorDetail;
+  final String? subImagePath;
+  final String? subCategoryName;
+  final String? subdescripion;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Get.to(() => VendorListScreen(uid: documentId));
+        Get.to(() => VendorListScreen(
+              uid: documentId,
+              subImagePath: subImagePath,
+              subCategoryName: subCategoryName,
+              subdescripion: subdescripion,
+            ));
       },
       child: Stack(
         children: [
@@ -108,6 +119,8 @@ class FieldsWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     PopupMenuButton(
+                      iconColor: Colors.white,
+                      color: Colors.white,
                       onSelected: (value) async {
                         if (value == 'View Detail') {
                           Get.to(() => EntrepreneurDetailScreen(

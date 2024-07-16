@@ -40,9 +40,7 @@ class ListViewWidget extends StatelessWidget {
           );
         }
         var documents = snapshot.data!.docs;
-        documents.forEach((doc) {
-          print('Document: ${doc.data()}');
-        });
+
         return SizedBox(
           height: screenHeight * 0.24,
           child: ListView.builder(

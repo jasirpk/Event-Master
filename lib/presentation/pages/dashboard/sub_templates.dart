@@ -105,7 +105,11 @@ class SubEventTemplatesScreen extends StatelessWidget {
                       subdetailSnapshot.data!.data() as Map<String, dynamic>;
                   return InkWell(
                     onTap: () {
-                      Get.to(() => EntrepreneursListScreen());
+                      Get.to(() => EntrepreneursListScreen(
+                            subImagePath: subimagePath,
+                            subCategoryName: subDetailData['subCategoryName'],
+                            subdescripion: subDetailData['about'],
+                          ));
                     },
                     child: Container(
                       margin:
@@ -192,7 +196,12 @@ class SubEventTemplatesScreen extends StatelessWidget {
                                   }),
                               IconButton(
                                 onPressed: () {
-                                  Get.to(() => EntrepreneursListScreen());
+                                  Get.to(() => EntrepreneursListScreen(
+                                        subImagePath: subimagePath,
+                                        subCategoryName:
+                                            subDetailData['subCategoryName'],
+                                        subdescripion: subDetailData['about'],
+                                      ));
                                 },
                                 icon: Icon(CupertinoIcons.forward),
                                 color: Colors.white,

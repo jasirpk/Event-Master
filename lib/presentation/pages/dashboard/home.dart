@@ -4,7 +4,7 @@ import 'package:event_master/data_layer/dashboard/dashboard_bloc.dart';
 import 'package:event_master/presentation/components/dashboard/favorite.dart';
 import 'package:event_master/presentation/components/dashboard/home.dart';
 import 'package:event_master/presentation/components/dashboard/search.dart';
-import 'package:event_master/presentation/components/dashboard/vendor.dart';
+import 'package:event_master/presentation/components/dashboard/events.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

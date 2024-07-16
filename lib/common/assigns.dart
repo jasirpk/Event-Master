@@ -18,4 +18,11 @@ class Assigns {
   static String location = 'Location';
   static String budget = 'Budget';
   static String vendorName = 'VendorName:';
+  static String submitDetails = 'Submit Details';
+  static String clientInformation = 'Client Information';
+  static String eventOverview = 'Event Overview';
+  static String styleAndTheme = 'Style & Theme';
+  static String guestList = 'Guest List';
+  static String selectedVendors = 'Selected Vendors';
+  static String totalAmount = 'Total Amount';
 }

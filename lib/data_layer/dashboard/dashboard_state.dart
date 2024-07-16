@@ -3,7 +3,12 @@ part of 'dashboard_bloc.dart';
 @immutable
 sealed class DashboardState {}
 
-final class DashboardInitial extends DashboardState {}
+class DashboardInitial extends DashboardState {
+  final File? pickImage;
+  final String pickLocation;
+
+  DashboardInitial({required this.pickImage, required this.pickLocation});
+}
 
 class TabState extends DashboardState {
   final int index;
@@ -23,3 +28,17 @@ class SearchError extends DashboardState {
 
   SearchError(this.message);
 }
+
+class ColorThemeChanged extends DashboardState {
+  final Color newColor;
+
+  ColorThemeChanged(this.newColor);
+}
+
+class VendorSelectionState extends DashboardState {
+  final List<Map<String, dynamic>> selectedVendors;
+
+  VendorSelectionState({this.selectedVendors = const []});
+}
+
+class LocationFetchLoading extends DashboardState {}

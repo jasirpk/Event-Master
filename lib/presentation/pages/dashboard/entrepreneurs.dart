@@ -11,8 +11,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 class EntrepreneursListScreen extends StatelessWidget {
-  const EntrepreneursListScreen({super.key});
+  final String? subImagePath;
+  final String? subCategoryName;
+  final String? subdescripion;
 
+  const EntrepreneursListScreen(
+      {super.key, this.subImagePath, this.subCategoryName, this.subdescripion});
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -110,6 +114,9 @@ class EntrepreneursListScreen extends StatelessWidget {
                     screenWidth: screenWidth,
                     vendorRequest: VendorRequest(),
                     searchTerm: '',
+                    subImagePath: subImagePath,
+                    subCategoryName: subCategoryName,
+                    subdescripion: subdescripion,
                   );
                 },
               ),

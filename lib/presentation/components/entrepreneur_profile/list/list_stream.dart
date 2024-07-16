@@ -14,6 +14,9 @@ class ListOfStreamWidget extends StatelessWidget {
     required this.screenWidth,
     required this.vendorRequest,
     required this.searchTerm,
+    this.subImagePath,
+    this.subCategoryName,
+    this.subdescripion,
   });
 
   final UserProfile userProfile;
@@ -21,6 +24,9 @@ class ListOfStreamWidget extends StatelessWidget {
   final double screenWidth;
   final VendorRequest vendorRequest;
   final String searchTerm;
+  final String? subImagePath;
+  final String? subCategoryName;
+  final String? subdescripion;
 
   @override
   Widget build(BuildContext context) {
@@ -108,12 +114,16 @@ class ListOfStreamWidget extends StatelessWidget {
                         as Map<String, dynamic>;
 
                     return FieldsWidget(
-                        documentId: documentId,
-                        screenWidth: screenWidth,
-                        screenHeight: screenHeight,
-                        imagePath: imagePath!,
-                        userDetail: userDetail,
-                        vendorDetail: vendorDetail);
+                      documentId: documentId,
+                      screenWidth: screenWidth,
+                      screenHeight: screenHeight,
+                      imagePath: imagePath!,
+                      userDetail: userDetail,
+                      vendorDetail: vendorDetail,
+                      subImagePath: subImagePath,
+                      subCategoryName: subCategoryName,
+                      subdescripion: subdescripion,
+                    );
                   },
                 );
               },
