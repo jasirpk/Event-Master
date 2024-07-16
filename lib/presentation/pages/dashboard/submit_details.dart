@@ -2,7 +2,7 @@
 import 'dart:io';
 import 'package:event_master/common/assigns.dart';
 import 'package:event_master/data_layer/dashboard/dashboard_bloc.dart';
-import 'package:event_master/presentation/components/create_event/event+fields.dart';
+import 'package:event_master/presentation/components/event/add_event/event_fields.dart';
 import 'package:event_master/presentation/components/ui/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

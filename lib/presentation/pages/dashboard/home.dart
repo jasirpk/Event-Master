@@ -12,7 +12,7 @@ class HomeScreen extends StatelessWidget {
   final List<Widget> pages = [
     HomePage(),
     SearchPage(),
-    VendorPage(),
+    EventPage(),
     FavoritePage()
   ];
   @override

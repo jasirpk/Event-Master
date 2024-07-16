@@ -87,4 +87,48 @@ class EventBookingMethods {
       rethrow;
     }
   }
+
+  Stream<QuerySnapshot> getGeneratedEventsDetails(String uid) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('events')
+        .snapshots();
+  }
+
+  Future<DocumentSnapshot?> getEventsById(String uid, String eventId) async {
+    try {
+      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('events')
+          .doc(eventId)
+          .get();
+      if (documentSnapshot.exists) {
+        return documentSnapshot;
+      } else {
+        print('Event with eventId $eventId not found');
+        return null;
+      }
+    } catch (e) {
+      print('Error getting documentId by Id $e');
+      throw Exception('Failed to get document by ID: $e');
+    }
+  }
+
+  Future<void> deleteGeneratedEventDetail(String uid, String documentId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('events')
+          .doc(documentId)
+          .delete();
+
+      print('Vendor details deleted successfully.');
+    } catch (e) {
+      print('Error deleting vendor details: $e');
+      throw Exception('Failed to delete vendor details: $e');
+    }
+  }
 }

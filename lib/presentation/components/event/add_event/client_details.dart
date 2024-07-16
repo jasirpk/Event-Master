@@ -1,7 +1,7 @@
 import 'package:event_master/common/assigns.dart';
 import 'package:event_master/data_layer/dashboard/dashboard_bloc.dart';
-import 'package:event_master/presentation/components/create_event/custom_headline.dart';
-import 'package:event_master/presentation/components/create_event/custom_textfeild.dart';
+import 'package:event_master/presentation/components/event/add_event/custom_headline.dart';
+import 'package:event_master/presentation/components/event/add_event/custom_textfeild.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

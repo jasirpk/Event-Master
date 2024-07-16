@@ -1,7 +1,7 @@
 import 'package:event_master/common/assigns.dart';
-import 'package:event_master/presentation/components/create_event/colortheme_selector.dart';
-import 'package:event_master/presentation/components/create_event/custom_headline.dart';
-import 'package:event_master/presentation/components/create_event/custom_textfeild.dart';
+import 'package:event_master/presentation/components/event/add_event/colortheme_selector.dart';
+import 'package:event_master/presentation/components/event/add_event/custom_headline.dart';
+import 'package:event_master/presentation/components/event/add_event/custom_textfeild.dart';
 import 'package:flutter/material.dart';
 
 class StyleAndThemeWidget extends StatelessWidget {

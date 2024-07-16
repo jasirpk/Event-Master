@@ -25,4 +25,13 @@ class Assigns {
   static String guestList = 'Guest List';
   static String selectedVendors = 'Selected Vendors';
   static String totalAmount = 'Total Amount';
+  static String date = 'Date:';
+  static String time = 'Time:';
+  static String guestCount = 'Guest Count:';
+  static String totalAmoutn = 'Total Amount';
+  static String name = 'Name:';
+  static String email = 'Email:';
+  static String phoneNumberdot = 'Phone Number:';
+  static String eventDetail = 'Event Details';
+  static String guestAndTheme = 'Guests & Theme';
 }

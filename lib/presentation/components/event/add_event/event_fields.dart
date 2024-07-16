@@ -5,15 +5,17 @@ import 'package:event_master/bussiness_layer.dart/snack_bar.dart';
 import 'package:event_master/common/assigns.dart';
 import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/services/create_event.dart';
-import 'package:event_master/presentation/components/create_event/client_details.dart';
-import 'package:event_master/presentation/components/create_event/custom_headline.dart';
-import 'package:event_master/presentation/components/create_event/event_type.dart';
-import 'package:event_master/presentation/components/create_event/selected_vendors.dart';
-import 'package:event_master/presentation/components/create_event/style_and_theme.dart';
+import 'package:event_master/presentation/components/event/add_event/client_details.dart';
+import 'package:event_master/presentation/components/event/add_event/custom_headline.dart';
+import 'package:event_master/presentation/components/event/add_event/event_type.dart';
+import 'package:event_master/presentation/components/event/add_event/selected_vendors.dart';
+import 'package:event_master/presentation/components/event/add_event/style_and_theme.dart';
+import 'package:event_master/presentation/components/dashboard/events.dart';
 import 'package:event_master/presentation/components/ui/pushable_button.dart';
 import 'package:event_master/presentation/pages/dashboard/submit_details.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class EventFieldsWidget extends StatelessWidget {
   const EventFieldsWidget({
@@ -165,6 +167,7 @@ class EventFieldsWidget extends StatelessWidget {
                     sum: sum.toString(),
                   );
                   showCustomSnackBar('Success', 'Event added successfully');
+                  Get.offAll(() => EventPage());
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       backgroundColor: Colors.red,

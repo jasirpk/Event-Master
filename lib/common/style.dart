@@ -5,3 +5,4 @@ var sizedbox = SizedBox(height: 20);
 var sizedBoxWidth = SizedBox(
   width: 20,
 );
+Color myCustomColor = Color(0xFF840CFC);
