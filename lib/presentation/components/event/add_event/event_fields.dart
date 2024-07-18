@@ -135,7 +135,8 @@ class EventFieldsWidget extends StatelessWidget {
                 String eventType = eventTypeController.text.trim();
                 String eventAbout = aboutController.text.trim();
                 String guestCount = guestCountController.text.trim();
-                String selectedColorTheme = selectedColor.toString();
+                String selectedColorTheme =
+                    selectedColor.value.toRadixString(16);
 
                 String? imagePath = this.imagePath;
                 if (image != null) {

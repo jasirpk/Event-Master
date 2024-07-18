@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_master/bussiness_layer.dart/show_diolog.dart';
+import 'package:event_master/common/assigns.dart';
 import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/services/create_event.dart';
 import 'package:event_master/presentation/components/shimmer/shimmer_all_subcategories.dart';
 import 'package:event_master/presentation/components/ui/custom_appbar.dart';
+import 'package:event_master/presentation/pages/dashboard/edit_events.dart';
 import 'package:event_master/presentation/pages/dashboard/entrepreneurs.dart';
 import 'package:event_master/presentation/pages/dashboard/event_detail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,14 +24,16 @@ class EventPage extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     EventBookingMethods eventBookingMethods = EventBookingMethods();
+
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            Get.to(() => EntrepreneursListScreen());
-          },
-          label: Text(
-            '+Add Events',
-          )),
+        onPressed: () {
+          Get.to(() => EntrepreneursListScreen());
+        },
+        label: Text(
+          '+Add Events',
+        ),
+      ),
       appBar: CustomAppBarWithDivider(title: 'Events'),
       body: StreamBuilder<QuerySnapshot?>(
         stream: eventBookingMethods.getGeneratedEventsDetails(user.uid),
@@ -39,10 +43,19 @@ class EventPage extends StatelessWidget {
                 screenHeight: screenHeight, screenWidth: screenWidth);
           }
 
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Error loading events: ${snapshot.error}',
+                style: TextStyle(color: Colors.white),
+              ),
+            );
+          }
+
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return Center(
               child: Text(
-                'No Templates Found for ',
+                'No Templates Found',
                 style: TextStyle(color: Colors.white),
               ),
             );
@@ -71,12 +84,21 @@ class EventPage extends StatelessWidget {
                           screenHeight: screenHeight, screenWidth: screenWidth);
                     }
 
+                    if (subdetailSnapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          'Error loading details: ${subdetailSnapshot.error}',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      );
+                    }
+
                     if (!subdetailSnapshot.hasData ||
                         subdetailSnapshot.data == null ||
                         subdetailSnapshot.data!.data() == null) {
                       return Center(
                         child: Text(
-                          'Details not found ',
+                          'Details not found',
                           style: TextStyle(color: Colors.white),
                         ),
                       );
@@ -84,8 +106,6 @@ class EventPage extends StatelessWidget {
 
                     var subDetailData =
                         subdetailSnapshot.data!.data() as Map<String, dynamic>;
-
-                    // bool isSubmit = subDetailData['isValid'] ?? false;
 
                     return InkWell(
                       onTap: () {
@@ -119,12 +139,19 @@ class EventPage extends StatelessWidget {
                               height: screenHeight * 0.16,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                image: DecorationImage(
-                                  image: imagePath.startsWith('http')
-                                      ? NetworkImage(imagePath)
-                                      : AssetImage(imagePath) as ImageProvider,
-                                  fit: BoxFit.cover,
-                                ),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: imagePath.startsWith('http')
+                                    ? FadeInImage.assetNetwork(
+                                        placeholder: Assigns.placeHolderImage,
+                                        image: imagePath,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Image.asset(
+                                        imagePath,
+                                        fit: BoxFit.cover,
+                                      ),
                               ),
                             ),
                             SizedBox(width: 8.0),
@@ -166,7 +193,7 @@ class EventPage extends StatelessWidget {
                                           color: Colors.white54,
                                           size: 20,
                                         ),
-                                        sizedBoxWidth,
+                                        SizedBox(width: 10),
                                         Text(
                                           subDetailData['time'] ?? '',
                                           style: TextStyle(
@@ -177,7 +204,6 @@ class EventPage extends StatelessWidget {
                                       ],
                                     ),
                                     SizedBox(height: 10.0),
-                                    // isSubmit
                                     Container(
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 4, vertical: 4),
@@ -186,13 +212,12 @@ class EventPage extends StatelessWidget {
                                           borderRadius:
                                               BorderRadius.circular(30)),
                                       child: Text(
-                                        'submited',
+                                        'submitted',
                                         style: TextStyle(
                                             color: Colors.black,
                                             fontSize: screenHeight * 0.010),
                                       ),
                                     )
-                                    //     : SizedBox(),
                                   ],
                                 ),
                               ),
@@ -231,23 +256,27 @@ class EventPage extends StatelessWidget {
                                         eventMethods: eventBookingMethods,
                                       );
                                     } else if (value == 'update') {
-                                      // Get.to(() => EditVendorScreen(
-                                      //     vendorId: documentId,
-                                      //     vendorName:
-                                      //         subDetailData['categoryName'],
-                                      //     vendorImage: imagePath,
-                                      //     location: subDetailData['location'],
-                                      //     description:
-                                      //         subDetailData['description'],
-                                      //     images:
-                                      //         List<Map<String, dynamic>>.from(
-                                      //             subDetailData['images']),
-                                      //     budget: Map<String, double>.from(
-                                      //         subDetailData['budget'])));
+                                      Get.to(() => EditEventsScreen(
+                                            uid: user.uid,
+                                            eventId: documentId,
+                                            clientName:
+                                                subDetailData['clientName'],
+                                            clientEmail: subDetailData['email'],
+                                            phoneNumber:
+                                                subDetailData['phoneNumber'],
+                                            location: subDetailData['location'],
+                                            eventType:
+                                                subDetailData['eventype'],
+                                            description:
+                                                subDetailData['eventAbout'],
+                                            imagePath: imagePath,
+                                            guests: subDetailData['guestCount'],
+                                            amount: subDetailData['sum'],
+                                            date: subDetailData['date'],
+                                            time: subDetailData['time'],
+                                          ));
                                     } else if (value == 'submit') {
-                                      // await generatedVendor.updateIsValidField(
-                                      //     uid, documentId,
-                                      //     isSumbit: true);
+                                      // await generatedVendor.updateIsValidField(uid, documentId, isSumbit: true);
                                     }
                                   },
                                   itemBuilder: (context) {

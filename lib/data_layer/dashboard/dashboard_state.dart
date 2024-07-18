@@ -3,11 +3,27 @@ part of 'dashboard_bloc.dart';
 @immutable
 sealed class DashboardState {}
 
+// class DashboardInitial extends DashboardState {
+//   final File? pickImage;
+//   final String pickLocation;
+
+//   DashboardInitial({required this.pickImage, required this.pickLocation});
+// }
 class DashboardInitial extends DashboardState {
   final File? pickImage;
   final String pickLocation;
 
   DashboardInitial({required this.pickImage, required this.pickLocation});
+
+  DashboardInitial copyWith({
+    File? pickImage,
+    String? pickLocation,
+  }) {
+    return DashboardInitial(
+      pickImage: pickImage ?? this.pickImage,
+      pickLocation: pickLocation ?? this.pickLocation,
+    );
+  }
 }
 
 class TabState extends DashboardState {

@@ -81,9 +81,13 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       if (image != null) {
         print('image Picked successfully');
         final File updatedImage = File(image.path);
-        emit(DashboardInitial(
-            pickImage: updatedImage,
-            pickLocation: (state as DashboardInitial).pickLocation));
+        if (state is DashboardInitial) {
+          emit((state as DashboardInitial).copyWith(pickImage: updatedImage));
+        } else {
+          emit(DashboardInitial(
+              pickImage: updatedImage,
+              pickLocation: (state as DashboardInitial).pickLocation));
+        }
         print('State updated with new image path: ${updatedImage.path}');
       } else {
         print('Image picking failed, no image selected.');

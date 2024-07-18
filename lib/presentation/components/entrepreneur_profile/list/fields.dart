@@ -1,3 +1,4 @@
+import 'package:event_master/common/assigns.dart';
 import 'package:event_master/common/style.dart';
 import 'package:event_master/presentation/pages/dashboard/entrepreneur_detail.dart';
 import 'package:event_master/presentation/pages/dashboard/vendor_list.dart';
@@ -62,15 +63,28 @@ class FieldsWidget extends StatelessWidget {
               children: [
                 Container(
                   width: screenWidth * 0.30,
-                  height: screenHeight * 0.20,
+                  height: screenHeight * 0.16,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    image: DecorationImage(
-                      image: imagePath.startsWith('http')
-                          ? NetworkImage(imagePath)
-                          : AssetImage(imagePath) as ImageProvider,
-                      fit: BoxFit.cover,
-                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: imagePath.startsWith('http')
+                        ? FadeInImage.assetNetwork(
+                            placeholder: Assigns.placeHolderImage,
+                            image: imagePath,
+                            fit: BoxFit.cover,
+                            imageErrorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                Assigns.placeHolderImage,
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          )
+                        : Image.asset(
+                            imagePath,
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ),
                 SizedBox(width: 8.0),

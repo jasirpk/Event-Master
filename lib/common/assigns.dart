@@ -34,4 +34,6 @@ class Assigns {
   static String phoneNumberdot = 'Phone Number:';
   static String eventDetail = 'Event Details';
   static String guestAndTheme = 'Guests & Theme';
+  static String updateEvent = 'Update Event Details';
+  static String placeHolderImage = 'assets/images/place holder.jpg';
 }

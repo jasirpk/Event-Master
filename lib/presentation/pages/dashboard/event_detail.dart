@@ -210,7 +210,6 @@ class EventDetailScreen extends StatelessWidget {
                                         maxWidth: screenWidth * 0.3),
                                     child: Text(
                                       vendor['categoryName'],
-                                      // vendor['categoryName'],
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 1,
                                     ),

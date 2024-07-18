@@ -2,6 +2,7 @@ import 'package:event_master/common/style.dart';
 import 'package:event_master/presentation/components/entrepreneur_profile/detail/fields.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class EntrepreneurDetailScreen extends StatelessWidget {
   final String companyName;
@@ -39,7 +40,9 @@ class EntrepreneurDetailScreen extends StatelessWidget {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8), color: myColor),
             child: IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Get.back();
+              },
               icon: Icon(
                 CupertinoIcons.back,
                 color: Colors.white,

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:event_master/bussiness_layer.dart/snack_bar.dart';
 import 'dart:io';
-
 import 'package:firebase_storage/firebase_storage.dart';
 
 class EventBookingMethods {
@@ -129,6 +129,57 @@ class EventBookingMethods {
     } catch (e) {
       print('Error deleting vendor details: $e');
       throw Exception('Failed to delete vendor details: $e');
+    }
+  }
+
+  Future<void> updateEvent({
+    required String uid,
+    required String eventId,
+    required String clientName,
+    required String email,
+    required String phoneNumber,
+    required String location,
+    required String date,
+    required String time,
+    required String eventType,
+    required String eventAbout,
+    required String imagePath,
+    required String guestCount,
+    required String sum,
+  }) async {
+    try {
+      String finalImagePath = imagePath;
+      if (!imagePath.startsWith('http')) {
+        finalImagePath = await uploadImage(File(imagePath));
+      }
+
+      Map<String, dynamic> updatedEventCredential = {
+        'clientName': clientName,
+        'email': email,
+        'phoneNumber': phoneNumber,
+        'location': location,
+        'guestCount': guestCount,
+        'date': date,
+        'time': time,
+        'eventype': eventType,
+        'eventAbout': eventAbout,
+        'imageURL': finalImagePath,
+        'sum': sum,
+      };
+
+      // Update the event in Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('events')
+          .doc(eventId)
+          .update(updatedEventCredential);
+      showCustomSnackBar('Success', 'Event updated  successfully');
+
+      print('Updated event in Firebase');
+    } catch (e) {
+      print('Error updating event: $e');
+      rethrow;
     }
   }
 }
