@@ -5,6 +5,7 @@ import 'package:event_master/presentation/components/dashboard/favorite.dart';
 import 'package:event_master/presentation/components/dashboard/home.dart';
 import 'package:event_master/presentation/components/dashboard/search.dart';
 import 'package:event_master/presentation/components/dashboard/events.dart';
+import 'package:event_master/presentation/pages/dashboard/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,7 +14,8 @@ class HomeScreen extends StatelessWidget {
     HomePage(),
     SearchPage(),
     EventPage(),
-    FavoritePage()
+    FavoritePage(),
+    ProfileScreen()
   ];
   @override
   Widget build(BuildContext context) {
@@ -21,12 +23,13 @@ class HomeScreen extends StatelessWidget {
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: myColor,
         color: Colors.black,
-        animationDuration: Duration(milliseconds: 400),
+        animationDuration: Duration(milliseconds: 200),
         items: <Widget>[
-          Icon(Icons.home, size: 30, color: Colors.white),
-          Icon(Icons.search, size: 30, color: Colors.white),
-          Icon(Icons.receipt, size: 30, color: Colors.white),
-          Icon(Icons.favorite, size: 30, color: Colors.white),
+          Icon(Icons.home, size: 20, color: Colors.white),
+          Icon(Icons.search, size: 20, color: Colors.white),
+          Icon(Icons.receipt, size: 20, color: Colors.white),
+          Icon(Icons.favorite, size: 20, color: Colors.white),
+          Icon(Icons.settings, size: 20, color: Colors.white),
         ],
         onTap: (index) {
           context.read<DashboardBloc>().add(TabChanged(index));

@@ -1,6 +1,6 @@
 import 'package:event_master/bussiness_layer.dart/fullscreen_snackbar.dart';
 import 'package:event_master/common/style.dart';
-import 'package:event_master/presentation/pages/dashboard/profile.dart';
+import 'package:event_master/presentation/pages/dashboard/chat_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,7 +18,6 @@ class StackAppBar extends StatelessWidget {
     FullscreenSnackbar fullscreenSnackbar = FullscreenSnackbar();
     return Stack(
       children: <Widget>[
-        // Background image container
         Container(
           height: 160,
           decoration: BoxDecoration(
@@ -32,26 +31,6 @@ class StackAppBar extends StatelessWidget {
             ),
           ),
         ),
-
-        AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          actions: [
-            Transform.rotate(
-              angle: 5.5,
-              child: IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.send_sharp),
-              ),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.notifications),
-            ),
-            SizedBox(width: 8),
-          ],
-        ),
-
         Positioned(
           top: 28,
           left: 0,
@@ -67,14 +46,9 @@ class StackAppBar extends StatelessWidget {
                   width: 2.0,
                 ),
               ),
-              child: InkWell(
-                onTap: () {
-                  Get.to(() => ProfileScreen());
-                },
-                child: CircleAvatar(
-                  maxRadius: 30,
-                  backgroundImage: AssetImage('assets/images/download.jpeg'),
-                ),
+              child: CircleAvatar(
+                maxRadius: 30,
+                backgroundImage: AssetImage('assets/images/download.jpeg'),
               ),
             ),
             title: Container(
@@ -103,7 +77,32 @@ class StackAppBar extends StatelessWidget {
             ),
           ),
         ),
-
+        AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          actions: [
+            Transform.rotate(
+              angle: 5.5,
+              child: IconButton(
+                onPressed: () {
+                  Get.to(() => MessageListScreen());
+                },
+                icon: Icon(
+                  Icons.send_sharp,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.notifications,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(width: 8),
+          ],
+        ),
         Padding(
           padding: EdgeInsets.only(
             top: 118,
