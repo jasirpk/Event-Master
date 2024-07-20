@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_master/bussiness_layer.dart/show_diolog.dart';
+import 'package:event_master/bussiness_layer.dart/snack_bar.dart';
 import 'package:event_master/common/assigns.dart';
 import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/services/create_event.dart';
@@ -106,7 +107,7 @@ class EventPage extends StatelessWidget {
 
                     var subDetailData =
                         subdetailSnapshot.data!.data() as Map<String, dynamic>;
-
+                    bool isConfirm = subDetailData['isValid'] ?? false;
                     return InkWell(
                       onTap: () {
                         Get.to(() => EventDetailScreen(
@@ -204,18 +205,28 @@ class EventPage extends StatelessWidget {
                                       ],
                                     ),
                                     SizedBox(height: 10.0),
-                                    Container(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 4, vertical: 4),
-                                      decoration: BoxDecoration(
-                                          color: myColor,
-                                          borderRadius:
-                                              BorderRadius.circular(30)),
-                                      child: Text(
-                                        'submitted',
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: screenHeight * 0.010),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        await eventBookingMethods
+                                            .updateIsValidField(
+                                                user.uid, documentId,
+                                                isConfirm: true);
+                                        showCustomSnackBar('Success',
+                                            'Your Event is Hand Overed to Event Management Company');
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 4, vertical: 4),
+                                        decoration: BoxDecoration(
+                                            color: myColor,
+                                            borderRadius:
+                                                BorderRadius.circular(30)),
+                                        child: Text(
+                                          isConfirm ? 'Confirmed' : 'Confirm',
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: screenHeight * 0.010),
+                                        ),
                                       ),
                                     )
                                   ],
@@ -275,8 +286,6 @@ class EventPage extends StatelessWidget {
                                             date: subDetailData['date'],
                                             time: subDetailData['time'],
                                           ));
-                                    } else if (value == 'submit') {
-                                      // await generatedVendor.updateIsValidField(uid, documentId, isSumbit: true);
                                     }
                                   },
                                   itemBuilder: (context) {
@@ -292,17 +301,6 @@ class EventPage extends StatelessWidget {
                                       PopupMenuItem(
                                         child: Text('Update'),
                                         value: 'update',
-                                      ),
-                                      PopupMenuItem(
-                                        child: Text(
-                                          'Submit',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: myCustomColor,
-                                            letterSpacing: 1,
-                                          ),
-                                        ),
-                                        value: 'submit',
                                       ),
                                     ];
                                   },

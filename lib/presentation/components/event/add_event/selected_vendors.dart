@@ -1,5 +1,5 @@
 import 'package:event_master/common/style.dart';
-import 'package:event_master/presentation/pages/dashboard/submit_details.dart';
+import 'package:event_master/presentation/pages/dashboard/create_event.dart';
 import 'package:flutter/material.dart';
 
 class SelectedVendorsWidget extends StatelessWidget {

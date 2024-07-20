@@ -110,8 +110,12 @@ class ClientDeatailsWidget extends StatelessWidget {
                         initialTime: TimeOfDay.now(),
                       );
                       if (pickedTime != null) {
-                        timeController.text =
-                            "${pickedTime.hour}:${pickedTime.minute}";
+                        final locallizations =
+                            MaterialLocalizations.of(context);
+                        final formattedTime = locallizations.formatTimeOfDay(
+                            pickedTime,
+                            alwaysUse24HourFormat: false);
+                        timeController.text = formattedTime;
                       }
                     },
                   ),

@@ -8,7 +8,7 @@ import 'package:event_master/presentation/components/shimmer/shimmer_subcategory
 import 'package:event_master/presentation/components/ui/custom_appbar.dart';
 import 'package:event_master/presentation/components/ui/pushable_button.dart';
 import 'package:event_master/presentation/pages/dashboard/all_templates.dart';
-import 'package:event_master/presentation/pages/dashboard/submit_details.dart';
+import 'package:event_master/presentation/pages/dashboard/create_event.dart';
 import 'package:event_master/presentation/pages/dashboard/vendor_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -158,6 +158,7 @@ class _VendorListScreenState extends State<VendorListScreen> {
                         showCustomSnackBar('Error', 'Please Select Vendors!!');
                       } else {
                         Get.to(() => SubmitDetailsScreen(
+                              EntrepreneurId: widget.uid,
                               selectedVendors: selectedVendors,
                               subImagePath: widget.subImagePath,
                               subCategoryName: widget.subCategoryName,

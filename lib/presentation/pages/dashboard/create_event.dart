@@ -12,13 +12,15 @@ class SubmitDetailsScreen extends StatefulWidget {
   final String? subImagePath;
   final String? subCategoryName;
   final String? subdescripion;
+  final String EntrepreneurId;
 
   SubmitDetailsScreen(
       {super.key,
       required this.selectedVendors,
       this.subImagePath,
       this.subCategoryName,
-      this.subdescripion});
+      this.subdescripion,
+      required this.EntrepreneurId});
 
   @override
   State<SubmitDetailsScreen> createState() => _SubmitDetailsScreenState();
@@ -90,6 +92,7 @@ class _SubmitDetailsScreenState extends State<SubmitDetailsScreen> {
           return SingleChildScrollView(
             padding: EdgeInsets.all(16.0),
             child: EventFieldsWidget(
+                EntrepreneurId: widget.EntrepreneurId,
                 screenHeight: screenHeight,
                 clientNameController: clientNameController,
                 emailController: emailController,

@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 class EventBookingMethods {
   Future<void> addEvent(
       {required String uid,
+      required String EntrepreneurId,
       required String clientName,
       required String email,
       required String phoneNumber,
@@ -17,6 +18,7 @@ class EventBookingMethods {
       required String imagePath,
       required String selectedColor,
       required String guestCount,
+      required bool isValid,
       required List<Map<String, dynamic>> selectedVendors,
       required String sum}) async {
     try {
@@ -33,6 +35,7 @@ class EventBookingMethods {
           .id;
 
       Map<String, dynamic> eventCredential = {
+        'EntrepreneurId': EntrepreneurId,
         'uid': uid,
         'clientName': clientName,
         'email': email,
@@ -47,6 +50,7 @@ class EventBookingMethods {
         'selectedColor': selectedColor,
         'selectedVendors': selectedVendors,
         'sum': sum,
+        'isValid': isValid
       };
 
       // Add the event to Firestore
@@ -180,6 +184,21 @@ class EventBookingMethods {
     } catch (e) {
       print('Error updating event: $e');
       rethrow;
+    }
+  }
+
+  Future<void> updateIsValidField(String uid, String documentId,
+      {required bool isConfirm}) async {
+    try {
+      CollectionReference eventDetailsRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('events');
+      await eventDetailsRef.doc(documentId).update({'isValid': isConfirm});
+      print('IsValid Field updated successfully');
+    } catch (e) {
+      print('Error update isValid field');
+      throw Exception('Failed to update IsValid Field');
     }
   }
 }

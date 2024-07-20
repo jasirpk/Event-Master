@@ -10,9 +10,9 @@ import 'package:event_master/presentation/components/event/add_event/custom_head
 import 'package:event_master/presentation/components/event/add_event/event_type.dart';
 import 'package:event_master/presentation/components/event/add_event/selected_vendors.dart';
 import 'package:event_master/presentation/components/event/add_event/style_and_theme.dart';
-import 'package:event_master/presentation/components/dashboard/events.dart';
 import 'package:event_master/presentation/components/ui/pushable_button.dart';
-import 'package:event_master/presentation/pages/dashboard/submit_details.dart';
+import 'package:event_master/presentation/pages/dashboard/all_templates.dart';
+import 'package:event_master/presentation/pages/dashboard/create_event.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -36,6 +36,7 @@ class EventFieldsWidget extends StatelessWidget {
     required this.guestCountController,
     required this.widget,
     required this.sum,
+    required this.EntrepreneurId,
   });
 
   final double screenHeight;
@@ -54,6 +55,7 @@ class EventFieldsWidget extends StatelessWidget {
   final TextEditingController guestCountController;
   final SubmitDetailsScreen widget;
   final double sum;
+  final String EntrepreneurId;
 
   @override
   Widget build(BuildContext context) {
@@ -110,10 +112,8 @@ class EventFieldsWidget extends StatelessWidget {
         PushableButton_Widget(
             buttonText: 'Submit Details',
             onpressed: () async {
-              // Create an instance of EventBookingMethods
               EventBookingMethods eventBookingMethods = EventBookingMethods();
 
-              // Perform form validation
               if (clientNameController.text.isNotEmpty &&
                   emailController.text.isNotEmpty &&
                   phoneNumberController.text.isNotEmpty &&
@@ -152,6 +152,8 @@ class EventFieldsWidget extends StatelessWidget {
 
                 try {
                   await eventBookingMethods.addEvent(
+                    EntrepreneurId: widget.EntrepreneurId,
+                    isValid: false,
                     uid: user!.uid,
                     clientName: clientName,
                     email: email,
@@ -168,7 +170,7 @@ class EventFieldsWidget extends StatelessWidget {
                     sum: sum.toString(),
                   );
                   showCustomSnackBar('Success', 'Event added successfully');
-                  Get.offAll(() => EventPage());
+                  Get.off(() => AllTemplatesScreen());
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       backgroundColor: Colors.red,
