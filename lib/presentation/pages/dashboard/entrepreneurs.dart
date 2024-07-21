@@ -15,12 +15,17 @@ class EntrepreneursListScreen extends StatelessWidget {
   final String? subCategoryName;
   final String? subdescripion;
 
-  const EntrepreneursListScreen(
-      {super.key, this.subImagePath, this.subCategoryName, this.subdescripion});
+  const EntrepreneursListScreen({
+    super.key,
+    this.subImagePath,
+    this.subCategoryName,
+    this.subdescripion,
+  });
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    TextEditingController searchController = TextEditingController();
 
     return Scaffold(
       appBar: CustomAppBarWithDivider(
@@ -63,7 +68,8 @@ class EntrepreneursListScreen extends StatelessWidget {
             SizedBox(height: 10.0),
             Padding(
               padding: EdgeInsets.only(left: 8, right: 8),
-              child: TextField(
+              child: TextFormField(
+                controller: searchController,
                 decoration: InputDecoration(
                   labelText: 'Search',
                   border: OutlineInputBorder(
@@ -82,7 +88,7 @@ class EntrepreneursListScreen extends StatelessWidget {
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      context.read<DashboardBloc>().add(SearchTermChanged(''));
+                      searchController.clear();
                     },
                   ),
                 ),

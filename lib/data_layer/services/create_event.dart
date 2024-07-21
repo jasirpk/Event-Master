@@ -4,23 +4,24 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class EventBookingMethods {
-  Future<void> addEvent(
-      {required String uid,
-      required String EntrepreneurId,
-      required String clientName,
-      required String email,
-      required String phoneNumber,
-      required String location,
-      required String date,
-      required String time,
-      required String eventype,
-      required String eventAbout,
-      required String imagePath,
-      required String selectedColor,
-      required String guestCount,
-      required bool isValid,
-      required List<Map<String, dynamic>> selectedVendors,
-      required String sum}) async {
+  Future<void> addEvent({
+    required String uid,
+    required String EntrepreneurId,
+    required String clientName,
+    required String email,
+    required String phoneNumber,
+    required String location,
+    required String date,
+    required String time,
+    required String eventype,
+    required String eventAbout,
+    required String imagePath,
+    required String selectedColor,
+    required String guestCount,
+    required bool isValid,
+    required List<Map<String, dynamic>> selectedVendors,
+    required String sum,
+  }) async {
     try {
       String finalImagePath = imagePath;
       if (!imagePath.startsWith('http')) {
@@ -50,7 +51,7 @@ class EventBookingMethods {
         'selectedColor': selectedColor,
         'selectedVendors': selectedVendors,
         'sum': sum,
-        'isValid': isValid
+        'isValid': isValid,
       };
 
       // Add the event to Firestore
@@ -67,6 +68,105 @@ class EventBookingMethods {
       rethrow;
     }
   }
+
+  Future<void> updateEntrepreneurRating(
+      String EntrepreneurId, double rating) async {
+    try {
+      DocumentReference entrepreneurRef = FirebaseFirestore.instance
+          .collection('entrepreneurs')
+          .doc(EntrepreneurId);
+
+      DocumentSnapshot entrepreneurDoc = await entrepreneurRef.get();
+      if (entrepreneurDoc.exists) {
+        var data = entrepreneurDoc.data() as Map<String, dynamic>;
+        double currentRating = data['rating'] ?? 0.0;
+        int ratingCount = data['ratingCount'] ?? 0;
+
+        double newRating =
+            (currentRating * ratingCount + rating) / (ratingCount + 1);
+        ratingCount += 1;
+
+        await entrepreneurRef.update({
+          'rating': newRating,
+          'ratingCount': ratingCount,
+        });
+      } else {
+        await entrepreneurRef.set({
+          'rating': rating,
+          'ratingCount': 1,
+        });
+      }
+
+      print('Updated Entrepreneur rating');
+    } catch (e) {
+      print('Error updating Entrepreneur rating: $e');
+      rethrow;
+    }
+  }
+
+  // Future<void> addEvent(
+  //     {required String uid,
+  //     required String EntrepreneurId,
+  //     required String clientName,
+  //     required String email,
+  //     required String phoneNumber,
+  //     required String location,
+  //     required String date,
+  //     required String time,
+  //     required String eventype,
+  //     required String eventAbout,
+  //     required String imagePath,
+  //     required String selectedColor,
+  //     required String guestCount,
+  //     required bool isValid,
+  //     required List<Map<String, dynamic>> selectedVendors,
+  //     required String sum}) async {
+  //   try {
+  //     String finalImagePath = imagePath;
+  //     if (!imagePath.startsWith('http')) {
+  //       finalImagePath = await uploadImage(File(imagePath));
+  //     }
+  //     // Generate a unique event ID
+  //     String eventId = FirebaseFirestore.instance
+  //         .collection('users')
+  //         .doc(uid)
+  //         .collection('events')
+  //         .doc()
+  //         .id;
+
+  //     Map<String, dynamic> eventCredential = {
+  //       'EntrepreneurId': EntrepreneurId,
+  //       'uid': uid,
+  //       'clientName': clientName,
+  //       'email': email,
+  //       'phoneNumber': phoneNumber,
+  //       'location': location,
+  //       'guestCount': guestCount,
+  //       'date': date,
+  //       'time': time,
+  //       'eventype': eventype,
+  //       'eventAbout': eventAbout,
+  //       'imageURL': finalImagePath,
+  //       'selectedColor': selectedColor,
+  //       'selectedVendors': selectedVendors,
+  //       'sum': sum,
+  //       'isValid': isValid
+  //     };
+
+  //     // Add the event to Firestore
+  //     await FirebaseFirestore.instance
+  //         .collection('users')
+  //         .doc(uid)
+  //         .collection('events')
+  //         .doc(eventId)
+  //         .set(eventCredential);
+
+  //     print('Added event to Firebase');
+  //   } catch (e) {
+  //     print('Error adding to events: $e');
+  //     rethrow;
+  //   }
+  // }
 
   Future<String> uploadImage(File imageFile) async {
     try {

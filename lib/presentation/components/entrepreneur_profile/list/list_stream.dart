@@ -51,10 +51,11 @@ class ListOfStreamWidget extends StatelessWidget {
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return EmptyEntrepreneurListWidget(
-              userProfile: userProfile,
-              screenHeight: screenHeight,
-              screenWidth: screenWidth,
-              vendorRequest: vendorRequest);
+            userProfile: userProfile,
+            screenHeight: screenHeight,
+            screenWidth: screenWidth,
+            vendorRequest: vendorRequest,
+          );
         }
 
         var documents = snapshot.data!.docs;

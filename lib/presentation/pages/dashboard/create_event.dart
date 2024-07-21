@@ -14,13 +14,14 @@ class SubmitDetailsScreen extends StatefulWidget {
   final String? subdescripion;
   final String EntrepreneurId;
 
-  SubmitDetailsScreen(
-      {super.key,
-      required this.selectedVendors,
-      this.subImagePath,
-      this.subCategoryName,
-      this.subdescripion,
-      required this.EntrepreneurId});
+  SubmitDetailsScreen({
+    super.key,
+    required this.selectedVendors,
+    this.subImagePath,
+    this.subCategoryName,
+    this.subdescripion,
+    required this.EntrepreneurId,
+  });
 
   @override
   State<SubmitDetailsScreen> createState() => _SubmitDetailsScreenState();
@@ -92,23 +93,24 @@ class _SubmitDetailsScreenState extends State<SubmitDetailsScreen> {
           return SingleChildScrollView(
             padding: EdgeInsets.all(16.0),
             child: EventFieldsWidget(
-                EntrepreneurId: widget.EntrepreneurId,
-                screenHeight: screenHeight,
-                clientNameController: clientNameController,
-                emailController: emailController,
-                phoneNumberController: phoneNumberController,
-                locationController: locationController,
-                dateController: dateController,
-                timeController: timeController,
-                eventTypeController: eventTypeController,
-                aboutController: aboutController,
-                imagePath: imagePath,
-                image: image,
-                screenWidth: screenWidth,
-                selectedColor: selectedColor,
-                guestCountController: guestCountController,
-                widget: widget,
-                sum: sum),
+              EntrepreneurId: widget.EntrepreneurId,
+              screenHeight: screenHeight,
+              clientNameController: clientNameController,
+              emailController: emailController,
+              phoneNumberController: phoneNumberController,
+              locationController: locationController,
+              dateController: dateController,
+              timeController: timeController,
+              eventTypeController: eventTypeController,
+              aboutController: aboutController,
+              imagePath: imagePath,
+              image: image,
+              screenWidth: screenWidth,
+              selectedColor: selectedColor,
+              guestCountController: guestCountController,
+              widget: widget,
+              sum: sum,
+            ),
           );
         },
       ),

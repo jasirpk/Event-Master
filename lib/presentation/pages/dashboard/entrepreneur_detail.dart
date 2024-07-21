@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_master/common/style.dart';
 import 'package:event_master/presentation/components/entrepreneur_profile/detail/fields.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,17 +14,20 @@ class EntrepreneurDetailScreen extends StatelessWidget {
   final String imagePath;
   final List<Map<String, dynamic>> links;
   final List<Map<String, dynamic>> images;
+  final String uid;
 
-  const EntrepreneurDetailScreen(
-      {super.key,
-      required this.companyName,
-      required this.about,
-      required this.phoneNumber,
-      required this.bussinessEmail,
-      required this.website,
-      required this.imagePath,
-      required this.links,
-      required this.images});
+  const EntrepreneurDetailScreen({
+    super.key,
+    required this.companyName,
+    required this.about,
+    required this.phoneNumber,
+    required this.bussinessEmail,
+    required this.website,
+    required this.imagePath,
+    required this.links,
+    required this.images,
+    required this.uid,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -54,18 +58,36 @@ class EntrepreneurDetailScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(8.0),
-          child: Detail_FieldsWidget(
-              imagePath: imagePath,
-              companyName: companyName,
-              screenHeight: screenHeight,
-              about: about,
-              phoneNumber: phoneNumber,
-              bussinessEmail: bussinessEmail,
-              website: website,
-              links: links,
-              images: images),
+          child: DetailFieldsWidget(
+            imagePath: imagePath,
+            companyName: companyName,
+            screenHeight: screenHeight,
+            about: about,
+            phoneNumber: phoneNumber,
+            bussinessEmail: bussinessEmail,
+            website: website,
+            links: links,
+            images: images,
+            onRatingSubmit: (rating) {
+              submitRating(uid, rating);
+              print('rating submitted');
+            },
+          ),
         ),
       ),
     );
+  }
+
+  Future<void> submitRating(String uid, double rating) async {
+    // Add logic to update the rating in Firestore
+    try {
+      await FirebaseFirestore.instance
+          .collection('entrepreneurs')
+          .doc(uid)
+          .update({'rating': rating});
+      print('Rating updated successfully');
+    } catch (e) {
+      print('Error updating rating: $e');
+    }
   }
 }

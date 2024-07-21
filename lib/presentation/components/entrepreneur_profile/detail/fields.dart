@@ -1,10 +1,13 @@
 import 'package:event_master/common/assigns.dart';
 import 'package:event_master/common/style.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:event_master/presentation/components/entrepreneur_profile/detail/linkds.dart';
+import 'package:event_master/presentation/components/entrepreneur_profile/detail/medaia.dart';
+import 'package:event_master/presentation/components/entrepreneur_profile/detail/rich_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-class Detail_FieldsWidget extends StatelessWidget {
-  const Detail_FieldsWidget({
+class DetailFieldsWidget extends StatefulWidget {
+  const DetailFieldsWidget({
     super.key,
     required this.imagePath,
     required this.companyName,
@@ -15,6 +18,7 @@ class Detail_FieldsWidget extends StatelessWidget {
     required this.website,
     required this.links,
     required this.images,
+    required this.onRatingSubmit,
   });
 
   final String imagePath;
@@ -26,6 +30,60 @@ class Detail_FieldsWidget extends StatelessWidget {
   final String website;
   final List<Map<String, dynamic>> links;
   final List<Map<String, dynamic>> images;
+  final Function(double) onRatingSubmit;
+
+  @override
+  _DetailFieldsWidgetState createState() => _DetailFieldsWidgetState();
+}
+
+class _DetailFieldsWidgetState extends State<DetailFieldsWidget> {
+  double _userRating = 0.0;
+
+  void _showRatingDialog(BuildContext context, double initialRating) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        double _dialogRating = initialRating;
+        return AlertDialog(
+          title: Text('Rate ${widget.companyName}'),
+          content: RatingBar.builder(
+            initialRating: initialRating,
+            minRating: 1,
+            direction: Axis.horizontal,
+            allowHalfRating: true,
+            itemCount: 5,
+            itemBuilder: (context, _) => Icon(
+              Icons.star,
+              color: Colors.amber,
+            ),
+            unratedColor: Colors.grey,
+            onRatingUpdate: (rating) {
+              _dialogRating = rating;
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _userRating = _dialogRating;
+                });
+                widget.onRatingSubmit(_dialogRating);
+                print('User Rating: $_dialogRating');
+                Navigator.of(context).pop();
+              },
+              child: Text('Submit'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,34 +95,46 @@ class Detail_FieldsWidget extends StatelessWidget {
             CircleAvatar(
               maxRadius: 60,
               backgroundColor: myColor,
-              backgroundImage: imagePath.startsWith('http')
-                  ? NetworkImage(imagePath)
-                  : AssetImage(imagePath) as ImageProvider,
+              backgroundImage: widget.imagePath.startsWith('http')
+                  ? NetworkImage(widget.imagePath)
+                  : AssetImage(widget.imagePath) as ImageProvider,
             ),
             sizedBoxWidth,
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  companyName,
+                  widget.companyName,
                   style: TextStyle(
-                      fontSize: screenHeight * 0.026,
+                      fontSize: widget.screenHeight * 0.026,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1),
                 ),
                 SizedBox(height: 10),
-                Row(
-                  children: [
-                    Icon(Icons.star, color: Colors.yellow, size: 20),
-                    SizedBox(width: 4),
-                    Icon(Icons.star, color: Colors.yellow, size: 20),
-                    SizedBox(width: 4),
-                    Icon(Icons.star, color: Colors.yellow, size: 20),
-                    SizedBox(width: 4),
-                    Icon(Icons.star, color: Colors.yellow, size: 20),
-                    SizedBox(width: 4),
-                    Icon(Icons.star_half, color: Colors.yellow, size: 20),
-                  ],
+                RatingBar.builder(
+                  initialRating: _userRating,
+                  minRating: 1,
+                  itemSize: 20,
+                  direction: Axis.horizontal,
+                  allowHalfRating: true,
+                  itemCount: 5,
+                  itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                  itemBuilder: (context, _) => Icon(
+                    Icons.star,
+                    color: Colors.amber,
+                  ),
+                  unratedColor: Colors.white38,
+                  onRatingUpdate: (rating) {
+                    _showRatingDialog(context, rating);
+                  },
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Rating: $_userRating',
+                  style: TextStyle(
+                      fontSize: widget.screenHeight * 0.022,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1),
                 ),
               ],
             ),
@@ -74,54 +144,40 @@ class Detail_FieldsWidget extends StatelessWidget {
         Text(
           Assigns.aboutUs,
           style: TextStyle(
-              fontSize: screenHeight * 0.022, fontWeight: FontWeight.bold),
+              fontSize: widget.screenHeight * 0.022,
+              fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 10),
         Text(
-          about,
+          widget.about,
           style: TextStyle(
-              fontSize: screenHeight * 0.018, fontWeight: FontWeight.w300),
+              fontSize: widget.screenHeight * 0.018,
+              fontWeight: FontWeight.w300),
         ),
         sizedbox,
         Text(
           Assigns.moreDetail,
           style: TextStyle(
-              fontSize: screenHeight * 0.022, fontWeight: FontWeight.w500),
+              fontSize: widget.screenHeight * 0.022,
+              fontWeight: FontWeight.w500),
         ),
         SizedBox(height: 10),
         Text(
           Assigns.phoneNumber,
           style: TextStyle(
-              fontSize: screenHeight * 0.020, fontWeight: FontWeight.w300),
-        ),
-        SizedBox(height: 10),
-        Text(
-          phoneNumber,
-          style: TextStyle(
-              color: Colors.blue,
-              fontSize: screenHeight * 0.018,
+              fontSize: widget.screenHeight * 0.020,
               fontWeight: FontWeight.w300),
         ),
         SizedBox(height: 10),
-        RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(
-                  text: '@',
-                  style: TextStyle(
-                      fontSize: screenHeight * 0.022,
-                      fontWeight: FontWeight.bold)),
-              TextSpan(text: ' '),
-              TextSpan(
-                text: bussinessEmail,
-                style: TextStyle(
-                    color: Colors.blue,
-                    fontSize: screenHeight * 0.018,
-                    fontWeight: FontWeight.w300),
-              ),
-            ],
-          ),
+        Text(
+          widget.phoneNumber,
+          style: TextStyle(
+              color: Colors.blue,
+              fontSize: widget.screenHeight * 0.018,
+              fontWeight: FontWeight.w300),
         ),
+        SizedBox(height: 10),
+        RichTextEmailWidget(widget: widget),
         SizedBox(height: 10),
         RichText(
           text: TextSpan(
@@ -129,13 +185,13 @@ class Detail_FieldsWidget extends StatelessWidget {
               TextSpan(
                   text: Assigns.website,
                   style: TextStyle(
-                      fontSize: screenHeight * 0.022,
+                      fontSize: widget.screenHeight * 0.022,
                       fontWeight: FontWeight.w500)),
               TextSpan(text: ' '),
               TextSpan(
-                text: website,
+                text: widget.website,
                 style: TextStyle(
-                    fontSize: screenHeight * 0.018,
+                    fontSize: widget.screenHeight * 0.018,
                     fontWeight: FontWeight.w300,
                     color: Colors.blue,
                     decoration: TextDecoration.underline,
@@ -148,72 +204,20 @@ class Detail_FieldsWidget extends StatelessWidget {
         Text(
           Assigns.otherLinks,
           style: TextStyle(
-              fontSize: screenHeight * 0.020, fontWeight: FontWeight.w300),
+              fontSize: widget.screenHeight * 0.020,
+              fontWeight: FontWeight.w300),
         ),
         SizedBox(height: 10),
-        Container(
-            height: screenHeight * 0.1,
-            child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: links.length,
-                itemBuilder: (context, index) {
-                  var data = links[index];
-                  return Column(
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            CupertinoIcons.forward,
-                            color: Colors.white,
-                            size: 10,
-                          ),
-                          SizedBox(width: 4),
-                          Flexible(
-                            child: Text(data['link'],
-                                style: TextStyle(
-                                    fontSize: screenHeight * 0.018,
-                                    fontWeight: FontWeight.w300,
-                                    color: Colors.blue,
-                                    decoration: TextDecoration.underline,
-                                    decorationColor: Colors.blue)),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                    ],
-                  );
-                })),
+        LinksWidget(widget: widget),
         sizedbox,
         Text(
           Assigns.media,
           style: TextStyle(
-              fontSize: screenHeight * 0.022, fontWeight: FontWeight.w500),
+              fontSize: widget.screenHeight * 0.022,
+              fontWeight: FontWeight.w500),
         ),
         SizedBox(height: 10),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          itemCount: images.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            mainAxisExtent: 130,
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-          ),
-          itemBuilder: (context, index) {
-            var image = images[index];
-            return Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: image['image'].startsWith('http')
-                      ? NetworkImage(image['image'])
-                      : AssetImage(image['image']) as ImageProvider,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            );
-          },
-        )
+        MediaWidget(widget: widget)
       ],
     );
   }

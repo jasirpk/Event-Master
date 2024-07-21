@@ -39,4 +39,15 @@ class UserProfile {
       return Stream.empty();
     }
   }
+
+  Future<double> fetchRating(String documentId) async {
+    DocumentSnapshot doc = await FirebaseFirestore.instance
+        .collection('entrepreneurs')
+        .doc(documentId)
+        .get();
+    if (doc.exists && doc.data() != null && doc['rating'] != null) {
+      return doc['rating'];
+    }
+    return 0.0;
+  }
 }

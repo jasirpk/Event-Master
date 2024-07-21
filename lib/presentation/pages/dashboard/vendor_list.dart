@@ -20,12 +20,13 @@ class VendorListScreen extends StatefulWidget {
   final String? subCategoryName;
   final String? subdescripion;
 
-  const VendorListScreen(
-      {super.key,
-      required this.uid,
-      this.subImagePath,
-      this.subCategoryName,
-      this.subdescripion});
+  const VendorListScreen({
+    super.key,
+    required this.uid,
+    this.subImagePath,
+    this.subCategoryName,
+    this.subdescripion,
+  });
 
   @override
   State<VendorListScreen> createState() => _VendorListScreenState();
