@@ -9,6 +9,7 @@ class ClientProfile {
     required String uid,
     required String imagePath,
     required String phoneNumber,
+    required bool isValid,
   }) async {
     try {
       // Read the file data from the provided path
@@ -37,6 +38,8 @@ class ClientProfile {
         'userName': userName,
         'imagePath': downloadUrl,
         'phoneNumber': phoneNumber,
+        'timestamp': FieldValue.serverTimestamp(),
+        'isValid': isValid,
       });
 
       print('User details added successfully to sub-collection.');

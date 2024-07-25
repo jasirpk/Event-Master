@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_master/data_layer/services/entrepreneur_profile/profile.dart';
-import 'package:event_master/presentation/components/shimmer/shimmer_all_subcategories.dart';
+import 'package:event_master/presentation/components/shimmer/shimmer_subcategory.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -62,7 +62,7 @@ class MessageListScreen extends StatelessWidget {
                   String chatId = _getChatId(currentUserUid, userUid);
                   if (detailSnapshot.connectionState ==
                       ConnectionState.waiting) {
-                    return ShimmerAllSubcategories(
+                    return ShimmerSubCategoryItem(
                         screenHeight: screenHeight, screenWidth: screenWidth);
                   }
                   if (detailSnapshot.hasError) {

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:event_master/bussiness_layer.dart/snack_bar.dart';
 import 'package:event_master/common/style.dart';
 import 'package:event_master/entities/user_data.dart';
 import 'package:event_master/data_layer/auth_bloc/manage_bloc.dart';
@@ -26,7 +27,7 @@ class SignupScreen extends StatelessWidget {
         listener: (context, state) {
           if (state is Authenticated) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              Get.snackbar('Success', 'Successfully Registerd');
+              showCustomSnackBar('Success', 'User Registered Successfully');
               Get.offAll(() => HomeScreen());
             });
           } else if (state is ValidationSuccess) {

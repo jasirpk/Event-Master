@@ -14,13 +14,13 @@ import 'dart:io';
 import 'package:get/get.dart';
 
 class ProfileFormScreen extends StatefulWidget {
-  final String userName;
-  final String phoneNumber;
+  final String? userName;
+  final String? phoneNumber;
 
   const ProfileFormScreen({
     super.key,
-    required this.userName,
-    required this.phoneNumber,
+    this.userName,
+    this.phoneNumber,
   });
   @override
   State<ProfileFormScreen> createState() => _ProfileFormScreenState();
@@ -32,8 +32,8 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
 
   @override
   void initState() {
-    userNameContrller.text = widget.userName;
-    phoneNumberContrller.text = widget.phoneNumber;
+    userNameContrller.text = widget.userName ?? '';
+    phoneNumberContrller.text = widget.phoneNumber ?? '';
     super.initState();
   }
 
@@ -133,6 +133,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                                       FirebaseAuth.instance.currentUser!.uid;
                                   try {
                                     await ClientProfile().updateProfile(
+                                        isValid: true,
                                         userName: userNameContrller.text,
                                         uid: uid,
                                         imagePath: image.path,
