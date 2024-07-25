@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:event_master/common/assigns.dart';
 import 'package:event_master/data_layer/dashboard/dashboard_bloc.dart';
 import 'package:event_master/presentation/components/event/add_event/custom_headline.dart';

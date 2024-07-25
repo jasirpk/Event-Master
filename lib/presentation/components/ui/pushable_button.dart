@@ -19,7 +19,7 @@ class PushableButton_Widget extends StatelessWidget {
       child: Text(
         buttonText,
         style: TextStyle(
-            fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 1),
+            fontSize: 22, fontWeight: FontWeight.w500, letterSpacing: 1),
       ),
     );
   }

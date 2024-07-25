@@ -36,4 +36,10 @@ class Assigns {
   static String guestAndTheme = 'Guests & Theme';
   static String updateEvent = 'Update Event Details';
   static String placeHolderImage = 'assets/images/place holder.jpg';
+  static String terms = 'Terms of Service';
+  static String privacy = 'Privacy Policy';
+  static String logout = 'Log Out';
+  static String personImage = 'assets/images/Circle-icons-profile.svg.png';
+  static String completeProfile = 'Complete Your Profile';
+  static String profileBackground = 'assets/images/clint_login_background.png';
 }

@@ -48,22 +48,23 @@ class _VendorListScreenState extends State<VendorListScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-        appBar: CustomAppBarWithDivider(
-          title: 'Available Vendors',
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.source,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                Get.to(() => AllTemplatesScreen());
-              },
+      appBar: CustomAppBarWithDivider(
+        title: 'Available Vendors',
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.source,
+              color: Colors.white,
             ),
-            sizedBoxWidth,
-          ],
-        ),
-        body: Stack(children: [
+            onPressed: () {
+              Get.to(() => AllTemplatesScreen());
+            },
+          ),
+          sizedBoxWidth,
+        ],
+      ),
+      body: Stack(
+        children: [
           StreamBuilder<QuerySnapshot>(
               stream: vendorRequest.getAcceptedVendorList(widget.uid),
               builder: (context, snapshot) {
@@ -168,6 +169,8 @@ class _VendorListScreenState extends State<VendorListScreen> {
                       }
                     }
                   }))
-        ]));
+        ],
+      ),
+    );
   }
 }

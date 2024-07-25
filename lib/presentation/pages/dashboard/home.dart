@@ -17,29 +17,40 @@ class HomeScreen extends StatelessWidget {
     FavoritePage(),
     ProfileScreen()
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: myColor,
-        color: Colors.black,
-        animationDuration: Duration(milliseconds: 200),
-        items: <Widget>[
-          Icon(Icons.home, size: 20, color: Colors.white),
-          Icon(Icons.search, size: 20, color: Colors.white),
-          Icon(Icons.receipt, size: 20, color: Colors.white),
-          Icon(Icons.favorite, size: 20, color: Colors.white),
-          Icon(Icons.settings, size: 20, color: Colors.white),
-        ],
-        onTap: (index) {
-          context.read<DashboardBloc>().add(TabChanged(index));
+      bottomNavigationBar: BlocBuilder<DashboardBloc, DashboardState>(
+        builder: (context, state) {
+          int currentIndex = 0;
+          if (state is TabState) {
+            currentIndex = state.index;
+          } else if (state is DashboardInitial) {
+            currentIndex = state.selectedIndex;
+          }
+
+          return CurvedNavigationBar(
+            backgroundColor: myColor,
+            color: Colors.black,
+            animationDuration: Duration(milliseconds: 200),
+            index: currentIndex,
+            items: <Widget>[
+              Icon(Icons.home, size: 20, color: Colors.white),
+              Icon(Icons.search, size: 20, color: Colors.white),
+              Icon(Icons.receipt, size: 20, color: Colors.white),
+              Icon(Icons.favorite, size: 20, color: Colors.white),
+              Icon(Icons.settings, size: 20, color: Colors.white),
+            ],
+            onTap: (index) {
+              context.read<DashboardBloc>().add(TabChanged(index));
+            },
+          );
         },
       ),
       body: BlocBuilder<DashboardBloc, DashboardState>(
         builder: (context, state) {
-          if (state is DashboardInitial) {
-            return pages[0];
-          } else if (state is TabState) {
+          if (state is TabState) {
             return IndexedStack(
               index: state.index,
               children: pages,
