@@ -1,3 +1,4 @@
+import 'package:event_master/common/assigns.dart';
 import 'package:event_master/common/style.dart';
 import 'package:flutter/material.dart';
 
@@ -20,6 +21,14 @@ class ShareContainerWidget extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: Colors.white,
+            gradient: LinearGradient(
+              colors: [
+                Colors.white,
+                myColor,
+              ],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -40,7 +49,7 @@ class ShareContainerWidget extends StatelessWidget {
                 ),
               ),
               Text(
-                'Loving Event Master? Let Everyone know!',
+                Assigns.shareApp,
                 style:
                     TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
               )

@@ -5,11 +5,13 @@ sealed class DashboardState {}
 
 class DashboardInitial extends DashboardState {
   final File? pickImage;
+  final List<File>? pickImages;
   final String pickLocation;
   final int selectedIndex;
 
   DashboardInitial(
       {required this.pickImage,
+      this.pickImages,
       required this.pickLocation,
       this.selectedIndex = 0});
 }

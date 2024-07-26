@@ -5,6 +5,7 @@ import 'package:event_master/presentation/components/ui/custom_text.dart';
 import 'package:event_master/presentation/components/dashboard/listview.dart';
 import 'package:event_master/presentation/components/dashboard/stack_appbar.dart';
 import 'package:event_master/presentation/pages/dashboard/all_templates.dart';
+import 'package:event_master/presentation/pages/dashboard/medias.dart';
 import 'package:event_master/presentation/pages/dashboard/notes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -26,13 +27,27 @@ class HomePage extends StatelessWidget {
         'text': 'Notes',
         'icon': Icons.notes,
         'onTap': () {
-          Get.to(() => NotesScreen());
+          Get.to(
+            () => NotesScreen(),
+            transition: Transition.fade,
+            duration: Duration(
+              milliseconds: 800,
+            ),
+          );
         },
       },
       {
         'text': 'Media',
         'icon': Icons.collections_bookmark,
-        'onTap': () {},
+        'onTap': () {
+          Get.to(
+            () => MediaScreen(),
+            transition: Transition.fade,
+            duration: Duration(
+              milliseconds: 800,
+            ),
+          );
+        },
       },
       {
         'text': 'Greetings',

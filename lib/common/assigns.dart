@@ -45,4 +45,5 @@ class Assigns {
   static String noteContent =
       '''Keep track of pending payments, schedule meetings, and manage tasks effortlessly. Ensure a smooth event planning experience with our comprehensive notes feature for all your event details''';
   static String createOne = 'Create One!';
+  static String shareApp = 'Loving Event Master? Let Everyone know!';
 }

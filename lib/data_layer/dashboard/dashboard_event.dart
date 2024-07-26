@@ -39,3 +39,5 @@ class PickImageEvent extends DashboardEvent {}
 class ClearImage extends DashboardEvent {}
 
 class FetchLocation extends DashboardEvent {}
+
+class PickImagesEvent extends DashboardEvent {}

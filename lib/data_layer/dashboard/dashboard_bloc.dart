@@ -12,9 +12,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   List<Map<String, dynamic>> selectedVendors = [];
   DashboardBloc()
       : super(DashboardInitial(
-          pickImage: null,
-          pickLocation: '',
-        )) {
+            pickImage: null, pickLocation: '', pickImages: null)) {
     on<SearchTermChanged>(searchterm);
     on<ChangeColorTheme>(changeColorTheme);
     on<SelectedVendor>(selectedVendor);
@@ -26,6 +24,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     on<PickImageEvent>(pickImageEventHandler);
     on<ClearImage>(clearImageHandler);
     on<FetchLocation>(fetchLocation);
+    on<PickImagesEvent>(pickImagesEvent);
   }
 
   FutureOr<void> searchterm(
@@ -136,7 +135,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         ));
       } else if (state is VendorSelectionState) {
         emit(DashboardInitial(
-          pickImage: null, // or maintain previous image state if needed
+          pickImage: null,
           pickLocation: locationName,
         ));
       } else {
@@ -151,8 +150,38 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     }
   }
 
+  FutureOr<void> pickImagesEvent(
+      PickImagesEvent event, Emitter<DashboardState> emit) async {
+    final picker = ImagePicker();
+    try {
+      final List<XFile> images = await picker.pickMultiImage();
+      if (images.isNotEmpty) {
+        print('Images picker successfully');
+        final List<File> updateImages =
+            images.map((image) => File(image.path)).toList();
+        emit(DashboardInitial(
+          pickImages: updateImages,
+          pickImage: null,
+          pickLocation: (state is DashboardInitial)
+              ? (state as DashboardInitial).pickLocation
+              : '',
+        ));
+        print(
+            'State updated with new images paths: ${updateImages.map((image) => image.path)}');
+      } else {
+        print('Image picking failed, no images selected.');
+      }
+    } catch (e) {
+      print('Image picking failed, no images selected. $e');
+    }
+  }
+
   FutureOr<void> clearImageHandler(
       ClearImage event, Emitter<DashboardState> emit) {
-    emit(DashboardInitial(pickImage: null, pickLocation: ''));
+    emit(DashboardInitial(
+      pickImage: null,
+      pickLocation: '',
+      pickImages: null,
+    ));
   }
 }
