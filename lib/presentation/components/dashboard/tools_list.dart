@@ -22,47 +22,50 @@ class ToolsListWidget extends StatelessWidget {
         itemCount: items.length,
         itemBuilder: (context, index) {
           var data = items[index];
-          return Container(
-            margin: EdgeInsets.symmetric(horizontal: 5),
-            width: screenWidth * 0.32,
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white38,
-                  border: Border.all(color: myColor, width: 1.5),
+          return InkWell(
+            onTap: data['onTap'],
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 5),
+              width: screenWidth * 0.32,
+              child: Card(
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Padding(
-                  padding: EdgeInsets.only(top: 4, left: 4),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: myColor,
-                        ),
-                        child: Center(
-                          child: Icon(
-                            data['icon'],
-                            color: Colors.black,
-                            size: 24,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white38,
+                    border: Border.all(color: myColor, width: 1.5),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 4, left: 4),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: myColor,
+                          ),
+                          child: Center(
+                            child: Icon(
+                              data['icon'],
+                              color: Colors.black,
+                              size: 24,
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        data['text'],
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600, color: Colors.black),
-                      )
-                    ],
+                        SizedBox(height: 8),
+                        Text(
+                          data['text'],
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600, color: Colors.black),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),

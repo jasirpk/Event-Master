@@ -5,6 +5,7 @@ import 'package:event_master/presentation/components/ui/custom_text.dart';
 import 'package:event_master/presentation/components/dashboard/listview.dart';
 import 'package:event_master/presentation/components/dashboard/stack_appbar.dart';
 import 'package:event_master/presentation/pages/dashboard/all_templates.dart';
+import 'package:event_master/presentation/pages/dashboard/notes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -16,10 +17,28 @@ class HomePage extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     final List<Map<String, dynamic>> items = [
-      {'text': 'Instant Meet', 'icon': Icons.filter_alt},
-      {'text': 'Notes', 'icon': Icons.notes},
-      {'text': 'Media', 'icon': Icons.collections_bookmark},
-      {'text': 'Greetings', 'icon': Icons.monitor_heart_rounded},
+      {
+        'text': 'Instant Meet',
+        'icon': Icons.filter_alt,
+        'onTap': () {},
+      },
+      {
+        'text': 'Notes',
+        'icon': Icons.notes,
+        'onTap': () {
+          Get.to(() => NotesScreen());
+        },
+      },
+      {
+        'text': 'Media',
+        'icon': Icons.collections_bookmark,
+        'onTap': () {},
+      },
+      {
+        'text': 'Greetings',
+        'icon': Icons.monitor_heart_rounded,
+        'onTap': () {},
+      },
     ];
     return Scaffold(
       body: SingleChildScrollView(

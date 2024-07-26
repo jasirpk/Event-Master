@@ -42,4 +42,7 @@ class Assigns {
   static String personImage = 'assets/images/Circle-icons-profile.svg.png';
   static String completeProfile = 'Complete Your Profile';
   static String profileBackground = 'assets/images/clint_login_background.png';
+  static String noteContent =
+      '''Keep track of pending payments, schedule meetings, and manage tasks effortlessly. Ensure a smooth event planning experience with our comprehensive notes feature for all your event details''';
+  static String createOne = 'Create One!';
 }

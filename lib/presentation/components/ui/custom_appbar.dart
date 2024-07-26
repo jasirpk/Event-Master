@@ -34,18 +34,17 @@ class CustomAppBarWithDivider extends StatelessWidget
           title: Text(
             title,
             style: TextStyle(
-              fontSize: screenHeight * 0.018,
-              fontWeight: FontWeight.w400,
-              fontFamily: 'JacquesFrancois',
-              color: Colors.white,
-            ),
+                fontSize: screenHeight * 0.018,
+                fontWeight: FontWeight.w400,
+                fontFamily: 'JacquesFrancois',
+                color: Colors.white,
+                letterSpacing: 1),
           ),
           backgroundColor: Colors.black,
         ),
         Divider(
           thickness: dividerThickness,
-          height:
-              dividerThickness, // Ensures the divider doesn't take extra vertical space
+          height: dividerThickness,
         ),
       ],
     );
