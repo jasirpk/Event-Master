@@ -59,4 +59,13 @@ class MediaMethods {
         .collection('medias')
         .snapshots();
   }
+
+  Future<void> deleteImage(String uid, String imageId) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('medias')
+        .doc(imageId)
+        .delete();
+  }
 }

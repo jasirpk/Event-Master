@@ -1,5 +1,6 @@
 import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/dashboard/dashboard_bloc.dart';
+import 'package:event_master/data_layer/instant/instant_bloc.dart';
 import 'package:event_master/firebase_options.dart';
 import 'package:event_master/data_layer/auth_bloc/manage_bloc.dart';
 import 'package:event_master/presentation/pages/onboarding/splash_screen.dart';
@@ -25,6 +26,7 @@ class EventMaster extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => ManageBloc()),
         BlocProvider(create: (context) => DashboardBloc()),
+        BlocProvider(create: (context) => InstantBloc())
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,

@@ -29,18 +29,18 @@ class ToolsListWidget extends StatelessWidget {
               width: screenWidth * 0.32,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                gradient: LinearGradient(
-                  colors: [
-                    myCustomColor,
-                    Colors.white,
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
+                // gradient: LinearGradient(
+                //   colors: [
+                //     myColor,
+                //     Colors.white,
+                //   ],
+                //   begin: Alignment.centerLeft,
+                //   end: Alignment.centerRight,
+                // ),
               ),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white38,
+                  color: Colors.white,
                   border: Border.all(color: myColor, width: 1.5),
                   borderRadius: BorderRadius.circular(10),
                 ),

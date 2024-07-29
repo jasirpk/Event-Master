@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_master/bussiness_layer.dart/snack_bar.dart';
+import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/dashboard/dashboard_bloc.dart';
 import 'package:event_master/data_layer/services/medias.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -60,7 +61,7 @@ class MediaScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                )
+                ),
               ],
               leading: IconButton(
                 onPressed: () {
@@ -109,7 +110,7 @@ class MediaScreen extends StatelessWidget {
                     var document = documents[index];
                     var data = document.data() as Map<String, dynamic>;
                     var imageUrl = data['url'];
-
+                    var imageId = documents[index].id;
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -121,6 +122,8 @@ class MediaScreen extends StatelessWidget {
                                       as Map<String, dynamic>)['url'] as String)
                                   .toList(),
                               initialIndex: index,
+                              uid: uid,
+                              imageId: imageId,
                             ),
                           ),
                         );
@@ -188,19 +191,49 @@ class MediaScreen extends StatelessWidget {
 class FullScreenImageView extends StatelessWidget {
   final List<String> imageUrls;
   final int initialIndex;
+  final String uid;
+  final String imageId;
 
   const FullScreenImageView({
     Key? key,
     required this.imageUrls,
     required this.initialIndex,
+    required this.uid,
+    required this.imageId,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+              onPressed: () {
+                Get.defaultDialog(
+                    title: 'Delete Confirmation⚠️',
+                    middleText: 'Are you sure you want to delete this picture?',
+                    textCancel: 'Cancel',
+                    textConfirm: 'Delete',
+                    middleTextStyle: TextStyle(color: Colors.black),
+                    cancelTextColor: Colors.black,
+                    confirmTextColor: Colors.white,
+                    buttonColor: Colors.teal,
+                    onCancel: () {
+                      Get.back();
+                    },
+                    onConfirm: () {
+                      MediaMethods().deleteImage(uid, imageId);
+                      Get.back();
+                    });
+              },
+              icon: Icon(
+                Icons.delete,
+                color: Colors.white,
+              )),
+          sizedBoxWidth,
+        ],
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.black,
-        title: Text('Full Screen Image'),
       ),
       body: PhotoViewGallery.builder(
         itemCount: imageUrls.length,

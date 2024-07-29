@@ -8,6 +8,8 @@ class CustomTextFieldWidget extends StatelessWidget {
   final IconData? prefixIcon;
   final bool readOnly;
   final VoidCallback? onTap;
+  final ValueChanged<String>? onChanged;
+  final IconData? suffixIcon;
 
   const CustomTextFieldWidget({
     super.key,
@@ -18,6 +20,8 @@ class CustomTextFieldWidget extends StatelessWidget {
     this.prefixIcon,
     this.onTap,
     required this.readOnly,
+    this.onChanged,
+    this.suffixIcon,
   });
 
   @override
@@ -28,7 +32,12 @@ class CustomTextFieldWidget extends StatelessWidget {
       maxLines: maxLines,
       readOnly: readOnly,
       onTap: onTap,
+      onChanged: onChanged,
       decoration: InputDecoration(
+        suffixIcon: Icon(
+          suffixIcon,
+          color: Colors.white,
+        ),
         prefixIcon: Icon(prefixIcon),
         prefixIconColor: Colors.white,
         labelText: labelText,

@@ -46,4 +46,14 @@ class Assigns {
       '''Keep track of pending payments, schedule meetings, and manage tasks effortlessly. Ensure a smooth event planning experience with our comprehensive notes feature for all your event details''';
   static String createOne = 'Create One!';
   static String shareApp = 'Loving Event Master? Let Everyone know!';
+  static String contacts = 'Contacts';
+  static String lottieImage = 'assets/images/Animation - 1716651896239.json';
+  static String searchEmptyImage =
+      'assets/images/Animation - 1721975522807.json';
+  static String invite = 'Invite!';
+  static String instantAbout =
+      'Create instant meetups and invite friends effortlessly! Select contacts, send invitations, and manage RSVPs seamlessly for spontaneous gatherings. Quick, easy, and perfect for last-minute plans';
+  static String aboutDes =
+      '''Share a couple words about the gathering, location or the occasion''';
+  static String newMeet = 'New Instant Meet';
 }

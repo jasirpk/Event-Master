@@ -1,4 +1,5 @@
 import 'package:event_master/common/style.dart';
+import 'package:event_master/presentation/pages/dashboard/greetings.dart';
 import 'package:event_master/presentation/components/dashboard/share_container.dart';
 import 'package:event_master/presentation/components/dashboard/tools_list.dart';
 import 'package:event_master/presentation/components/ui/custom_text.dart';
@@ -21,7 +22,12 @@ class HomePage extends StatelessWidget {
       {
         'text': 'Instant Meet',
         'icon': Icons.filter_alt,
-        'onTap': () {},
+        'onTap': () {
+          Get.to(
+            () => GreetingCardView(),
+            transition: Transition.rightToLeft,
+          );
+        },
       },
       {
         'text': 'Notes',
@@ -29,10 +35,7 @@ class HomePage extends StatelessWidget {
         'onTap': () {
           Get.to(
             () => NotesScreen(),
-            transition: Transition.fade,
-            duration: Duration(
-              milliseconds: 800,
-            ),
+            transition: Transition.rightToLeft,
           );
         },
       },
@@ -42,18 +45,15 @@ class HomePage extends StatelessWidget {
         'onTap': () {
           Get.to(
             () => MediaScreen(),
-            transition: Transition.fade,
-            duration: Duration(
-              milliseconds: 800,
-            ),
+            transition: Transition.rightToLeft,
           );
         },
       },
-      {
-        'text': 'Greetings',
-        'icon': Icons.monitor_heart_rounded,
-        'onTap': () {},
-      },
+      // {
+      //   'text': 'Greetings',
+      //   'icon': Icons.monitor_heart_rounded,
+      //   'onTap': () {},
+      // },
     ];
     return Scaffold(
       body: SingleChildScrollView(
