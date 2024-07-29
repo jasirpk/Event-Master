@@ -1,7 +1,7 @@
 // ignore_for_file: unnecessary_null_comparison
 
 import 'dart:io';
-import 'package:event_master/bussiness_layer.dart/snack_bar.dart';
+import 'package:event_master/bussiness_layer.dart/repos/snack_bar.dart';
 import 'package:event_master/common/assigns.dart';
 import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/services/create_event.dart';

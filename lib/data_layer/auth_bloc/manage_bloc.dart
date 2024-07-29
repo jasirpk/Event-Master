@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:event_master/entities/user_data.dart';
+import 'package:event_master/bussiness_layer.dart/entities/user_data.dart';
 import 'package:event_master/presentation/pages/onboarding/welcome_intro_evernt_track.dart';
 import 'package:event_master/presentation/pages/dashboard/home.dart';
 import 'package:event_master/presentation/components/ui/welcome_user_widget.dart';

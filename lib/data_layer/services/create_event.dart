@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:event_master/bussiness_layer.dart/snack_bar.dart';
+import 'package:event_master/bussiness_layer.dart/repos/snack_bar.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 

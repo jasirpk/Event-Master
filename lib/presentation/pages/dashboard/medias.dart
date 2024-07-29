@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:event_master/bussiness_layer.dart/snack_bar.dart';
+import 'package:event_master/bussiness_layer.dart/repos/snack_bar.dart';
 import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/dashboard/dashboard_bloc.dart';
 import 'package:event_master/data_layer/services/medias.dart';

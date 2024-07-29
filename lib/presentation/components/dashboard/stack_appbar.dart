@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:event_master/bussiness_layer.dart/fullscreen_snackbar.dart';
+import 'package:event_master/bussiness_layer.dart/repos/fullscreen_snackbar.dart';
 import 'package:event_master/common/assigns.dart';
 import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/services/prifile.dart';

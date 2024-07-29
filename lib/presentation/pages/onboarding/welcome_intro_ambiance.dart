@@ -14,7 +14,10 @@ class WelcomeIntroAmbiance extends StatelessWidget {
         subTitle:
             '''Elevate your event with stunning decor options. Create memorable atmospheres.''',
         onpressed: () {
-          Get.to(() => GoogleAuthScreen());
+          Get.to(
+            () => GoogleAuthScreen(),
+            transition: Transition.rightToLeft,
+          );
         },
         backButtonPressed: () {
           Get.back();

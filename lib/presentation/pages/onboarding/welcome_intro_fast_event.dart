@@ -14,7 +14,10 @@ class WelcomeIntroFastEvent extends StatelessWidget {
         subTitle:
             '''Stream is here to help you to find the best events based on your interests''',
         onpressed: () {
-          Get.to(() => WelocmeIntroDelicious());
+          Get.to(
+            () => WelocmeIntroDelicious(),
+            transition: Transition.rightToLeft,
+          );
         },
         backButtonPressed: () {
           Get.back();

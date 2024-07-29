@@ -1,4 +1,4 @@
-import 'package:event_master/bussiness_layer.dart/snack_bar.dart';
+import 'package:event_master/bussiness_layer.dart/repos/snack_bar.dart';
 import 'package:event_master/data_layer/services/create_event.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

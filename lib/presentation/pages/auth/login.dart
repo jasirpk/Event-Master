@@ -129,14 +129,18 @@ class GoogleAuthScreen extends StatelessWidget {
                                       SizedBox(height: 10),
                                       AuthBottomText(
                                           onpressed: () {
-                                            Get.to(() => SignupScreen());
+                                            Get.to(
+                                              () => SignupScreen(),
+                                            );
                                           },
                                           text: 'Don\'t have an account?',
                                           subText: 'Sign Up'),
                                       SizedBox(height: 10),
                                       AuthBottomText(
                                           onpressed: () {
-                                            Get.to(() => ForgotPassword());
+                                            Get.to(
+                                              () => ForgotPassword(),
+                                            );
                                           },
                                           text: 'Forgot Password?',
                                           subText: 'click'),

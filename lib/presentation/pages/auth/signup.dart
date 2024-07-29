@@ -1,8 +1,8 @@
 import 'dart:ui';
 
-import 'package:event_master/bussiness_layer.dart/snack_bar.dart';
+import 'package:event_master/bussiness_layer.dart/repos/snack_bar.dart';
 import 'package:event_master/common/style.dart';
-import 'package:event_master/entities/user_data.dart';
+import 'package:event_master/bussiness_layer.dart/entities/user_data.dart';
 import 'package:event_master/data_layer/auth_bloc/manage_bloc.dart';
 import 'package:event_master/presentation/pages/auth/login.dart';
 import 'package:event_master/presentation/pages/dashboard/home.dart';
@@ -166,7 +166,9 @@ class SignupScreen extends StatelessWidget {
                                   SizedBox(height: 10),
                                   AuthBottomText(
                                     onpressed: () {
-                                      Get.to(() => GoogleAuthScreen());
+                                      Get.to(
+                                        () => GoogleAuthScreen(),
+                                      );
                                     },
                                     text: '''Already have an account?''',
                                     subText: 'Login',

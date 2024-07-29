@@ -1,5 +1,5 @@
-import 'package:event_master/bussiness_layer.dart/addnote.dart';
-import 'package:event_master/bussiness_layer.dart/update_note.dart';
+import 'package:event_master/bussiness_layer.dart/repos/addnote.dart';
+import 'package:event_master/bussiness_layer.dart/repos/update_note.dart';
 import 'package:event_master/common/assigns.dart';
 import 'package:event_master/common/style.dart';
 import 'package:event_master/presentation/components/event/add_event/custom_textfeild.dart';

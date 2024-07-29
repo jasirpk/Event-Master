@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
-import 'package:event_master/bussiness_layer.dart/location.dart';
+import 'package:event_master/bussiness_layer.dart/repos/location.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';

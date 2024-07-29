@@ -14,7 +14,10 @@ class WelocmeIntroDelicious extends StatelessWidget {
         subTitle:
             '''Delicious cuisines for your special events. Choose from a variety of menus.''',
         onpressed: () {
-          Get.to(() => WelcomeIntroAmbiance());
+          Get.to(
+            () => WelcomeIntroAmbiance(),
+            transition: Transition.rightToLeft,
+          );
         },
         backButtonPressed: () {
           Get.back();

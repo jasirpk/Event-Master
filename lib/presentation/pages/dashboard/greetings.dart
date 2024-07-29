@@ -1,5 +1,5 @@
-import 'package:event_master/bussiness_layer.dart/instant_meet.dart';
-import 'package:event_master/bussiness_layer.dart/snack_bar.dart';
+import 'package:event_master/bussiness_layer.dart/repos/instant_meet.dart';
+import 'package:event_master/bussiness_layer.dart/repos/snack_bar.dart';
 import 'package:event_master/common/assigns.dart';
 import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/instant/instant_bloc.dart';
@@ -172,9 +172,16 @@ class _GreetingCardViewState extends State<GreetingCardView> {
               SizedBox(height: 16.0),
               CustomTextFieldWidget(
                   onTap: () {
-                    Get.to(() => SelectContactsView(
-                          message: messageController.text,
-                        ));
+                    if (messageController.text.isNotEmpty) {
+                      Get.to(() => SelectContactsView(
+                            message: messageController.text,
+                          ));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          backgroundColor: Colors.red,
+                          content:
+                              Text('Please fill all the required fields')));
+                    }
                   },
                   prefixIcon: Icons.contact_page,
                   controller: contactController,

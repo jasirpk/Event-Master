@@ -15,7 +15,10 @@ class WelcomeIntroEverntTrack extends StatelessWidget {
         subTitle:
             '''Discover top-notch event parties in your area with our curated selection. Find yours now!''',
         onpressed: () {
-          Get.to(() => WelcomeIntroFastEvent());
+          Get.to(
+            () => WelcomeIntroFastEvent(),
+            transition: Transition.rightToLeft,
+          );
         },
         backButtonPressed: () {
           Get.back();
