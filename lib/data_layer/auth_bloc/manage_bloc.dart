@@ -221,6 +221,11 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('uid', uid);
     await prefs.setString('email', email);
+    await FirebaseFirestore.instance.collection('users').doc(uid).set({
+      'uid': uid,
+      'email': email,
+      'createdAt': DateTime.now(),
+    });
     log('Saved UID: $uid');
     log('Saved Email: $email');
   }

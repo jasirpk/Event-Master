@@ -88,7 +88,7 @@ class StackAppBar extends StatelessWidget {
                 ),
                 subtitle: Container(
                   child: Text(
-                    'Welcome to Admin Master',
+                    'Welcome to Event Master',
                     style: TextStyle(
                       fontSize: screenHeight * 0.016,
                       fontWeight: FontWeight.w300,

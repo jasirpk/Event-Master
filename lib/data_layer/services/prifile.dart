@@ -12,24 +12,32 @@ class ClientProfile {
     required bool isValid,
   }) async {
     try {
-      // Read the file data from the provided path
-      File imageFile = File(imagePath);
-      if (!imageFile.existsSync()) {
-        throw Exception('File does not exist: $imagePath');
+      String downloadUrl;
+
+      // Check if the imagePath is a URL or a local file path
+      if (Uri.parse(imagePath).isAbsolute) {
+        // If it's already a URL, use it directly
+        downloadUrl = imagePath;
+      } else {
+        // Read the file data from the provided path
+        File imageFile = File(imagePath);
+        if (!imageFile.existsSync()) {
+          throw Exception('File does not exist: $imagePath');
+        }
+        Uint8List imageData = await imageFile.readAsBytes();
+
+        // Prepare the storage reference
+        String fileName = imagePath.split('/').last;
+        Reference storageRef =
+            FirebaseStorage.instance.ref().child('client_profile/$fileName');
+
+        // Upload the image data
+        UploadTask uploadTask = storageRef.putData(imageData);
+        TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => {});
+
+        // Get the download URL
+        downloadUrl = await taskSnapshot.ref.getDownloadURL();
       }
-      Uint8List imageData = await imageFile.readAsBytes();
-
-      // Prepare the storage reference
-      String fileName = imagePath.split('/').last;
-      Reference storageRef =
-          FirebaseStorage.instance.ref().child('client_profile/$fileName');
-
-      // Upload the image data
-      UploadTask uploadTask = storageRef.putData(imageData);
-      TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => {});
-
-      // Get the download URL
-      String downloadUrl = await taskSnapshot.ref.getDownloadURL();
 
       // Update Firestore document
       DocumentReference documentReference =

@@ -36,6 +36,7 @@ class _ChatScreenState extends State<ChatScreen> {
         'text': _messageController.text,
         'createdAt': Timestamp.now(),
         'senderId': _auth.currentUser?.uid,
+        'timestamp': FieldValue.serverTimestamp(),
       });
       _messageController.clear();
     }

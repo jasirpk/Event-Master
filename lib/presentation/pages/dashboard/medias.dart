@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_master/bussiness_layer.dart/repos/snack_bar.dart';
-import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/dashboard/dashboard_bloc.dart';
 import 'package:event_master/data_layer/services/medias.dart';
+import 'package:event_master/presentation/components/shimmer/shimmer_media.dart';
+import 'package:event_master/presentation/pages/dashboard/media_scalable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +12,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:photo_view/photo_view.dart';
-import 'package:photo_view/photo_view_gallery.dart';
 
 class MediaScreen extends StatelessWidget {
   const MediaScreen({super.key});
@@ -20,7 +19,7 @@ class MediaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-
+    final screenWidth = MediaQuery.of(context).size.width;
     MediaMethods mediaMethods = MediaMethods();
     final uid = FirebaseAuth.instance.currentUser!.uid;
     return SafeArea(
@@ -85,9 +84,8 @@ class MediaScreen extends StatelessWidget {
               stream: mediaMethods.getImages(uid),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return ShimmerMediaItem(
+                      screenHeight: screenHeight, screenWidth: screenWidth);
                 }
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
@@ -135,12 +133,9 @@ class MediaScreen extends StatelessWidget {
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  color: Colors.white38,
-                                  strokeWidth: 3,
-                                ),
-                              );
+                              return ShimmerMediaItem(
+                                  screenHeight: screenHeight,
+                                  screenWidth: screenWidth);
                             } else if (snapshot.hasError) {
                               return Center(
                                 child: Icon(
@@ -185,73 +180,5 @@ class MediaScreen extends StatelessWidget {
 
   Future<void> _loadImage(String imageUrl) async {
     await precacheImage(NetworkImage(imageUrl), Get.context!);
-  }
-}
-
-class FullScreenImageView extends StatelessWidget {
-  final List<String> imageUrls;
-  final int initialIndex;
-  final String uid;
-  final String imageId;
-
-  const FullScreenImageView({
-    Key? key,
-    required this.imageUrls,
-    required this.initialIndex,
-    required this.uid,
-    required this.imageId,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-              onPressed: () {
-                Get.defaultDialog(
-                    title: 'Delete Confirmation⚠️',
-                    middleText: 'Are you sure you want to delete this picture?',
-                    textCancel: 'Cancel',
-                    textConfirm: 'Delete',
-                    middleTextStyle: TextStyle(color: Colors.black),
-                    cancelTextColor: Colors.black,
-                    confirmTextColor: Colors.white,
-                    buttonColor: Colors.teal,
-                    onCancel: () {
-                      Get.back();
-                    },
-                    onConfirm: () {
-                      MediaMethods().deleteImage(uid, imageId);
-                      Get.back();
-                    });
-              },
-              icon: Icon(
-                Icons.delete,
-                color: Colors.white,
-              )),
-          sizedBoxWidth,
-        ],
-        iconTheme: IconThemeData(color: Colors.white),
-        backgroundColor: Colors.black,
-      ),
-      body: PhotoViewGallery.builder(
-        itemCount: imageUrls.length,
-        builder: (context, index) {
-          return PhotoViewGalleryPageOptions(
-            imageProvider: NetworkImage(imageUrls[index]),
-            minScale: PhotoViewComputedScale.contained * 0.8,
-            maxScale: PhotoViewComputedScale.covered * 2,
-            heroAttributes: PhotoViewHeroAttributes(
-                tag: 'imageHero_$index'), // Ensure unique tag
-          );
-        },
-        scrollPhysics: BouncingScrollPhysics(),
-        backgroundDecoration: BoxDecoration(
-          color: Colors.black,
-        ),
-        pageController: PageController(initialPage: initialIndex),
-      ),
-    );
   }
 }

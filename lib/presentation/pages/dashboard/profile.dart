@@ -5,7 +5,9 @@ import 'package:event_master/data_layer/auth_bloc/manage_bloc.dart';
 import 'package:event_master/data_layer/services/prifile.dart';
 import 'package:event_master/presentation/components/settings/menu_button.dart';
 import 'package:event_master/presentation/pages/auth/login.dart';
+import 'package:event_master/presentation/pages/dashboard/privacy_policy.dart';
 import 'package:event_master/presentation/pages/dashboard/profile_form.dart';
+import 'package:event_master/presentation/pages/dashboard/terms_of_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -40,8 +42,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
     List<Map<String, dynamic>> items = [
       {'icon': Icons.share, 'text': 'Share this App', 'onTap': () {}},
-      {'icon': Icons.preview, 'text': 'Privacy Policy', 'onTap': () {}},
-      {'icon': Icons.info, 'text': 'Terms of Service', 'onTap': () {}},
+      {
+        'icon': Icons.preview,
+        'text': 'Privacy Policy',
+        'onTap': () {
+          Get.to(() => PrivacyPolicy());
+        }
+      },
+      {
+        'icon': Icons.info,
+        'text': 'Terms of Service',
+        'onTap': () {
+          Get.to(() => TermsOfService());
+        }
+      },
       {
         'icon': Icons.logout,
         'text': 'Exit Application',
@@ -56,9 +70,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Get.back();
               },
               onConfirm: () {
+                Get.offAll(() => GoogleAuthScreen());
                 context.read<ManageBloc>().add(Logout());
                 context.read<ManageBloc>().add(SignOutWithGoogle());
-                context.read<ManageBloc>().add(SignOutWithFacebook());
+                // context.read<ManageBloc>().add(SignOutWithFacebook());
               });
         }
       },
@@ -133,6 +148,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             phoneNumber:
                                                 userData['phoneNumber'] ??
                                                     '+91',
+                                            imagePath: profileImage,
                                           ));
                                     },
                                     icon: Icon(
@@ -161,7 +177,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         sizedBoxWidth,
                         Text(
-                          userData['phoneNumber'] ?? '+91',
+                          userData['phoneNumber'] ?? '',
                         ),
                       ],
                     ),
@@ -218,7 +234,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     sizedbox,
                     Padding(
                       padding: EdgeInsets.only(top: 60),
-                      child: Text('Version 1.2.0',
+                      child: Text('Version 1.0.0+1',
                           style: TextStyle(color: Colors.white)),
                     ),
                   ],

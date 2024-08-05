@@ -57,12 +57,19 @@ dependencies:
   contacts_service: ^0.6.3
   permission_handler: ^11.3.1
   share_plus: ^9.0.0
+  url_launcher: ^6.3.0
   
-  
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: "^0.13.1"
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/Screenshot 2024-05-22 201328.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

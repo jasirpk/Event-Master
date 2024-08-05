@@ -21,6 +21,7 @@ class HomePage extends StatelessWidget {
     final List<Map<String, dynamic>> items = [
       {
         'text': 'Instant Meet',
+        'image': 'assets/images/clint_login_background.png',
         'icon': Icons.filter_alt,
         'onTap': () {
           Get.to(
@@ -32,6 +33,7 @@ class HomePage extends StatelessWidget {
       {
         'text': 'Notes',
         'icon': Icons.notes,
+        'image': 'assets/images/notes_img.jpg',
         'onTap': () {
           Get.to(
             () => NotesScreen(),
@@ -42,6 +44,7 @@ class HomePage extends StatelessWidget {
       {
         'text': 'Media',
         'icon': Icons.collections_bookmark,
+        'image': 'assets/images/media_img.jpg',
         'onTap': () {
           Get.to(
             () => MediaScreen(),
@@ -70,9 +73,9 @@ class HomePage extends StatelessWidget {
                   Text(
                     'Event Templates',
                     style: TextStyle(
-                      fontSize: screenHeight * 0.022,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        fontSize: screenHeight * 0.022,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'JacquesFracois'),
                   ),
                   CustomText(
                     screenHeight: screenHeight,
@@ -94,6 +97,7 @@ class HomePage extends StatelessWidget {
               Text(
                 'Tools',
                 style: TextStyle(
+                  fontFamily: 'JacquesFracois',
                   fontSize: screenHeight * 0.022,
                   fontWeight: FontWeight.bold,
                 ),

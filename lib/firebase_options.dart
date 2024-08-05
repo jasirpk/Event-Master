@@ -46,35 +46,39 @@ class DefaultFirebaseOptions {
     messagingSenderId: '334593508928',
     projectId: 'event-master-2bf93',
     authDomain: 'event-master-2bf93.firebaseapp.com',
+    databaseURL: 'https://event-master-2bf93-default-rtdb.firebaseio.com',
     storageBucket: 'event-master-2bf93.appspot.com',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDsmz6muR2iWyQFx_iL43roclqFhbW07-Y',
-    appId: '1:334593508928:android:b776416d691ad62dcd01a5',
+    appId: '1:334593508928:android:0c37b74274fd0de8cd01a5',
     messagingSenderId: '334593508928',
     projectId: 'event-master-2bf93',
+    databaseURL: 'https://event-master-2bf93-default-rtdb.firebaseio.com',
     storageBucket: 'event-master-2bf93.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBQnP4X5kalPbXNiBmAahI0TkLNK9zH7rQ',
-    appId: '1:334593508928:ios:23756ec52ca0c2b1cd01a5',
+    appId: '1:334593508928:ios:243d1725fd58612ccd01a5',
     messagingSenderId: '334593508928',
     projectId: 'event-master-2bf93',
+    databaseURL: 'https://event-master-2bf93-default-rtdb.firebaseio.com',
     storageBucket: 'event-master-2bf93.appspot.com',
-    androidClientId: '334593508928-gvtah6ct4mmeuq1pa6n5oq0eqmrv8tfm.apps.googleusercontent.com',
+    androidClientId: '334593508928-b49laga5iqbih3v4takm8jbp7dheocli.apps.googleusercontent.com',
     iosClientId: '334593508928-4tscr6nn0t4nqen2h76epdqikfjm3dff.apps.googleusercontent.com',
     iosBundleId: 'com.example.eventMaster',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyBQnP4X5kalPbXNiBmAahI0TkLNK9zH7rQ',
-    appId: '1:334593508928:ios:23756ec52ca0c2b1cd01a5',
+    appId: '1:334593508928:ios:243d1725fd58612ccd01a5',
     messagingSenderId: '334593508928',
     projectId: 'event-master-2bf93',
+    databaseURL: 'https://event-master-2bf93-default-rtdb.firebaseio.com',
     storageBucket: 'event-master-2bf93.appspot.com',
-    androidClientId: '334593508928-gvtah6ct4mmeuq1pa6n5oq0eqmrv8tfm.apps.googleusercontent.com',
+    androidClientId: '334593508928-b49laga5iqbih3v4takm8jbp7dheocli.apps.googleusercontent.com',
     iosClientId: '334593508928-4tscr6nn0t4nqen2h76epdqikfjm3dff.apps.googleusercontent.com',
     iosBundleId: 'com.example.eventMaster',
   );
@@ -85,7 +89,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '334593508928',
     projectId: 'event-master-2bf93',
     authDomain: 'event-master-2bf93.firebaseapp.com',
+    databaseURL: 'https://event-master-2bf93-default-rtdb.firebaseio.com',
     storageBucket: 'event-master-2bf93.appspot.com',
   );
-
 }

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:event_master/bussiness_layer.dart/repos/snack_bar.dart';
 import 'package:event_master/data_layer/auth_bloc/manage_bloc.dart';
 import 'package:event_master/presentation/pages/auth/signup.dart';
 import 'package:event_master/presentation/pages/dashboard/home.dart';
@@ -31,9 +32,9 @@ class GoogleAuthScreen extends StatelessWidget {
                   ));
         } else if (state is Authenticated) {
           Get.offAll(() => HomeScreen());
-          Get.snackbar('Success', 'Successfully added');
+          showCustomSnackBar('Success', 'Successfully Authenticated');
         } else if (state is AuthenticatedErrors) {
-          Get.snackbar('error', state.message);
+          showCustomSnackBar('Error', 'Authentication Error Occurred!');
         }
       },
       child: Scaffold(

@@ -11,6 +11,8 @@ import 'package:event_master/presentation/components/ui/back_arrow_button.dart';
 import 'package:event_master/presentation/components/auth/pasword_field.dart';
 import 'package:event_master/presentation/components/ui/pushable_button.dart';
 import 'package:event_master/presentation/components/auth/text_field.dart';
+import 'package:event_master/presentation/pages/dashboard/terms_of_service.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -129,14 +131,18 @@ class SignupScreen extends StatelessWidget {
                                             fontSize: 18, color: Colors.white),
                                         children: <TextSpan>[
                                           TextSpan(
-                                            text:
-                                                'Terms of Service and Privacy Policy',
-                                            style: TextStyle(
-                                              color: myColor,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
+                                              text:
+                                                  'Terms of Service and Privacy Policy',
+                                              style: TextStyle(
+                                                color: myColor,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                              recognizer: TapGestureRecognizer()
+                                                ..onTap = () {
+                                                  Get.to(
+                                                      () => TermsOfService());
+                                                }),
                                         ],
                                       ),
                                     ),

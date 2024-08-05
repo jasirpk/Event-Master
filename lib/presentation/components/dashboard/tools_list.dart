@@ -28,11 +28,20 @@ class ToolsListWidget extends StatelessWidget {
               margin: EdgeInsets.symmetric(horizontal: 5),
               width: screenWidth * 0.32,
               decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(data['image']),
+                  fit: BoxFit.cover,
+                  // colorFilter: ColorFilter.mode(
+                  //   Colors.black.withOpacity(0.1),
+                  //   BlendMode.color,
+                  // ),
+                ),
+
                 borderRadius: BorderRadius.circular(10),
                 // gradient: LinearGradient(
                 //   colors: [
-                //     myColor,
-                //     Colors.white,
+                //     Colors.grey,
+                //     Colors.white12,
                 //   ],
                 //   begin: Alignment.centerLeft,
                 //   end: Alignment.centerRight,
@@ -40,9 +49,7 @@ class ToolsListWidget extends StatelessWidget {
               ),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: myColor, width: 1.5),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(4),
                 ),
                 child: Padding(
                   padding: EdgeInsets.only(top: 4, left: 4),
@@ -65,11 +72,22 @@ class ToolsListWidget extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 8),
-                      Text(
-                        data['text'],
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600, color: Colors.black),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.black.withOpacity(0.4),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            data['text'],
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontFamily: 'JacquesFracois',
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                        ),
                       )
                     ],
                   ),

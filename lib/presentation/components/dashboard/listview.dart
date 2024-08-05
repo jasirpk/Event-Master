@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/services/category.dart';
 import 'package:event_master/presentation/components/shimmer/shimmer_home_list.dart';
 import 'package:event_master/presentation/pages/dashboard/sub_templates.dart';
@@ -93,7 +92,6 @@ class ListViewWidget extends StatelessWidget {
                           ),
                           child: Container(
                             decoration: BoxDecoration(
-                              border: Border.all(color: myColor, width: 1.5),
                               borderRadius: BorderRadius.circular(10),
                               image: DecorationImage(
                                 image: imagePath.startsWith('http')

@@ -16,11 +16,13 @@ import 'package:get/get.dart';
 class ProfileFormScreen extends StatefulWidget {
   final String? userName;
   final String? phoneNumber;
+  final String? imagePath;
 
   const ProfileFormScreen({
     super.key,
     this.userName,
     this.phoneNumber,
+    this.imagePath,
   });
   @override
   State<ProfileFormScreen> createState() => _ProfileFormScreenState();
@@ -29,6 +31,7 @@ class ProfileFormScreen extends StatefulWidget {
 class _ProfileFormScreenState extends State<ProfileFormScreen> {
   TextEditingController userNameContrller = TextEditingController();
   TextEditingController phoneNumberContrller = TextEditingController();
+  File? image;
 
   @override
   void initState() {
@@ -67,102 +70,105 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: screenHeight * 0.034,
-                        fontFamily: 'JacquesFracois',
+                        fontFamily: 'JacquesFrancois',
                         letterSpacing: 1),
                   ),
                 ),
                 SizedBox(height: 180),
-                Container(
-                  child: BlocBuilder<DashboardBloc, DashboardState>(
-                    builder: (context, state) {
-                      File? image;
-                      if (state is DashboardInitial &&
-                          state.pickImage != null) {
-                        image = state.pickImage;
-                      }
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomTextFieldWidget(
-                            controller: userNameContrller,
-                            labelText: 'Name',
-                            readOnly: false,
-                            prefixIcon: Icons.person,
+                BlocBuilder<DashboardBloc, DashboardState>(
+                  builder: (context, state) {
+                    if (state is DashboardInitial) {
+                      image = state.pickImage;
+                    }
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomTextFieldWidget(
+                          controller: userNameContrller,
+                          labelText: 'Name',
+                          readOnly: false,
+                          prefixIcon: Icons.person,
+                        ),
+                        sizedbox,
+                        CustomTextFieldWidget(
+                          controller: phoneNumberContrller,
+                          labelText: 'Phone number',
+                          readOnly: false,
+                          prefixIcon: Icons.call,
+                          keyboardType: TextInputType.phone,
+                        ),
+                        sizedbox,
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(width: 2, color: Colors.white38),
+                            image: image != null
+                                ? DecorationImage(
+                                    image: FileImage(image!), fit: BoxFit.cover)
+                                : widget.imagePath != null
+                                    ? DecorationImage(
+                                        image: NetworkImage(widget.imagePath!),
+                                        fit: BoxFit.cover)
+                                    : null,
                           ),
-                          sizedbox,
-                          CustomTextFieldWidget(
-                            controller: phoneNumberContrller,
-                            labelText: 'Phone number',
-                            readOnly: false,
-                            prefixIcon: Icons.call,
-                            keyboardType: TextInputType.phone,
-                          ),
-                          sizedbox,
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border:
-                                  Border.all(width: 2, color: Colors.white38),
-                              image: image != null
-                                  ? DecorationImage(
-                                      image: FileImage(image),
-                                      fit: BoxFit.cover)
-                                  : null,
+                          child: Center(
+                            child: IconButton(
+                              onPressed: () {
+                                context
+                                    .read<DashboardBloc>()
+                                    .add(PickImageEvent());
+                              },
+                              icon: Icon(Icons.collections_bookmark),
                             ),
-                            child: Center(
-                              child: IconButton(
-                                onPressed: () {
-                                  context
-                                      .read<DashboardBloc>()
-                                      .add(PickImageEvent());
-                                },
-                                icon: Icon(Icons.collections_bookmark),
-                              ),
-                            ),
-                            width: screenWidth * 0.4,
-                            height: screenHeight * 0.16,
                           ),
-                          sizedbox,
-                          PushableButton_Widget(
-                              buttonText: 'Submit Deatails',
-                              onpressed: () async {
-                                if (userNameContrller.text.isNotEmpty &&
-                                    phoneNumberContrller.text.isNotEmpty &&
-                                    image != null) {
-                                  var uid =
-                                      FirebaseAuth.instance.currentUser!.uid;
-                                  try {
-                                    await ClientProfile().updateProfile(
-                                        isValid: true,
-                                        userName: userNameContrller.text,
-                                        uid: uid,
-                                        imagePath: image.path,
-                                        phoneNumber: phoneNumberContrller.text);
+                          width: screenWidth * 0.4,
+                          height: screenHeight * 0.16,
+                        ),
+                        sizedbox,
+                        PushableButton_Widget(
+                          buttonText: 'Submit Details',
+                          onpressed: () async {
+                            if (userNameContrller.text.isNotEmpty &&
+                                phoneNumberContrller.text.length == 10 &&
+                                (image != null || widget.imagePath != null)) {
+                              var uid = FirebaseAuth.instance.currentUser!.uid;
+                              try {
+                                String imagePath = image != null
+                                    ? image!.path
+                                    : widget.imagePath!;
+                                await ClientProfile().updateProfile(
+                                  isValid: true,
+                                  userName: userNameContrller.text,
+                                  uid: uid,
+                                  imagePath: imagePath,
+                                  phoneNumber: phoneNumberContrller.text,
+                                );
 
-                                    showCustomSnackBar(
-                                        'Success', 'updated sucessfully');
+                                showCustomSnackBar(
+                                    'Success', 'Updated successfully');
 
-                                    print('User profile updated');
-                                  } catch (e) {
-                                    print('Failded to add fields $e');
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                            backgroundColor: Colors.red,
-                                            content: Text(
-                                                'Failed to add event: $e')));
-                                  }
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          backgroundColor: Colors.red,
-                                          content: Text(
-                                              'Please fill all the required fields')));
-                                }
-                              })
-                        ],
-                      );
-                    },
-                  ),
+                                print('User profile updated');
+                              } catch (e) {
+                                print('Failed to add fields $e');
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  backgroundColor: Colors.red,
+                                  content: Text('Failed to add event: $e'),
+                                ));
+                              }
+                            } else {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                backgroundColor: Colors.red,
+                                content:
+                                    Text('Please fill all the required fields'),
+                              ));
+                            }
+                          },
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),
@@ -170,5 +176,12 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    userNameContrller.dispose();
+    phoneNumberContrller.dispose();
+    super.dispose();
   }
 }

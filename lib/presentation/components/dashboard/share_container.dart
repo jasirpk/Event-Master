@@ -20,7 +20,14 @@ class ShareContainerWidget extends StatelessWidget {
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: Colors.white,
+            gradient: LinearGradient(
+              colors: [
+                Colors.grey,
+                Colors.white12,
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -43,7 +50,7 @@ class ShareContainerWidget extends StatelessWidget {
               Text(
                 Assigns.shareApp,
                 style:
-                    TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
               )
             ],
           ),
