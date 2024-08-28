@@ -10,6 +10,7 @@ import 'package:event_master/presentation/pages/dashboard/medias.dart';
 import 'package:event_master/presentation/pages/dashboard/notes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -108,7 +109,12 @@ class HomePage extends StatelessWidget {
                   items: items,
                   screenWidth: screenWidth),
               SizedBox(height: 30),
-              ShareContainerWidget(screenHeight: screenHeight)
+              InkWell(
+                  onTap: () {
+                    Share.share(
+                        'https://www.amazon.com/dp/B0DC59TJDZ/ref=apps_sf_sta');
+                  },
+                  child: ShareContainerWidget(screenHeight: screenHeight))
             ],
           ),
         ),

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class ChatScreen extends StatefulWidget {
   final String chatId;
@@ -84,7 +85,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   String _formatTimestamp(Timestamp timestamp) {
     var date = timestamp.toDate();
-    return '${date.hour}:${date.minute}';
+    var formattedDate = DateFormat('dd MMM yyyy').format(date);
+    var formattedTime = DateFormat.jm().format(date);
+    return '$formattedDate at $formattedTime';
   }
 
   @override

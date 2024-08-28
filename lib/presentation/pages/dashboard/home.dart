@@ -26,8 +26,6 @@ class HomeScreen extends StatelessWidget {
           int currentIndex = 0;
           if (state is TabState) {
             currentIndex = state.index;
-          } else if (state is DashboardInitial) {
-            currentIndex = state.selectedIndex;
           }
 
           return CurvedNavigationBar(

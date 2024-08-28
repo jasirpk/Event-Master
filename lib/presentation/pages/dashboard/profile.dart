@@ -13,6 +13,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -41,7 +42,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     List<Map<String, dynamic>> items = [
-      {'icon': Icons.share, 'text': 'Share this App', 'onTap': () {}},
+      {
+        'icon': Icons.share,
+        'text': 'Share this App',
+        'onTap': () {
+          Share.share('https://www.amazon.com/dp/B0DC59TJDZ/ref=apps_sf_sta');
+        }
+      },
       {
         'icon': Icons.preview,
         'text': 'Privacy Policy',
@@ -125,14 +132,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             Container(
                               decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.white),
-                                  borderRadius: BorderRadius.circular(100)),
+                                border: Border.all(color: Colors.white),
+                                borderRadius: BorderRadius.circular(100),
+                              ),
                               child: CircleAvatar(
-                                  maxRadius: 60,
-                                  backgroundImage: profileImage.isNotEmpty
-                                      ? NetworkImage(profileImage)
-                                      : AssetImage(Assigns.personImage)
-                                          as ImageProvider),
+                                maxRadius: 60,
+                                child: ClipOval(
+                                  child: FadeInImage(
+                                    placeholder:
+                                        AssetImage(Assigns.personImage),
+                                    image: profileImage.isNotEmpty
+                                        ? NetworkImage(profileImage)
+                                        : AssetImage(Assigns.personImage)
+                                            as ImageProvider,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
                             ),
                             Positioned(
                               bottom: 0,
@@ -234,7 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     sizedbox,
                     Padding(
                       padding: EdgeInsets.only(top: 60),
-                      child: Text('Version 1.0.0+1',
+                      child: Text('Version 1.0.0+2',
                           style: TextStyle(color: Colors.white)),
                     ),
                   ],
