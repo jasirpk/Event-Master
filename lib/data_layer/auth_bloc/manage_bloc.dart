@@ -164,44 +164,54 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
       emit(AuthLoading());
 
       try {
-        final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-        if (googleUser == null) {
-          emit(AuthenticatedErrors(message: 'Google sign_in canceled'));
-          return;
-        }
+        final GoogleSignIn googleSignIn = GoogleSignIn.instance;
 
-        final GoogleSignInAuthentication? googleAuth =
-            await googleUser.authentication;
+        await googleSignIn.initialize();
+
+        final GoogleSignInAccount googleUser = await googleSignIn.authenticate();
+
+        final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
         final credential = GoogleAuthProvider.credential(
-            accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
+          idToken: googleAuth.idToken,
+        );
 
-        final userCredential =
-            await FirebaseAuth.instance.signInWithCredential(credential);
+        final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
 
         final user = userCredential.user;
 
         if (user != null) {
-          await saveAuthState(user.uid, user.email!);
-          emit(Authenticated(
-              UserModel(uid: user.uid, email: user.email!, password: '')));
-          print('Google Authentication Success');
-        } else {
-          emit(AuthenticatedErrors(
-              message: 'Failed to authenticate with Google'));
+          await saveAuthState(
+            user.uid,
+            user.email ?? '',
+          );
+
+          emit(
+            Authenticated(
+              UserModel(
+                uid: user.uid,
+                email: user.email,
+                password: '',
+              ),
+            ),
+          );
         }
       } catch (e) {
-        emit(AuthenticatedErrors(message: 'Google Authentication error $e'));
+        emit(
+          AuthenticatedErrors(
+            message: e.toString(),
+          ),
+        );
       }
     });
 
 // Google SignOUt...!
     on<SignOutWithGoogle>((event, emit) async {
       try {
-        await GoogleSignIn().signOut();
+        await GoogleSignIn.instance.signOut();
         clearAuthState();
       } catch (e) {
-        emit(AuthenticatedErrors(message: 'Signout Error'));
+        emit(AuthenticatedErrors(message: 'signOut error'));
       }
     });
 

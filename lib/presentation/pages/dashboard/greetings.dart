@@ -172,16 +172,16 @@ class _GreetingCardViewState extends State<GreetingCardView> {
               SizedBox(height: 16.0),
               CustomTextFieldWidget(
                   onTap: () {
-                    if (messageController.text.isNotEmpty) {
-                      Get.to(() => SelectContactsView(
-                            message: messageController.text,
-                          ));
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          backgroundColor: Colors.red,
-                          content:
-                              Text('Please fill all the required fields')));
-                    }
+                    // if (messageController.text.isNotEmpty) {
+                    //   Get.to(() => SelectContactsView(
+                    //         message: messageController.text,
+                    //       ));
+                    // } else {
+                    //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    //       backgroundColor: Colors.red,
+                    //       content:
+                    //           Text('Please fill all the required fields')));
+                    // }
                   },
                   prefixIcon: Icons.contact_page,
                   controller: contactController,
@@ -189,15 +189,15 @@ class _GreetingCardViewState extends State<GreetingCardView> {
                   suffixIcon: CupertinoIcons.forward,
                   readOnly: true),
               SizedBox(height: 16.0),
-              BlocListener<InstantBloc, InstantState>(
-                listener: (context, state) {
-                  if (state is GreetingCardSent) {
-                    showCustomSnackBar(
-                        'Success', 'Successfully send invitation message');
-                  }
-                },
-                child: Container(),
-              ),
+              // BlocListener<InstantBloc, InstantState>(
+              //   listener: (context, state) {
+              //     if (state is GreetingCardSent) {
+              //       showCustomSnackBar(
+              //           'Success', 'Successfully send invitation message');
+              //     }
+              //   },
+              //   child: Container(),
+              // ),
             ],
           ),
         ),

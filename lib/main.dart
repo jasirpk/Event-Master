@@ -26,7 +26,7 @@ class EventMaster extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => ManageBloc()),
         BlocProvider(create: (context) => DashboardBloc()),
-        BlocProvider(create: (context) => InstantBloc())
+        // BlocProvider(create: (context) => InstantBloc())
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
