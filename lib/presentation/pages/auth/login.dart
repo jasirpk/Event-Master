@@ -64,20 +64,15 @@ class GoogleAuthScreen extends StatelessWidget {
                     SizedBox(height: MediaQuery.of(context).size.height * 0.18),
                     Text(
                       'Hi !',
-                      style:
-                          TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                     ClipRRect(
                       child: BackdropFilter(
                         filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                         child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 18),
-                          decoration: BoxDecoration(
-                              color:
-                                  Color.fromARGB(0, 0, 0, 1).withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(30)),
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                          decoration: BoxDecoration(color: Color.fromARGB(0, 0, 0, 1).withOpacity(0.2), borderRadius: BorderRadius.circular(30)),
                           width: MediaQuery.of(context).size.width * 0.9,
                           height: MediaQuery.of(context).size.height * 0.47,
                           child: Form(
@@ -85,34 +80,23 @@ class GoogleAuthScreen extends StatelessWidget {
                             child: Center(
                               child: Column(
                                 children: [
-                                  TextFieldWidget(
-                                      Controller: userEmailController,
-                                      hintText: 'Email',
-                                      obscureText: false),
+                                  TextFieldWidget(Controller: userEmailController, hintText: 'Email', obscureText: false),
                                   SizedBox(height: 10),
-                                  PasswordField(
-                                      controller: userPasswordController,
-                                      hintText: 'Password'),
+                                  PasswordField(controller: userPasswordController, hintText: 'Password'),
                                   SizedBox(height: 10),
                                   PushableButton_Widget(
                                       buttonText: 'Continue',
                                       onpressed: () {
                                         final email = userEmailController.text;
-                                        final password =
-                                            userPasswordController.text;
+                                        final password = userPasswordController.text;
                                         if (email.isEmpty || password.isEmpty) {
-                                          Get.snackbar('Error',
-                                              'Please fill all fields');
+                                          Get.snackbar('Error', 'Please fill all fields');
                                           return;
                                         }
-                                        authBloc.add(LoginEvent(
-                                            email: email, password: password));
+                                        authBloc.add(LoginEvent(email: email, password: password));
                                       }),
                                   SizedBox(height: 10),
-                                  Text('Or',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold)),
+                                  Text('Or', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
                                   SizedBox(height: 8),
                                   Column(
                                     mainAxisSize: MainAxisSize.min,
@@ -120,9 +104,7 @@ class GoogleAuthScreen extends StatelessWidget {
                                     children: [
                                       SqureTile(
                                         onpressed: () {
-                                          context
-                                              .read<ManageBloc>()
-                                              .add(GoogleAuth());
+                                          context.read<ManageBloc>().add(GoogleAuth());
                                         },
                                         imagePath: 'assets/images/google.png',
                                         title: 'Continue with Google',

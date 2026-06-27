@@ -26,22 +26,16 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
     on<LoginEvent>((event, emit) async {
       emit(AuthLoading());
       try {
-        final UserCredential = await auth.signInWithEmailAndPassword(
-            email: event.email, password: event.password);
+        final UserCredential = await auth.signInWithEmailAndPassword(email: event.email, password: event.password);
         final user = UserCredential.user!;
-        DocumentSnapshot userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
         String platform = userDoc['platform'];
         if (platform == 'mobile') {
           await saveAuthState(user.uid, user.email!);
           print('Account is authenticated');
-          emit(Authenticated(
-              UserModel(email: user.email!, password: '', uid: user.uid)));
+          emit(Authenticated(UserModel(email: user.email!, password: '', uid: user.uid)));
         } else {
-          emit(AuthenticatedErrors(
-              message: 'Not Authenticated for this platform'));
+          emit(AuthenticatedErrors(message: 'Not Authenticated for this platform'));
           print('Authentication Failed: Not Authenticated for this platform');
         }
       } catch (e) {
@@ -55,21 +49,14 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
     on<SignUp>((event, emit) async {
       emit(AuthLoading());
       try {
-        final UserCredential = await auth.createUserWithEmailAndPassword(
-            email: event.userModel.email.toString(),
-            password: event.userModel.password.toString());
+        final UserCredential =
+            await auth.createUserWithEmailAndPassword(email: event.userModel.email.toString(), password: event.userModel.password.toString());
         final user = UserCredential.user;
         if (user != null) {
           await FirebaseFirestore.instance
               .collection('users')
               .doc(user.uid)
-              .set({
-            'uid': user.uid,
-            'email': user.email,
-            'password': event.userModel.password,
-            'platform': 'mobile',
-            'createdAt': DateTime.now()
-          });
+              .set({'uid': user.uid, 'email': user.email, 'password': event.userModel.password, 'platform': 'mobile', 'createdAt': DateTime.now()});
           await FirebaseAuth.instance.currentUser!.getIdToken(true);
           await FirebaseAuth.instance.currentUser!.updateDisplayName('mobile');
 
@@ -77,8 +64,7 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
           print('Account is authenticated');
           print('Current FirebaseAuth user UID: ${user.uid}');
           print('Current FirebaseAuth user Email: ${user.email}');
-          emit(Authenticated(
-              UserModel(email: user.email!, password: '', uid: user.uid)));
+          emit(Authenticated(UserModel(email: user.email!, password: '', uid: user.uid)));
         } else {
           emit(UnAuthenticated());
         }
@@ -112,8 +98,7 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
         Get.offAll(() => WelcomeUserWidget(
             image: 'assets/images/welcome_img1.webp',
             title: 'Welcome to Event Master',
-            subTitle:
-                '''Your all-in-one solution for seamless event planning. Let's create unforgettable moments together''',
+            subTitle: '''Your all-in-one solution for seamless event planning. Let's create unforgettable moments together''',
             onpressed: () {
               WelcomeIntroEverntTrack();
             },
@@ -126,16 +111,14 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
         if (user != null) {
           print('User Found in FirebaseAuth');
           Get.offAll(() => HomeScreen());
-          emit(Authenticated(
-              UserModel(uid: user.uid, email: user.email, password: '')));
+          emit(Authenticated(UserModel(uid: user.uid, email: user.email, password: '')));
         } else {
           emit(UnAuthenticated());
           print('User Not found in FirebaseAuth');
           Get.offAll(() => WelcomeUserWidget(
               image: 'assets/images/welcome_img1.webp',
               title: 'Welcome to Event Master',
-              subTitle:
-                  '''Your all-in-one solution for seamless event planning. Let's create unforgettable moments together''',
+              subTitle: '''Your all-in-one solution for seamless event planning. Let's create unforgettable moments together''',
               onpressed: () {
                 Get.to(() => WelcomeIntroEverntTrack());
               },
@@ -202,6 +185,7 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
             message: e.toString(),
           ),
         );
+        log(e.toString());
       }
     });
 
@@ -250,12 +234,9 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
   }
   // .....................Validation............!
 
-  FutureOr<void> validateTextField(
-      TextFieldTextchanged event, Emitter<ManageState> emit) {
+  FutureOr<void> validateTextField(TextFieldTextchanged event, Emitter<ManageState> emit) {
     try {
-      emit(isValidEmail(event.text)
-          ? TextValid()
-          : TextInvalid(message: 'Enter Valid Email'));
+      emit(isValidEmail(event.text) ? TextValid() : TextInvalid(message: 'Enter Valid Email'));
     } catch (e) {
       emit(AuthenticatedErrors(message: e.toString()));
     }
@@ -265,12 +246,9 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
     return text.isNotEmpty && text.contains('@gmail.com');
   }
 
-  FutureOr<void> validatePasswordField(
-      TextFieldPasswordChanged event, Emitter<ManageState> emit) {
+  FutureOr<void> validatePasswordField(TextFieldPasswordChanged event, Emitter<ManageState> emit) {
     try {
-      emit(isValidPassword(event.password)
-          ? PasswordValid()
-          : PasswordInvalid(message: 'Enter Valid Password'));
+      emit(isValidPassword(event.password) ? PasswordValid() : PasswordInvalid(message: 'Enter Valid Password'));
     } catch (e) {
       emit(AuthenticatedErrors(message: e.toString()));
     }
@@ -280,8 +258,7 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
     return password.isNotEmpty && password.length >= 6;
   }
 
-  FutureOr<void> togglePasswordVisibility(
-      TogglePasswordVisibility event, Emitter<ManageState> emit) {
+  FutureOr<void> togglePasswordVisibility(TogglePasswordVisibility event, Emitter<ManageState> emit) {
     isPasswordVisible = !isPasswordVisible;
     emit(PasswordvisiblityToggled(isVisible: isPasswordVisible));
   }
