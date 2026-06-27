@@ -6,7 +6,10 @@ sealed class ManageState {}
 final class ManageInitial extends ManageState {}
 
 // ..................Authentication...........!
-class AuthLoading extends ManageState {}
+class AuthLoading extends ManageState {
+  final bool isLoaded;
+  AuthLoading(this.isLoaded);
+}
 
 class Authenticated extends ManageState {
   final UserModel user;

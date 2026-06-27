@@ -24,17 +24,22 @@ class GoogleAuthScreen extends StatelessWidget {
     final authBloc = BlocProvider.of<ManageBloc>(context);
     return BlocListener<ManageBloc, ManageState>(
       listener: (context, state) {
-        if (state is AuthLoading) {
+        if (state is AuthLoading && state.isLoaded) {
           showDialog(
-              context: context,
-              builder: (context) => Center(
-                    child: CircularProgressIndicator(),
-                  ));
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => const Center(
+              child: CircularProgressIndicator()
+            ),
+          );
+
         } else if (state is Authenticated) {
+          Navigator.of(context, rootNavigator: true).pop();
           Get.offAll(() => HomeScreen());
           showCustomSnackBar('Success', 'Successfully Authenticated');
         } else if (state is AuthenticatedErrors) {
-          showCustomSnackBar('Error', 'Authentication Error Occurred!');
+          Navigator.of(context, rootNavigator: true).pop();
+          showCustomSnackBar('Error', state.message.toString());
         }
       },
       child: Scaffold(

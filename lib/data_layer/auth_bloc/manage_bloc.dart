@@ -24,7 +24,7 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
     // Login status...!
 
     on<LoginEvent>((event, emit) async {
-      emit(AuthLoading());
+      emit(AuthLoading(true));
       try {
         final UserCredential = await auth.signInWithEmailAndPassword(email: event.email, password: event.password);
         final user = UserCredential.user!;
@@ -39,7 +39,7 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
           print('Authentication Failed: Not Authenticated for this platform');
         }
       } catch (e) {
-        emit(AuthenticatedErrors(message: 'Not Authenticated'));
+        emit(AuthenticatedErrors(message: e.toString()));
         print('Authentication Failed $e');
       }
     });
@@ -47,7 +47,7 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
     // SiguUp...!
 
     on<SignUp>((event, emit) async {
-      emit(AuthLoading());
+      emit(AuthLoading(true));
       try {
         final UserCredential =
             await auth.createUserWithEmailAndPassword(email: event.userModel.email.toString(), password: event.userModel.password.toString());
@@ -69,15 +69,15 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
           emit(UnAuthenticated());
         }
       } catch (e) {
-        emit(AuthenticatedErrors(message: 'Creating Failed'));
-        print(('Authentication Failed $e'));
+        emit(AuthenticatedErrors(message: e.toString()));
+        log(('Authentication Failed $e'));
       }
     });
 
     // checUserProfile...!
 
     on<CheckUserEvent>((event, emit) async {
-      emit(AuthLoading());
+      emit(AuthLoading(true));
       await Future.delayed(Duration(seconds: 2));
       final prefs = await SharedPreferences.getInstance();
       final uid = prefs.getString('uid');
@@ -144,7 +144,7 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
 // Google Authentication...!
 
     on<GoogleAuth>((event, emit) async {
-      emit(AuthLoading());
+      emit(AuthLoading(true));
 
       try {
         final GoogleSignIn googleSignIn = GoogleSignIn.instance;
@@ -164,27 +164,19 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
         final user = userCredential.user;
 
         if (user != null) {
-          await saveAuthState(
-            user.uid,
-            user.email ?? '',
-          );
+          await saveAuthState(user.uid, user.email ?? '');
 
           emit(
             Authenticated(
-              UserModel(
-                uid: user.uid,
-                email: user.email,
-                password: '',
-              ),
+              UserModel(uid: user.uid, email: user.email, password: ''),
             ),
           );
         }
       } catch (e) {
         emit(
-          AuthenticatedErrors(
-            message: e.toString(),
-          ),
+          AuthenticatedErrors(message: e.toString()),
         );
+
         log(e.toString());
       }
     });
@@ -195,7 +187,7 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
         await GoogleSignIn.instance.signOut();
         clearAuthState();
       } catch (e) {
-        emit(AuthenticatedErrors(message: 'signOut error'));
+        emit(AuthenticatedErrors(message: e.toString()));
       }
     });
 

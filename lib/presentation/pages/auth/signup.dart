@@ -33,14 +33,18 @@ class SignupScreen extends StatelessWidget {
               Get.offAll(() => HomeScreen());
             });
           } else if (state is ValidationSuccess) {
-            UserModel user = UserModel(
-                email: userEmailController.text,
-                password: userPasswordController.text);
+            UserModel user = UserModel(email: userEmailController.text, password: userPasswordController.text);
             context.read<ManageBloc>().add(SignUp(userModel: user));
           } else if (state is AuthenticatedErrors) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               Get.snackbar('Error', 'Account not Registered');
             });
+          } else if (state is AuthLoading && state.isLoaded) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (_) => const Center(child: CircularProgressIndicator()),
+            );
           }
         },
         child: SingleChildScrollView(
@@ -67,9 +71,7 @@ class SignupScreen extends StatelessWidget {
                     SizedBox(height: MediaQuery.of(context).size.height * 0.24),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text('Sign Up',
-                          style: TextStyle(
-                              fontSize: 40, fontWeight: FontWeight.bold)),
+                      child: Text('Sign Up', style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
                     ),
                     SizedBox(height: MediaQuery.of(context).size.height * 0.01),
                     ClipRRect(
@@ -103,8 +105,7 @@ class SignupScreen extends StatelessWidget {
                                     ),
                                   ),
                                   Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 16.0),
+                                    padding: EdgeInsets.symmetric(horizontal: 16.0),
                                     child: TextFieldWidget(
                                       Controller: userEmailController,
                                       hintText: 'Email',
@@ -113,8 +114,7 @@ class SignupScreen extends StatelessWidget {
                                   ),
                                   SizedBox(height: 10),
                                   Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 16.0),
+                                    padding: EdgeInsets.symmetric(horizontal: 16.0),
                                     child: PasswordField(
                                       controller: userPasswordController,
                                       hintText: 'Password',
@@ -125,14 +125,11 @@ class SignupScreen extends StatelessWidget {
                                     padding: EdgeInsets.all(16.0),
                                     child: RichText(
                                       text: TextSpan(
-                                        text:
-                                            'By selecting Agree & Continue below, I agree to our ',
-                                        style: TextStyle(
-                                            fontSize: 18, color: Colors.white),
+                                        text: 'By selecting Agree & Continue below, I agree to our ',
+                                        style: TextStyle(fontSize: 18, color: Colors.white),
                                         children: <TextSpan>[
                                           TextSpan(
-                                              text:
-                                                  'Terms of Service and Privacy Policy',
+                                              text: 'Terms of Service and Privacy Policy',
                                               style: TextStyle(
                                                 color: myColor,
                                                 fontSize: 18,
@@ -140,31 +137,22 @@ class SignupScreen extends StatelessWidget {
                                               ),
                                               recognizer: TapGestureRecognizer()
                                                 ..onTap = () {
-                                                  Get.to(
-                                                      () => TermsOfService());
+                                                  Get.to(() => TermsOfService());
                                                 }),
                                         ],
                                       ),
                                     ),
                                   ),
                                   Padding(
-                                    padding:
-                                        EdgeInsets.only(left: 16, right: 16),
+                                    padding: EdgeInsets.only(left: 16, right: 16),
                                     child: PushableButton_Widget(
                                         buttonText: 'Agree and Continue',
                                         onpressed: () {
-                                          if (formKey.currentState!
-                                              .validate()) {
-                                            final email =
-                                                userEmailController.text;
-                                            final password =
-                                                userPasswordController.text;
-                                            context
-                                                .read<ManageBloc>()
-                                                .add(SignUp(
-                                                  userModel: UserModel(
-                                                      email: email,
-                                                      password: password),
+                                          if (formKey.currentState!.validate()) {
+                                            final email = userEmailController.text;
+                                            final password = userPasswordController.text;
+                                            context.read<ManageBloc>().add(SignUp(
+                                                  userModel: UserModel(email: email, password: password),
                                                 ));
                                           }
                                         }),

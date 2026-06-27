@@ -88,7 +88,7 @@ class WelcomeUserWidget extends StatelessWidget {
                         Get.to(() => GoogleAuthScreen());
                       },
                       child: Text(
-                        'Not now',
+                        'Skip',
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 18,
