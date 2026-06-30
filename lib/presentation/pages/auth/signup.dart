@@ -28,14 +28,17 @@ class SignupScreen extends StatelessWidget {
       body: BlocListener<ManageBloc, ManageState>(
         listener: (context, state) {
           if (state is Authenticated) {
+            Navigator.of(context, rootNavigator: true).pop();
             WidgetsBinding.instance.addPostFrameCallback((_) {
               showCustomSnackBar('Success', 'User Registered Successfully');
               Get.offAll(() => HomeScreen());
             });
           } else if (state is ValidationSuccess) {
+            Navigator.of(context, rootNavigator: true).pop();
             UserModel user = UserModel(email: userEmailController.text, password: userPasswordController.text);
             context.read<ManageBloc>().add(SignUp(userModel: user));
           } else if (state is AuthenticatedErrors) {
+            Navigator.of(context, rootNavigator: true).pop();
             WidgetsBinding.instance.addPostFrameCallback((_) {
               Get.snackbar('Error', 'Account not Registered');
             });

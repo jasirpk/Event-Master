@@ -56,14 +56,14 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
           await FirebaseFirestore.instance
               .collection('users')
               .doc(user.uid)
-              .set({'uid': user.uid, 'email': user.email, 'password': event.userModel.password, 'platform': 'mobile', 'createdAt': DateTime.now()});
+              .set({'uid': user.uid, 'email': user.email, 'password': event.userModel.password, 'platform': 'mobile', 'createdAt': DateTime.now()},SetOptions(merge: true));
           await FirebaseAuth.instance.currentUser!.getIdToken(true);
           await FirebaseAuth.instance.currentUser!.updateDisplayName('mobile');
 
           await saveAuthState(user.uid, user.email!);
-          print('Account is authenticated');
-          print('Current FirebaseAuth user UID: ${user.uid}');
-          print('Current FirebaseAuth user Email: ${user.email}');
+          log('Account is authenticated');
+          log('Current FirebaseAuth user UID: ${user.uid}');
+          log('Current FirebaseAuth user Email: ${user.email}');
           emit(Authenticated(UserModel(email: user.email!, password: '', uid: user.uid)));
         } else {
           emit(UnAuthenticated());
@@ -207,15 +207,10 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('uid', uid);
     await prefs.setString('email', email);
-    await FirebaseFirestore.instance.collection('users').doc(uid).set({
-      'uid': uid,
-      'email': email,
-      'createdAt': DateTime.now(),
-    });
+
     log('Saved UID: $uid');
     log('Saved Email: $email');
   }
-
 // User Credential clearing..!
 
   Future<void> clearAuthState() async {

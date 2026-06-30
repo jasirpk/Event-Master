@@ -95,7 +95,7 @@ class GoogleAuthScreen extends StatelessWidget {
                                         final email = userEmailController.text;
                                         final password = userPasswordController.text;
                                         if (email.isEmpty || password.isEmpty) {
-                                          Get.snackbar('Error', 'Please fill all fields');
+                                          showCustomSnackBar('Error', 'Please fill all fields');
                                           return;
                                         }
                                         authBloc.add(LoginEvent(email: email, password: password));
