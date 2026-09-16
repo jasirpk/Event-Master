@@ -4,4 +4,10 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- Debug-only: allows http:// to a local Media API during development
+         (the Android emulator reaches the host machine at 10.0.2.2). This
+         manifest is not merged into release builds, so shipped APKs keep
+         cleartext traffic disabled and must use an https:// API_BASE_URL. -->
+    <application android:usesCleartextTraffic="true" />
 </manifest>

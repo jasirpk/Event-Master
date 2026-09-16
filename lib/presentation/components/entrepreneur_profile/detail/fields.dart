@@ -20,6 +20,8 @@ class DetailFieldsWidget extends StatefulWidget {
     required this.links,
     required this.images,
     required this.onRatingSubmit,
+    required this.onLoadUserRating,
+    required this.onRatingRemove,
   });
 
   final String imagePath;
@@ -31,14 +33,61 @@ class DetailFieldsWidget extends StatefulWidget {
   final String website;
   final List<Map<String, dynamic>> links;
   final List<Map<String, dynamic>> images;
-  final Function(double) onRatingSubmit;
+
+  /// Returns true when the rating was actually persisted by the backend.
+  final Future<bool> Function(double) onRatingSubmit;
+
+  /// Loads this user's existing rating, or null if they have not rated.
+  final Future<double?> Function() onLoadUserRating;
+
+  /// Removes this user's rating. Returns true when the backend confirmed it.
+  final Future<bool> Function() onRatingRemove;
 
   @override
   _DetailFieldsWidgetState createState() => _DetailFieldsWidgetState();
 }
 
 class _DetailFieldsWidgetState extends State<DetailFieldsWidget> {
-  double _userRating = 3.5;
+  // null means "this consumer has not rated yet" — no rating is ever
+  // fabricated for display. Loaded once from the user's own rating document.
+  double? _userRating;
+
+  // Distinguishes "still loading" from "not rated", so the screen does not
+  // claim the user has no rating before the answer has arrived.
+  bool _loadingUserRating = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserRating();
+  }
+
+  Future<void> _loadUserRating() async {
+    final rating = await widget.onLoadUserRating();
+    if (!mounted) return;
+    setState(() {
+      _userRating = rating;
+      _loadingUserRating = false;
+    });
+  }
+
+  Future<void> _removeRating() async {
+    final previous = _userRating;
+
+    // Clear immediately, then restore if the backend refused — the same
+    // optimistic pattern the submit path uses.
+    setState(() {
+      _userRating = null;
+    });
+
+    final removed = await widget.onRatingRemove();
+
+    if (!removed && mounted) {
+      setState(() {
+        _userRating = previous;
+      });
+    }
+  }
 
   void _showRatingDialog(BuildContext context, double initialRating) {
     showDialog(
@@ -63,6 +112,19 @@ class _DetailFieldsWidgetState extends State<DetailFieldsWidget> {
             },
           ),
           actions: [
+            // Only offered once a rating exists — there is nothing to remove
+            // otherwise.
+            if (_userRating != null)
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _removeRating();
+                },
+                child: Text(
+                  'Remove rating',
+                  style: TextStyle(color: Colors.redAccent),
+                ),
+              ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
@@ -70,13 +132,24 @@ class _DetailFieldsWidgetState extends State<DetailFieldsWidget> {
               child: Text('Cancel'),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
+                final previous = _userRating;
+
+                // Show the new rating immediately, then roll back if the
+                // backend rejected it — leaving a star lit for a write that
+                // never persisted would misreport the outcome.
                 setState(() {
                   _userRating = _dialogRating;
                 });
-                widget.onRatingSubmit(_dialogRating);
-                print('User Rating: $_dialogRating');
                 Navigator.of(context).pop();
+
+                final persisted = await widget.onRatingSubmit(_dialogRating);
+
+                if (!persisted && mounted) {
+                  setState(() {
+                    _userRating = previous;
+                  });
+                }
               },
               child: Text('Submit'),
             ),
@@ -116,7 +189,7 @@ class _DetailFieldsWidgetState extends State<DetailFieldsWidget> {
                       ),
                       SizedBox(height: 10),
                       RatingBar.builder(
-                        initialRating: _userRating,
+                        initialRating: _userRating ?? 0,
                         minRating: 1,
                         itemSize: 20,
                         direction: Axis.horizontal,
@@ -134,7 +207,11 @@ class _DetailFieldsWidgetState extends State<DetailFieldsWidget> {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        'Rating: $_userRating',
+                        _loadingUserRating
+                            ? 'Rating: …'
+                            : _userRating == null
+                                ? 'Rating: Not rated yet'
+                                : 'Rating: $_userRating',
                         style: TextStyle(
                             fontSize: widget.screenHeight * 0.022,
                             fontWeight: FontWeight.bold,

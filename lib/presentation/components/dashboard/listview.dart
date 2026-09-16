@@ -24,8 +24,7 @@ class ListViewWidget extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           print('Stream error: ${snapshot.error}');
-          return ShimmerHomeList(
-              screenHeight: screenHeight, screenWidth: screenWidth);
+          return ShimmerHomeList(screenHeight: screenHeight, screenWidth: screenWidth);
         }
         if (snapshot.hasError) {
           return Center(
@@ -47,17 +46,14 @@ class ListViewWidget extends StatelessWidget {
             itemCount: documents.length,
             itemBuilder: (context, index) {
               var data = documents[index].data() as Map<String, dynamic>;
-              String imagePath =
-                  data['imagePath'] ?? 'assets/images/venue_decoration_img.jpg';
+              String imagePath = data['imagePath'] ?? 'assets/images/venue_decoration_img.jpg';
               String documentId = documents[index].id;
 
               return FutureBuilder<DocumentSnapshot>(
                 future: databaseMethods.getCategoryDetailById(documentId),
                 builder: (context, detailSnapshot) {
-                  if (detailSnapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return ShimmerHomeList(
-                        screenHeight: screenHeight, screenWidth: screenWidth);
+                  if (detailSnapshot.connectionState == ConnectionState.waiting) {
+                    return ShimmerHomeList(screenHeight: screenHeight, screenWidth: screenWidth);
                   }
                   if (detailSnapshot.hasError) {
                     return Center(
@@ -69,19 +65,14 @@ class ListViewWidget extends StatelessWidget {
                       child: Text('Details Not Found'),
                     );
                   }
-                  var detailData =
-                      detailSnapshot.data!.data() as Map<String, dynamic>;
+                  var detailData = detailSnapshot.data!.data() as Map<String, dynamic>;
                   return InkWell(
                     onTap: () {
-                      Get.to(() => SubEventTemplatesScreen(
-                          categoryId: documentId,
-                          categoryName: detailData['categoryName']));
+                      Get.to(() => SubEventTemplatesScreen(categoryId: documentId, categoryName: detailData['categoryName']));
                     },
                     child: InkWell(
                       onTap: () {
-                        Get.to(() => SubEventTemplatesScreen(
-                            categoryId: documentId,
-                            categoryName: detailData['categoryName']));
+                        Get.to(() => SubEventTemplatesScreen(categoryId: documentId, categoryName: detailData['categoryName']));
                       },
                       child: Container(
                         margin: EdgeInsets.symmetric(horizontal: 5),
@@ -94,9 +85,7 @@ class ListViewWidget extends StatelessWidget {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
                               image: DecorationImage(
-                                image: imagePath.startsWith('http')
-                                    ? NetworkImage(imagePath)
-                                    : AssetImage(imagePath) as ImageProvider,
+                                image: imagePath.startsWith('http') ? NetworkImage(imagePath) : AssetImage(imagePath) as ImageProvider,
                                 fit: BoxFit.cover,
                                 colorFilter: ColorFilter.mode(
                                   Colors.black.withOpacity(0.2),

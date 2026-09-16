@@ -69,41 +69,6 @@ class EventBookingMethods {
     }
   }
 
-  Future<void> updateEntrepreneurRating(
-      String EntrepreneurId, double rating) async {
-    try {
-      DocumentReference entrepreneurRef = FirebaseFirestore.instance
-          .collection('entrepreneurs')
-          .doc(EntrepreneurId);
-
-      DocumentSnapshot entrepreneurDoc = await entrepreneurRef.get();
-      if (entrepreneurDoc.exists) {
-        var data = entrepreneurDoc.data() as Map<String, dynamic>;
-        double currentRating = data['rating'] ?? 0.0;
-        int ratingCount = data['ratingCount'] ?? 0;
-
-        double newRating =
-            (currentRating * ratingCount + rating) / (ratingCount + 1);
-        ratingCount += 1;
-
-        await entrepreneurRef.update({
-          'rating': newRating,
-          'ratingCount': ratingCount,
-        });
-      } else {
-        await entrepreneurRef.set({
-          'rating': rating,
-          'ratingCount': 1,
-        });
-      }
-
-      print('Updated Entrepreneur rating');
-    } catch (e) {
-      print('Error updating Entrepreneur rating: $e');
-      rethrow;
-    }
-  }
-
   Future<String> uploadImage(File imageFile) async {
     try {
       // Create a reference to the Firebase Storage location
