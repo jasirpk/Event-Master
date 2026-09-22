@@ -53,10 +53,32 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
             await auth.createUserWithEmailAndPassword(email: event.userModel.email.toString(), password: event.userModel.password.toString());
         final user = UserCredential.user;
         if (user != null) {
+          // Account bookkeeping only. The password is never persisted: Firebase
+          // Auth already holds the credential, and nothing in any of the three
+          // apps ever reads it back from Firestore.
           await FirebaseFirestore.instance
               .collection('users')
               .doc(user.uid)
-              .set({'uid': user.uid, 'email': user.email, 'password': event.userModel.password, 'platform': 'mobile', 'createdAt': DateTime.now()},SetOptions(merge: true));
+              .set({'uid': user.uid, 'email': user.email, 'platform': 'mobile', 'createdAt': DateTime.now()},SetOptions(merge: true));
+
+          // The consumer-facing slice of the profile. Entrepreneurs read this
+          // instead of `users`, which stays owner-and-admin only. The profile
+          // fields are empty until the user fills them in, and `isValid` stays
+          // false so an incomplete profile is not yet discoverable — exactly
+          // the behaviour `users` had before, where these keys simply did not
+          // exist until the first profile edit.
+          await FirebaseFirestore.instance
+              .collection('publicProfiles')
+              .doc(user.uid)
+              .set({
+            'uid': user.uid,
+            'email': user.email,
+            'userName': '',
+            'imagePath': '',
+            'phoneNumber': '',
+            'timestamp': FieldValue.serverTimestamp(),
+            'isValid': false,
+          }, SetOptions(merge: true));
           await FirebaseAuth.instance.currentUser!.getIdToken(true);
           await FirebaseAuth.instance.currentUser!.updateDisplayName('mobile');
 

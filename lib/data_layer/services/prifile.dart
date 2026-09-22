@@ -50,6 +50,22 @@ class ClientProfile {
         'isValid': isValid,
       });
 
+      // Mirror the same fields to the consumer-facing profile the entrepreneur
+      // app reads. `email` is deliberately omitted: signup already wrote it
+      // from Firebase Auth, and merging here would create a second source of
+      // truth for it.
+      await FirebaseFirestore.instance
+          .collection('publicProfiles')
+          .doc(uid)
+          .set({
+        'uid': uid,
+        'userName': userName,
+        'imagePath': downloadUrl,
+        'phoneNumber': phoneNumber,
+        'timestamp': FieldValue.serverTimestamp(),
+        'isValid': isValid,
+      }, SetOptions(merge: true));
+
       print('User details added successfully to sub-collection.');
     } catch (e) {
       print('Error adding user Profile: $e');
