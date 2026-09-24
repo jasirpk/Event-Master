@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_master/data_layer/services/subcategory.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:event_master/presentation/components/media/media_image.dart';
 
 class DataSearch extends SearchDelegate<String> {
   final subDatabaseMethods databaseMethods = subDatabaseMethods();
@@ -64,7 +65,10 @@ class DataSearch extends SearchDelegate<String> {
             var document = documents[index];
             var data = document.data() as Map<String, dynamic>;
             String imagePath = data['imagePath'];
-            return Card(
+            return MediaImage(
+imagePath: imagePath,
+placeholder: kMediaPlaceholderImage,
+builder: (context, image) => Card(
               color: Colors.black,
               child: Container(
                 child: ListTile(
@@ -73,9 +77,7 @@ class DataSearch extends SearchDelegate<String> {
                     height: 60,
                     decoration: BoxDecoration(
                         image: DecorationImage(
-                            image: imagePath.startsWith('http')
-                                ? NetworkImage(imagePath)
-                                : AssetImage(imagePath) as ImageProvider,
+                            image: image ?? kMediaPlaceholderImage,
                             fit: BoxFit.cover)),
                   ),
                   title: Text(
@@ -106,7 +108,7 @@ class DataSearch extends SearchDelegate<String> {
                   },
                 ),
               ),
-            );
+            ));
           },
         );
       },

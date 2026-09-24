@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:event_master/common/assigns.dart';
 import 'package:event_master/data_layer/services/subcategory.dart';
 import 'package:event_master/presentation/components/shimmer/shimmer_subcategory.dart';
 import 'package:event_master/presentation/pages/dashboard/entrepreneurs.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:event_master/presentation/components/media/media_image.dart';
 
 class SubCategoryList extends StatelessWidget {
   const SubCategoryList({
@@ -87,20 +87,15 @@ class SubCategoryList extends StatelessWidget {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(10),
-                            child: FadeInImage.assetNetwork(
-                              placeholder: Assigns.placeHolderImage,
-                              image: subimagePath,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                              imageErrorBuilder: (context, error, stackTrace) {
-                                return Image.asset(
-                                  Assigns.placeHolderImage,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                );
-                              },
+                            child: MediaImage(
+                              imagePath: subimagePath,
+                              placeholder: kMediaPlaceholderImage,
+                              builder: (context, image) => Image(
+                                image: image ?? kMediaPlaceholderImage,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: double.infinity,
+                              ),
                             ),
                           ),
                           Align(

@@ -100,22 +100,33 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
 
     on<CheckUserEvent>((event, emit) async {
       emit(AuthLoading(true));
-      await Future.delayed(Duration(seconds: 2));
-      final prefs = await SharedPreferences.getInstance();
-      final uid = prefs.getString('uid');
-      final email = prefs.getString('email');
 
-      print('SharedPreferences UID: $uid');
-      print('SharedPreferences Email: $email');
+      // Firebase Auth is the source of truth, not SharedPreferences: the two
+      // can disagree — a revoked or expired session leaves a stale `uid` in
+      // prefs, and the app would then route to HomeScreen with no signed-in
+      // user, so every `currentUser!` below it throws.
+      //
+      // authStateChanges().first resolves as soon as Firebase has restored the
+      // persisted session, or confirmed there is none. The splash delay runs
+      // alongside it rather than before it, so the wait is whichever takes
+      // longer — never the sum, and never a guess that Firebase is ready.
+      final results = await Future.wait([
+        auth.authStateChanges().first,
+        Future.delayed(const Duration(seconds: 2)),
+      ]);
+      final user = results.first as User?;
 
-      if (uid != null) {
-        print('User found in sharedPreferenc');
+      if (user != null) {
+        print('Session restored from FirebaseAuth');
+        // Keep prefs in step with the session that actually exists.
+        await saveAuthState(user.uid, user.email ?? '');
         Get.offAll(() => HomeScreen());
-        emit(Authenticated(UserModel(uid: uid, email: email, password: '')));
+        emit(Authenticated(
+            UserModel(uid: user.uid, email: user.email, password: '')));
       } else {
-        print('User not found in SharedPreferences, checking FirebaseAuth');
-        print('User NOt found in FirebaseAuth');
-
+        print('No active FirebaseAuth session');
+        // Drop any stale uid/email so nothing downstream trusts them.
+        await clearAuthState();
         emit(UnAuthenticated());
         Get.offAll(() => WelcomeUserWidget(
             image: 'assets/images/welcome_img1.webp',
@@ -128,29 +139,9 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
             backButtonPressed: () {
               Get.back();
             }));
-
-        final user = auth.currentUser;
-        if (user != null) {
-          print('User Found in FirebaseAuth');
-          Get.offAll(() => HomeScreen());
-          emit(Authenticated(UserModel(uid: user.uid, email: user.email, password: '')));
-        } else {
-          emit(UnAuthenticated());
-          print('User Not found in FirebaseAuth');
-          Get.offAll(() => WelcomeUserWidget(
-              image: 'assets/images/welcome_img1.webp',
-              title: 'Welcome to Event Master',
-              subTitle: '''Your all-in-one solution for seamless event planning. Let's create unforgettable moments together''',
-              onpressed: () {
-                Get.to(() => WelcomeIntroEverntTrack());
-              },
-              buttonText: 'Get Started',
-              backButtonPressed: () {
-                Get.back();
-              }));
-        }
       }
     });
+
     // Handle logout...!
 
     on<Logout>((event, emit) async {

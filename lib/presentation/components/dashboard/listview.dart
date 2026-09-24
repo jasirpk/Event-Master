@@ -4,6 +4,7 @@ import 'package:event_master/presentation/components/shimmer/shimmer_home_list.d
 import 'package:event_master/presentation/pages/dashboard/sub_templates.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:event_master/presentation/components/media/media_image.dart';
 
 class ListViewWidget extends StatelessWidget {
   ListViewWidget({
@@ -66,7 +67,10 @@ class ListViewWidget extends StatelessWidget {
                     );
                   }
                   var detailData = detailSnapshot.data!.data() as Map<String, dynamic>;
-                  return InkWell(
+                  return MediaImage(
+imagePath: imagePath,
+placeholder: kMediaPlaceholderImage,
+builder: (context, image) => InkWell(
                     onTap: () {
                       Get.to(() => SubEventTemplatesScreen(categoryId: documentId, categoryName: detailData['categoryName']));
                     },
@@ -85,7 +89,7 @@ class ListViewWidget extends StatelessWidget {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
                               image: DecorationImage(
-                                image: imagePath.startsWith('http') ? NetworkImage(imagePath) : AssetImage(imagePath) as ImageProvider,
+                                image: image ?? kMediaPlaceholderImage,
                                 fit: BoxFit.cover,
                                 colorFilter: ColorFilter.mode(
                                   Colors.black.withOpacity(0.2),
@@ -113,7 +117,7 @@ class ListViewWidget extends StatelessWidget {
                         ),
                       ),
                     ),
-                  );
+                  ));
                 },
               );
             },

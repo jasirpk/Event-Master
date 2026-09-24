@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:event_master/common/assigns.dart';
 import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/services/favorites.dart';
 import 'package:event_master/presentation/components/shimmer/shimmer_all_subcategories.dart';
@@ -9,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:event_master/presentation/components/media/media_image.dart';
 
 class FavoritePage extends StatelessWidget {
   @override
@@ -75,16 +75,14 @@ class FavoritePage extends StatelessWidget {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
-                          child: subimagePath.startsWith('http')
-                              ? FadeInImage.assetNetwork(
-                                  placeholder: Assigns.placeHolderImage,
-                                  image: subimagePath,
-                                  fit: BoxFit.cover,
-                                )
-                              : Image.asset(
-                                  subimagePath,
-                                  fit: BoxFit.cover,
-                                ),
+                          child: MediaImage(
+                            imagePath: subimagePath,
+                            placeholder: kMediaPlaceholderImage,
+                            builder: (context, image) => Image(
+                              image: image ?? kMediaPlaceholderImage,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
                       ),
                       SizedBox(width: 8.0),
