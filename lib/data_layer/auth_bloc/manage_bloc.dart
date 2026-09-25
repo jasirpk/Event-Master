@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:bloc/bloc.dart';
+import 'package:bloc/bloc.dart' hide Transition;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_master/bussiness_layer.dart/entities/user_data.dart';
 import 'package:event_master/presentation/pages/onboarding/welcome_intro_evernt_track.dart';
@@ -61,27 +61,6 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
               .doc(user.uid)
               .set({'uid': user.uid, 'email': user.email, 'platform': 'mobile', 'createdAt': DateTime.now()},SetOptions(merge: true));
 
-          // The consumer-facing slice of the profile. Entrepreneurs read this
-          // instead of `users`, which stays owner-and-admin only. The profile
-          // fields are empty until the user fills them in, and `isValid` stays
-          // false so an incomplete profile is not yet discoverable — exactly
-          // the behaviour `users` had before, where these keys simply did not
-          // exist until the first profile edit.
-          await FirebaseFirestore.instance
-              .collection('publicProfiles')
-              .doc(user.uid)
-              .set({
-            'uid': user.uid,
-            'email': user.email,
-            'userName': '',
-            'imagePath': '',
-            'phoneNumber': '',
-            'timestamp': FieldValue.serverTimestamp(),
-            'isValid': false,
-          }, SetOptions(merge: true));
-          await FirebaseAuth.instance.currentUser!.getIdToken(true);
-          await FirebaseAuth.instance.currentUser!.updateDisplayName('mobile');
-
           await saveAuthState(user.uid, user.email!);
           log('Account is authenticated');
           log('Current FirebaseAuth user UID: ${user.uid}');
@@ -133,7 +112,10 @@ class ManageBloc extends Bloc<ManageEvent, ManageState> {
             title: 'Welcome to Event Master',
             subTitle: '''Your all-in-one solution for seamless event planning. Let's create unforgettable moments together''',
             onpressed: () {
-              WelcomeIntroEverntTrack();
+              Get.to(
+                    () => WelcomeIntroEverntTrack(),
+                transition: Transition.rightToLeft,
+              );
             },
             buttonText: 'Get Started',
             backButtonPressed: () {

@@ -28,8 +28,7 @@ class ClientProfile {
 
         // Prepare the storage reference
         String fileName = imagePath.split('/').last;
-        Reference storageRef =
-            FirebaseStorage.instance.ref().child('client_profile/$fileName');
+        Reference storageRef = FirebaseStorage.instance.ref().child('client_profile/$fileName');
 
         // Upload the image data
         UploadTask uploadTask = storageRef.putData(imageData);
@@ -40,8 +39,7 @@ class ClientProfile {
       }
 
       // Update Firestore document
-      DocumentReference documentReference =
-          FirebaseFirestore.instance.collection('users').doc(uid);
+      DocumentReference documentReference = FirebaseFirestore.instance.collection('users').doc(uid);
       await documentReference.update({
         'userName': userName,
         'imagePath': downloadUrl,
@@ -49,22 +47,6 @@ class ClientProfile {
         'timestamp': FieldValue.serverTimestamp(),
         'isValid': isValid,
       });
-
-      // Mirror the same fields to the consumer-facing profile the entrepreneur
-      // app reads. `email` is deliberately omitted: signup already wrote it
-      // from Firebase Auth, and merging here would create a second source of
-      // truth for it.
-      await FirebaseFirestore.instance
-          .collection('publicProfiles')
-          .doc(uid)
-          .set({
-        'uid': uid,
-        'userName': userName,
-        'imagePath': downloadUrl,
-        'phoneNumber': phoneNumber,
-        'timestamp': FieldValue.serverTimestamp(),
-        'isValid': isValid,
-      }, SetOptions(merge: true));
 
       print('User details added successfully to sub-collection.');
     } catch (e) {
@@ -75,8 +57,7 @@ class ClientProfile {
 
   Future<DocumentSnapshot> getUserProfile(String uid) async {
     try {
-      DocumentReference documentRef =
-          FirebaseFirestore.instance.collection('users').doc(uid);
+      DocumentReference documentRef = FirebaseFirestore.instance.collection('users').doc(uid);
       DocumentSnapshot documentSnapshot = await documentRef.get();
       if (!documentSnapshot.exists) {
         throw Exception('User profile does not exist for uid: $uid');
