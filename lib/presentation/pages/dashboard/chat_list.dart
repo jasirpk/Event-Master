@@ -4,6 +4,7 @@ import 'package:event_master/presentation/components/shimmer/shimmer_subcategory
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:event_master/presentation/components/media/media_image.dart';
 import 'package:get/get.dart';
 import 'chat_screen.dart';
 
@@ -90,13 +91,17 @@ class MessageListScreen extends StatelessWidget {
                             color: Colors.white12,
                             borderRadius: BorderRadius.circular(20)),
                         child: ListTile(
-                          leading: CircleAvatar(
-                            maxRadius: 30,
-                            backgroundImage: userDetails['profileImage'] != null
-                                ? NetworkImage(userDetails['profileImage'])
-                                : AssetImage(
-                                        'assets/images/Circle-icons-profile.svg.png')
-                                    as ImageProvider,
+                          // The entrepreneur's avatar is an R2 object key;
+                          // NetworkImage was handed the raw key.
+                          leading: MediaImage(
+                            imagePath:
+                                userDetails['profileImage'] as String?,
+                            placeholder: const AssetImage(
+                                'assets/images/Circle-icons-profile.svg.png'),
+                            builder: (context, image) => CircleAvatar(
+                              maxRadius: 30,
+                              backgroundImage: image,
+                            ),
                           ),
                           title: Text(
                             data['companyName'],

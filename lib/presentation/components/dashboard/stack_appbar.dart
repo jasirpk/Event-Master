@@ -7,6 +7,7 @@ import 'package:event_master/presentation/pages/dashboard/chat_list.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:event_master/presentation/components/media/media_image.dart';
 import 'package:get/get.dart';
 
 class StackAppBar extends StatelessWidget {
@@ -67,11 +68,15 @@ class StackAppBar extends StatelessWidget {
                       width: 2.0,
                     ),
                   ),
-                  child: CircleAvatar(
-                      maxRadius: 30,
-                      backgroundImage: imagePath.isNotEmpty
-                          ? NetworkImage(imagePath)
-                          : AssetImage(Assigns.personImage) as ImageProvider),
+                  // The user's own avatar is an R2 object key since the
+                  // migration; NetworkImage was handed the raw key.
+                  child: MediaImage(
+                      imagePath: imagePath,
+                      placeholder: AssetImage(Assigns.personImage),
+                      builder: (context, image) => CircleAvatar(
+                            maxRadius: 30,
+                            backgroundImage: image,
+                          )),
                 ),
                 title: Container(
                   child: Text(

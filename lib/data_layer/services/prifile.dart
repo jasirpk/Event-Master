@@ -1,64 +1,48 @@
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/services.dart';
+import 'package:event_master/data_layer/services/client_profile_api_service.dart';
 
 class ClientProfile {
-  Future<void> updateProfile({
+  /// Saves the signed-in user's own profile through the API.
+  ///
+  /// Previously this uploaded to Firebase Storage and wrote `users/{uid}`
+  /// directly, which meant the client chose its own `uid`, stamped its own
+  /// `timestamp`, and hard-coded `isValid: true`. All three are the server's
+  /// now, and the avatar goes to Cloudflare R2 through a presigned PUT —
+  /// Firebase Storage's quota is no longer in the path.
+  ///
+  /// Only a freshly picked file is uploaded. [newImage] null means the
+  /// stored avatar is left exactly as it is: an R2 key or a legacy URL,
+  /// either way untouched, because `imagePath` is then omitted from the
+  /// request entirely.
+  ///
+  /// If the upload succeeds and the save then fails, the uploaded object is
+  /// deliberately left in place. The only delete available would clear the
+  /// whole `client_profile_images/{uid}/` prefix, which still holds the
+  /// user's current avatar — an orphan is far cheaper than that.
+  Future<String> saveProfile({
     required String userName,
-    required String uid,
-    required String imagePath,
     required String phoneNumber,
-    required bool isValid,
+    File? newImage,
   }) async {
-    try {
-      String downloadUrl;
+    final api = ClientProfileApiService.instance;
 
-      // Check if the imagePath is a URL or a local file path
-      if (Uri.parse(imagePath).isAbsolute) {
-        // If it's already a URL, use it directly
-        downloadUrl = imagePath;
-      } else {
-        // Read the file data from the provided path
-        File imageFile = File(imagePath);
-        if (!imageFile.existsSync()) {
-          throw Exception('File does not exist: $imagePath');
-        }
-        Uint8List imageData = await imageFile.readAsBytes();
+    final String? imagePath =
+        newImage != null ? await api.uploadAvatar(newImage) : null;
 
-        // Prepare the storage reference
-        String fileName = imagePath.split('/').last;
-        Reference storageRef = FirebaseStorage.instance.ref().child('client_profile/$fileName');
-
-        // Upload the image data
-        UploadTask uploadTask = storageRef.putData(imageData);
-        TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => {});
-
-        // Get the download URL
-        downloadUrl = await taskSnapshot.ref.getDownloadURL();
-      }
-
-      // Update Firestore document
-      DocumentReference documentReference = FirebaseFirestore.instance.collection('users').doc(uid);
-      await documentReference.update({
-        'userName': userName,
-        'imagePath': downloadUrl,
-        'phoneNumber': phoneNumber,
-        'timestamp': FieldValue.serverTimestamp(),
-        'isValid': isValid,
-      });
-
-      print('User details added successfully to sub-collection.');
-    } catch (e) {
-      print('Error adding user Profile: $e');
-      throw Exception('Failed to add user Profile: $e');
-    }
+    return api.updateProfile(
+      userName: userName,
+      phoneNumber: phoneNumber,
+      imagePath: imagePath,
+    );
   }
 
   Future<DocumentSnapshot> getUserProfile(String uid) async {
     try {
-      DocumentReference documentRef = FirebaseFirestore.instance.collection('users').doc(uid);
-      DocumentSnapshot documentSnapshot = await documentRef.get();
+      final documentRef =
+          FirebaseFirestore.instance.collection('users').doc(uid);
+      final documentSnapshot = await documentRef.get();
       if (!documentSnapshot.exists) {
         throw Exception('User profile does not exist for uid: $uid');
       }

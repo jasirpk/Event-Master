@@ -5,6 +5,7 @@ import 'package:event_master/presentation/components/entrepreneur_profile/detail
 import 'package:event_master/presentation/components/entrepreneur_profile/detail/rich_text.dart';
 import 'package:event_master/presentation/components/ui/pushable_button.dart';
 import 'package:flutter/material.dart';
+import 'package:event_master/presentation/components/media/media_image.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class DetailFieldsWidget extends StatefulWidget {
@@ -168,12 +169,16 @@ class _DetailFieldsWidgetState extends State<DetailFieldsWidget> {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  maxRadius: 60,
-                  backgroundColor: myColor,
-                  backgroundImage: widget.imagePath.startsWith('http')
-                      ? NetworkImage(widget.imagePath)
-                      : AssetImage(widget.imagePath) as ImageProvider,
+                // An R2 object key needs signing; AssetImage asked for a
+                // bundled "profile_images/..." asset and threw.
+                MediaImage(
+                  imagePath: widget.imagePath,
+                  placeholder: kMediaPlaceholderImage,
+                  builder: (context, image) => CircleAvatar(
+                    maxRadius: 60,
+                    backgroundColor: myColor,
+                    backgroundImage: image,
+                  ),
                 ),
                 sizedBoxWidth,
                 Flexible(

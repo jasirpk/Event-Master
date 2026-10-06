@@ -6,8 +6,8 @@ import 'package:event_master/data_layer/services/prifile.dart';
 import 'package:event_master/presentation/components/event/add_event/custom_textfeild.dart';
 import 'package:event_master/presentation/components/ui/back_arrow_button.dart';
 import 'package:event_master/presentation/components/ui/pushable_button.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:event_master/presentation/components/media/media_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:io';
 
@@ -98,18 +98,23 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                           keyboardType: TextInputType.phone,
                         ),
                         sizedbox,
-                        Container(
+                        // The stored avatar is an R2 object key since the
+                        // migration, so NetworkImage was handed the raw key.
+                        // A freshly picked file needs no resolving and takes
+                        // priority, so the preview matches what Save stores.
+                        MediaImage(
+                          imagePath: image == null ? widget.imagePath : null,
+                          placeholder: image == null
+                              ? null
+                              : FileImage(image!) as ImageProvider,
+                          builder: (context, resolved) => Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(width: 2, color: Colors.white38),
-                            image: image != null
-                                ? DecorationImage(
-                                    image: FileImage(image!), fit: BoxFit.cover)
-                                : widget.imagePath != null
-                                    ? DecorationImage(
-                                        image: NetworkImage(widget.imagePath!),
-                                        fit: BoxFit.cover)
-                                    : null,
+                            image: resolved == null
+                                ? null
+                                : DecorationImage(
+                                    image: resolved, fit: BoxFit.cover),
                           ),
                           child: Center(
                             child: IconButton(
@@ -123,6 +128,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                           ),
                           width: screenWidth * 0.4,
                           height: screenHeight * 0.16,
+                          ),
                         ),
                         sizedbox,
                         PushableButton_Widget(
@@ -131,17 +137,16 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                             if (userNameContrller.text.isNotEmpty &&
                                 phoneNumberContrller.text.length == 10 &&
                                 (image != null || widget.imagePath != null)) {
-                              var uid = FirebaseAuth.instance.currentUser!.uid;
                               try {
-                                String imagePath = image != null
-                                    ? image!.path
-                                    : widget.imagePath!;
-                                await ClientProfile().updateProfile(
-                                  isValid: true,
-                                  userName: userNameContrller.text,
-                                  uid: uid,
-                                  imagePath: imagePath,
-                                  phoneNumber: phoneNumberContrller.text,
+                                // Only a newly picked file is sent. An
+                                // unchanged avatar is omitted entirely, so
+                                // nothing uploads and the stored key — or a
+                                // legacy URL — is left exactly as it is.
+                                await ClientProfile().saveProfile(
+                                  userName: userNameContrller.text.trim(),
+                                  phoneNumber:
+                                      phoneNumberContrller.text.trim(),
+                                  newImage: image,
                                 );
 
                                 showCustomSnackBar(

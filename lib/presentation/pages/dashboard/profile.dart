@@ -11,6 +11,7 @@ import 'package:event_master/presentation/pages/dashboard/terms_of_service.dart'
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:event_master/presentation/components/media/media_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
@@ -138,14 +139,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: CircleAvatar(
                                 maxRadius: 60,
                                 child: ClipOval(
-                                  child: FadeInImage(
+                                  // imagePath is an R2 object key since the
+                                  // migration; NetworkImage got the raw key.
+                                  child: MediaImage(
+                                    imagePath: profileImage,
                                     placeholder:
                                         AssetImage(Assigns.personImage),
-                                    image: profileImage.isNotEmpty
-                                        ? NetworkImage(profileImage)
-                                        : AssetImage(Assigns.personImage)
-                                            as ImageProvider,
-                                    fit: BoxFit.cover,
+                                    builder: (context, image) => FadeInImage(
+                                      placeholder:
+                                          AssetImage(Assigns.personImage),
+                                      image: image ??
+                                          AssetImage(Assigns.personImage),
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
                               ),
