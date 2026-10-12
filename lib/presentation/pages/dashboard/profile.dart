@@ -91,8 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (state is UnAuthenticated) {
           Get.off(() => GoogleAuthScreen());
         } else if (state is AuthenticatedErrors) {
-          Get.snackbar('Logout Error', state.message,
-              snackPosition: SnackPosition.BOTTOM);
+          Get.snackbar('Logout Error', state.message, snackPosition: SnackPosition.BOTTOM);
         }
       },
       child: Scaffold(
@@ -113,9 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               return Center(child: CircularProgressIndicator());
             }
 
-            if (!snapshot.hasData ||
-                !snapshot.data!.exists ||
-                snapshot.hasError) {
+            if (!snapshot.hasData || !snapshot.data!.exists || snapshot.hasError) {
               return Text('No data');
             }
             var userData = snapshot.data!.data() as Map<String, dynamic>;
@@ -131,28 +128,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         Stack(
                           children: [
+
                             Container(
+                              width: 120,
+                              height: 120,
                               decoration: BoxDecoration(
-                                border: Border.all(color: Colors.white),
-                                borderRadius: BorderRadius.circular(100),
+                                shape: BoxShape.circle,
+                                color: Colors.tealAccent,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 1.5,
+                                ),
                               ),
-                              child: CircleAvatar(
-                                maxRadius: 60,
-                                child: ClipOval(
-                                  // imagePath is an R2 object key since the
-                                  // migration; NetworkImage got the raw key.
-                                  child: MediaImage(
-                                    imagePath: profileImage,
-                                    placeholder:
-                                        AssetImage(Assigns.personImage),
-                                    builder: (context, image) => FadeInImage(
-                                      placeholder:
-                                          AssetImage(Assigns.personImage),
-                                      image: image ??
-                                          AssetImage(Assigns.personImage),
+                              child: ClipOval(
+                                child: MediaImage(
+                                  imagePath: profileImage,
+                                  placeholder: AssetImage(Assigns.personImage),
+                                  builder: (context, image) {
+                                    return Image(
+                                      image: image ?? AssetImage(Assigns.personImage),
+                                      width: 120,
+                                      height: 120,
                                       fit: BoxFit.cover,
-                                    ),
-                                  ),
+                                    );
+                                  },
                                 ),
                               ),
                             ),
@@ -165,11 +164,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 child: IconButton(
                                     onPressed: () {
                                       Get.to(() => ProfileFormScreen(
-                                            userName: userData['userName'] ??
-                                                'No name',
-                                            phoneNumber:
-                                                userData['phoneNumber'] ??
-                                                    '+91',
+                                            userName: userData['userName'] ?? 'No name',
+                                            phoneNumber: userData['phoneNumber'] ?? '+91',
                                             imagePath: profileImage,
                                           ));
                                     },
@@ -184,9 +180,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         sizedBoxWidth,
                         Text(
                           userData['userName'] ?? 'No name',
-                          style: TextStyle(
-                              fontSize: screenHeight * 0.022,
-                              fontWeight: FontWeight.w500),
+                          style: TextStyle(fontSize: screenHeight * 0.022, fontWeight: FontWeight.w500),
                         )
                       ],
                     ),
@@ -229,9 +223,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             padding: EdgeInsets.only(top: 12),
                             child: Container(
                               margin: EdgeInsets.symmetric(vertical: 4),
-                              decoration: BoxDecoration(
-                                  color: Colors.white38,
-                                  borderRadius: BorderRadius.circular(20)),
+                              decoration: BoxDecoration(color: Colors.white38, borderRadius: BorderRadius.circular(20)),
                               child: ListTile(
                                 leading: Icon(
                                   data['icon'],
@@ -256,8 +248,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     sizedbox,
                     Padding(
                       padding: EdgeInsets.only(top: 60),
-                      child: Text('Version 1.0.0+2',
-                          style: TextStyle(color: Colors.white)),
+                      child: Text('Version 1.0.0+2', style: TextStyle(color: Colors.white)),
                     ),
                   ],
                 ),
