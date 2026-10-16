@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'package:event_master/common/assigns.dart';
 import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/services/entrepreneur_profile/profile.dart';
@@ -35,7 +36,7 @@ class FieldsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<double>(
+    return FutureBuilder<double?>(
       future: UserProfile().fetchRating(documentId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -44,11 +45,24 @@ class FieldsWidget extends StatelessWidget {
             screenWidth: screenWidth,
           );
         }
+
+        // A rating is one line on this card, not the reason it exists.
+        // Returning an error widget here replaced the whole entrepreneur —
+        // name, photo, the tap target into their listings — because one
+        // secondary read failed. The card is now built either way and the
+        // rating line degrades on its own.
         if (snapshot.hasError) {
-          return Text('Error loading rating');
+          developer.log(
+            'Rating unavailable for entrepreneur $documentId: '
+            '${snapshot.error.runtimeType}',
+            name: 'EntrepreneurCard',
+          );
         }
 
-        double rating = snapshot.data ?? 0.0;
+        // null means "no rating to show": either none has been given yet, or
+        // the read failed. Neither is the same as a rating of zero, so the
+        // card says so rather than inventing one.
+        final double? rating = snapshot.hasError ? null : snapshot.data;
 
         return InkWell(
           onTap: () {
@@ -114,6 +128,10 @@ class FieldsWidget extends StatelessWidget {
                           children: [
                             Text(
                               userDetail['companyName'],
+                              // A long company name would otherwise push the
+                              // column past its share of the row.
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: screenHeight * 0.022,
                                 fontWeight: FontWeight.bold,
@@ -135,8 +153,7 @@ class FieldsWidget extends StatelessWidget {
                                   size: 20,
                                 ),
                                 Text(
-                                  rating
-                                      .toStringAsFixed(1), // Display the rating
+                                  rating?.toStringAsFixed(1) ?? '—',
                                   style: TextStyle(
                                     fontSize: screenHeight * 0.018,
                                     fontWeight: FontWeight.bold,
@@ -152,12 +169,21 @@ class FieldsWidget extends StatelessWidget {
                                   color: myColor,
                                   size: 20,
                                 ),
-                                Text(
-                                  vendorDetail['location'],
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  style:
-                                      TextStyle(fontSize: screenHeight * 0.014),
+                                // Expanded is what makes the ellipsis work.
+                                // Inside a Row an unconstrained Text takes its
+                                // full intrinsic width, so maxLines and
+                                // overflow had nothing to clip against and the
+                                // row ran past its bounds — the "RIGHT
+                                // OVERFLOWED BY 6.8 PIXELS" banner. Giving the
+                                // text the leftover width lets it truncate.
+                                Expanded(
+                                  child: Text(
+                                    vendorDetail['location'],
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                        fontSize: screenHeight * 0.014),
+                                  ),
                                 ),
                               ],
                             ),

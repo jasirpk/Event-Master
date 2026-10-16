@@ -1,5 +1,7 @@
 import 'package:event_master/common/style.dart';
 import 'package:flutter/material.dart';
+import 'package:event_master/presentation/components/media/media_image.dart';
+import 'package:event_master/data_layer/models/vendor_document.dart';
 
 class componentsWidget extends StatelessWidget {
   const componentsWidget({
@@ -40,12 +42,17 @@ class componentsWidget extends StatelessWidget {
                       ],
                     ),
                   ),
-                  CircleAvatar(
-                    maxRadius: 14,
-                    backgroundColor: Colors.blue,
-                    backgroundImage: data['imageUrl'].startsWith('http')
-                        ? NetworkImage(data['imageUrl'])
-                        : AssetImage(data['imageUrl']) as ImageProvider,
+                  // Components store their key under 'imagePath' since the
+                  // migration; reading only 'imageUrl' returned null and
+                  // crashed on .startsWith. vendorImageRef accepts either.
+                  MediaImage(
+                    imagePath: vendorImageRef(data),
+                    placeholder: kMediaPlaceholderImage,
+                    builder: (context, image) => CircleAvatar(
+                      maxRadius: 14,
+                      backgroundColor: Colors.blue,
+                      backgroundImage: image,
+                    ),
                   ),
                 ],
               ),

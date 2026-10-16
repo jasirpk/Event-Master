@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:event_master/presentation/components/media/media_image.dart';
 
 class VendorImageWidget extends StatelessWidget {
   const VendorImageWidget({
@@ -20,11 +21,16 @@ class VendorImageWidget extends StatelessWidget {
           width: 2,
         ),
       ),
-      child: CircleAvatar(
-        backgroundImage: vendorImage.startsWith('http')
-            ? NetworkImage(vendorImage)
-            : AssetImage(vendorImage) as ImageProvider,
-        maxRadius: 60,
+      // imagePathUrl is an R2 object key since the vendor migration, so it
+      // needs signing. AssetImage asked Flutter for a bundled asset named
+      // "vendor_images/..." and threw.
+      child: MediaImage(
+        imagePath: vendorImage,
+        placeholder: kMediaPlaceholderImage,
+        builder: (context, image) => CircleAvatar(
+          backgroundImage: image,
+          maxRadius: 60,
+        ),
       ),
     );
   }

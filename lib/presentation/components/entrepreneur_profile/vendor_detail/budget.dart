@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:event_master/presentation/components/media/media_image.dart';
 
 class BudgetWidget extends StatelessWidget {
   const BudgetWidget({
@@ -16,19 +17,24 @@ class BudgetWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    // The budget card uses the vendor's main picture as its backdrop, so it
+    // receives the same R2 object key the header does.
+    return MediaImage(
+      imagePath: vendorImage,
+      placeholder: kMediaPlaceholderImage,
+      builder: (context, image) => Container(
       height: screenHeight * 0.2,
       width: screenWidth * 0.4,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(width: 2, color: Colors.white),
-        image: DecorationImage(
-            image: vendorImage.startsWith('http')
-                ? NetworkImage(vendorImage)
-                : AssetImage(vendorImage) as ImageProvider,
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(0.6), BlendMode.color)),
+        image: image == null
+            ? null
+            : DecorationImage(
+                image: image,
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                    Colors.black.withOpacity(0.6), BlendMode.color)),
       ),
       child: Align(
         alignment: Alignment.center,
@@ -51,6 +57,7 @@ class BudgetWidget extends StatelessWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }

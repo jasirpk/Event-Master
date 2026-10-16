@@ -11,6 +11,7 @@ import 'package:event_master/presentation/pages/dashboard/all_templates.dart';
 import 'package:event_master/presentation/pages/dashboard/create_event.dart';
 import 'package:event_master/presentation/pages/dashboard/vendor_detail.dart';
 import 'package:flutter/material.dart';
+import 'package:event_master/data_layer/models/vendor_document.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
@@ -92,7 +93,10 @@ class _VendorListScreenState extends State<VendorListScreen> {
                     itemBuilder: (context, index) {
                       var data =
                           documents[index].data() as Map<String, dynamic>;
-                      String imagePath = data['imagePathUrl'];
+                      // Unguarded, this threw for any listing missing the
+                      // field and took down the whole list, not one row.
+                      final String imagePath =
+                          (data['imagePathUrl'] as String?) ?? '';
                       String documentId = documents[index].id;
 
                       return FutureBuilder<DocumentSnapshot?>(
@@ -130,9 +134,11 @@ class _VendorListScreenState extends State<VendorListScreen> {
                                         location: vendorDetail['location'],
                                         description:
                                             vendorDetail['description'],
-                                        images: List<Map<String, dynamic>>.from(
+                                        images: vendorImages(
                                             vendorDetail['images']),
-                                        budget: Map<String, double>.from(
+                                        // A budget written by the Media API
+                                        // arrives as Firestore integers.
+                                        budget: vendorBudget(
                                             vendorDetail['budget']),
                                       ));
                                 },

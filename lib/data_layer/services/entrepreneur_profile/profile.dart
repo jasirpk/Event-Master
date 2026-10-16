@@ -76,14 +76,37 @@ class UserProfile {
     }
   }
 
-  Future<double> fetchRating(String documentId) async {
-    DocumentSnapshot doc = await FirebaseFirestore.instance
+  /// The stored rating aggregate, or null when this entrepreneur has none.
+  ///
+  /// Null is a real answer, not a failure: `rating` is written only by the
+  /// ratings service when someone first rates, so a newly approved profile
+  /// genuinely has no field. Returning 0.0 for that would claim a rating of
+  /// zero, which is a different statement.
+  ///
+  /// Two things used to make this throw, and both took the whole
+  /// entrepreneur card down with it:
+  ///
+  ///  * `doc['rating']` is `DocumentSnapshot.get()`, which throws a
+  ///    StateError when the field is absent — so the `!= null` guard that
+  ///    followed never ran. Every never-rated entrepreneur hit this.
+  ///  * the aggregate is written by firebase-admin, which stores a whole
+  ///    number as a Firestore integer, so returning it directly from a
+  ///    `Future<double>` threw "type 'int' is not a subtype of type
+  ///    'double'" once a profile did have a rating.
+  ///
+  /// Reading through `data()` avoids the first and `num.toDouble()` the
+  /// second.
+  Future<double?> fetchRating(String documentId) async {
+    final doc = await FirebaseFirestore.instance
         .collection('entrepreneurs')
         .doc(documentId)
         .get();
-    if (doc.exists && doc.data() != null && doc['rating'] != null) {
-      return doc['rating'];
-    }
-    return 0.0;
+
+    if (!doc.exists) return null;
+
+    final data = doc.data();
+    final raw = data == null ? null : data['rating'];
+
+    return raw is num ? raw.toDouble() : null;
   }
 }

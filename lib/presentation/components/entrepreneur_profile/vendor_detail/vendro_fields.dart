@@ -3,6 +3,8 @@ import 'package:event_master/common/style.dart';
 import 'package:event_master/presentation/components/entrepreneur_profile/vendor_detail/selected_vendor.dart';
 import 'package:event_master/presentation/pages/dashboard/vendor_detail.dart';
 import 'package:flutter/material.dart';
+import 'package:event_master/data_layer/models/vendor_document.dart';
+import 'package:event_master/presentation/components/media/media_image.dart';
 import 'package:get/get.dart';
 
 class VendorFieldsWidget extends StatelessWidget {
@@ -41,18 +43,21 @@ class VendorFieldsWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  // imagePathUrl is an R2 object key since the migration;
+                  // Image.asset was asked for a bundled "vendor_images/..."
+                  // asset and threw.
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: imagePath.startsWith('http')
-                        ? FadeInImage.assetNetwork(
-                            placeholder: Assigns.placeHolderImage,
-                            image: imagePath,
-                            fit: BoxFit.cover,
-                          )
-                        : Image.asset(
-                            imagePath,
-                            fit: BoxFit.cover,
-                          ),
+                    child: MediaImage(
+                      imagePath: imagePath,
+                      placeholder: AssetImage(Assigns.placeHolderImage),
+                      builder: (context, image) => Image(
+                        image: image ??
+                            AssetImage(Assigns.placeHolderImage)
+                                as ImageProvider,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(width: 8.0),
@@ -111,10 +116,11 @@ class VendorFieldsWidget extends StatelessWidget {
                                 vendorImage: imagePath,
                                 location: vendorDetail['location'],
                                 description: vendorDetail['description'],
-                                images: List<Map<String, dynamic>>.from(
-                                    vendorDetail['images']),
-                                budget: Map<String, double>.from(
-                                    vendorDetail['budget']),
+                                images: vendorImages(vendorDetail['images']),
+                                // Not Map<String,double>.from: a budget from
+                                // the Media API arrives as Firestore integers
+                                // and that cast throws.
+                                budget: vendorBudget(vendorDetail['budget']),
                               ));
                         }
                       },
