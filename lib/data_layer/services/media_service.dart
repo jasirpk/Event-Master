@@ -6,6 +6,12 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
+/// The R2 folder holding consumer event pictures.
+///
+/// Named here because it is what decides which endpoint may sign a read for
+/// a key — see [MediaService.getDownloadUrl].
+const String kEventImageFolder = 'event_images';
+
 /// Thrown when a Media API request fails or returns an unexpected response.
 ///
 /// Never carries the Authorization header or a signed URL — only a message,
@@ -43,7 +49,22 @@ class MediaService {
 
   final http.Client _client;
 
-  MediaService({http.Client? client}) : _client = client ?? http.Client();
+  /// [tokenProvider] follows the convention [RatingApi] already uses: the
+  /// default reads Firebase, and a test supplies its own so these calls can
+  /// run with no Firebase app.
+  MediaService({
+    http.Client? client,
+    Future<String?> Function()? tokenProvider,
+  })  : _client = client ?? http.Client(),
+        _tokenProvider = tokenProvider ?? _firebaseIdToken;
+
+  final Future<String?> Function() _tokenProvider;
+
+  static Future<String?> _firebaseIdToken() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return null;
+    return user.getIdToken();
+  }
 
   static final String _configuredBaseUrl = dotenv.env['API_BASE_URL'] ?? "";
 
@@ -67,7 +88,7 @@ class MediaService {
     final token = await _currentIdToken();
 
     final response = await _client.get(
-      Uri.parse('$baseUrl/api/media/public-download-url').replace(
+      Uri.parse('$baseUrl${_downloadPathFor(objectKey)}').replace(
         queryParameters: {'objectKey': objectKey},
       ),
       headers: {'Authorization': 'Bearer $token'},
@@ -81,7 +102,8 @@ class MediaService {
       );
     }
 
-    final Map<String, dynamic> body = jsonDecode(response.body) as Map<String, dynamic>;
+    final Map<String, dynamic> body =
+        jsonDecode(response.body) as Map<String, dynamic>;
     final String? downloadUrl = body['downloadUrl'] as String?;
 
     if (downloadUrl == null) {
@@ -94,14 +116,25 @@ class MediaService {
     return downloadUrl;
   }
 
+  /// The endpoint that may sign a read for [objectKey].
+  ///
+  /// Catalogue, profile and vendor artwork go through `/public-download-url`,
+  /// which any signed-in caller may use because those images are already on
+  /// show throughout the apps. An event picture belongs to one person's
+  /// booking, so the API keeps it out of that list and serves it from an
+  /// owner-scoped endpoint instead, which answers 404 for somebody else's
+  /// key. Sending an event key to the public endpoint would simply be
+  /// refused.
+  static String _downloadPathFor(String objectKey) {
+    return objectKey.startsWith('$kEventImageFolder/')
+        ? '/api/events/download-url'
+        : '/api/media/public-download-url';
+  }
+
   Future<String> _currentIdToken() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      throw MediaApiException('No signed-in Firebase user');
-    }
-    final token = await user.getIdToken();
+    final token = await _tokenProvider();
     if (token == null) {
-      throw MediaApiException('Firebase did not return an ID token');
+      throw MediaApiException('No signed-in Firebase user');
     }
     return token;
   }

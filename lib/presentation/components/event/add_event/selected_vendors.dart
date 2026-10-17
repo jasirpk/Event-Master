@@ -1,4 +1,6 @@
 import 'package:event_master/common/style.dart';
+import 'package:event_master/data_layer/models/vendor_document.dart';
+import 'package:event_master/presentation/components/media/media_image.dart';
 import 'package:event_master/presentation/pages/dashboard/create_event.dart';
 import 'package:flutter/material.dart';
 
@@ -39,14 +41,21 @@ class SelectedVendorsWidget extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        CircleAvatar(
-                          maxRadius: 20,
-                          backgroundColor: myColor,
-                          backgroundImage:
-                              vendor['imagePathUrl'].startsWith('http')
-                                  ? NetworkImage(vendor['imagePathUrl'])
-                                  : AssetImage(vendor['imagePathUrl'])
-                                      as ImageProvider,
+                        // imagePathUrl is an R2 object key since the
+                        // migration, so it has to be signed before it can be
+                        // displayed. startsWith('http') sent every key down
+                        // the AssetImage branch, which asked Flutter for a
+                        // bundled asset named "vendor_images/..." and threw
+                        // "Unable to load asset". MediaImage tells a key from
+                        // a legacy URL and handles both.
+                        MediaImage(
+                          imagePath: vendorText(vendor['imagePathUrl']),
+                          placeholder: kMediaPlaceholderImage,
+                          builder: (context, image) => CircleAvatar(
+                            maxRadius: 20,
+                            backgroundColor: myColor,
+                            backgroundImage: image,
+                          ),
                         ),
                         SizedBox(width: 8),
                         Container(

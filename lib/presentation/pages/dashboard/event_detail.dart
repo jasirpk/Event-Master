@@ -1,5 +1,7 @@
 import 'package:event_master/common/assigns.dart';
 import 'package:event_master/common/style.dart';
+import 'package:event_master/data_layer/models/vendor_document.dart';
+import 'package:event_master/presentation/components/media/media_image.dart';
 import 'package:event_master/presentation/components/event/add_event/custom_headline.dart';
 import 'package:event_master/presentation/components/event/detail/date_and_time.dart';
 import 'package:event_master/presentation/components/event/detail/guest_and_theme.dart';
@@ -134,17 +136,21 @@ class EventDetailScreen extends StatelessWidget {
                 child: Icon(Icons.collections_bookmark),
               ),
               SizedBox(height: 10),
-              Card(
-                color: Colors.white12,
-                child: Container(
-                  height: screenHeight * 0.2,
-                  width: screenWidth * double.infinity,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: imagePath.startsWith('http')
-                          ? NetworkImage(imagePath)
-                          : AssetImage(imagePath) as ImageProvider,
-                      fit: BoxFit.cover,
+              // The event picture is an R2 key since the migration, so it
+              // needs signing before it can be shown. AssetImage looked for a
+              // bundled asset named "event_images/..." and threw.
+              MediaImage(
+                imagePath: imagePath,
+                placeholder: AssetImage(Assigns.placeHolderImage),
+                builder: (context, image) => Card(
+                  color: Colors.white12,
+                  child: Container(
+                    height: screenHeight * 0.2,
+                    width: screenWidth * double.infinity,
+                    decoration: BoxDecoration(
+                      image: image == null
+                          ? null
+                          : DecorationImage(image: image, fit: BoxFit.cover),
                     ),
                   ),
                 ),
@@ -195,14 +201,17 @@ class EventDetailScreen extends StatelessWidget {
                             children: [
                               Row(
                                 children: [
-                                  CircleAvatar(
-                                    maxRadius: 20,
-                                    backgroundColor: myColor,
-                                    backgroundImage: vendor['imagePathUrl']
-                                            .startsWith('http')
-                                        ? NetworkImage(vendor['imagePathUrl'])
-                                        : AssetImage(vendor['imagePathUrl'])
-                                            as ImageProvider,
+                                  // A vendor thumbnail is an R2 key too.
+                                  MediaImage(
+                                    imagePath:
+                                        vendorText(vendor['imagePathUrl']),
+                                    placeholder:
+                                        AssetImage(Assigns.placeHolderImage),
+                                    builder: (context, image) => CircleAvatar(
+                                      maxRadius: 20,
+                                      backgroundColor: myColor,
+                                      backgroundImage: image,
+                                    ),
                                   ),
                                   SizedBox(width: 8),
                                   Container(

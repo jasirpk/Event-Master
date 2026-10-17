@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_master/bussiness_layer.dart/repos/snack_bar.dart';
 import 'dart:io';
-import 'package:firebase_storage/firebase_storage.dart';
+
+import 'package:event_master/data_layer/services/event_image_api_service.dart';
+import 'package:event_master/data_layer/services/media_service.dart';
 
 class EventBookingMethods {
   Future<void> addEvent({
@@ -23,10 +25,11 @@ class EventBookingMethods {
     required String sum,
   }) async {
     try {
-      String finalImagePath = imagePath;
-      if (!imagePath.startsWith('http')) {
-        finalImagePath = await uploadImage(File(imagePath));
-      }
+      // An already-stored value is either a legacy Storage URL or an R2 key
+      // from a previous save; neither needs re-uploading. Only a local file
+      // path picked on this device does.
+      final String finalImagePath = await _storedImageRef(imagePath);
+
       // Generate a unique event ID
       String eventId = FirebaseFirestore.instance
           .collection('users')
@@ -69,28 +72,19 @@ class EventBookingMethods {
     }
   }
 
+  /// Stores an event picture and returns its R2 object key.
+  ///
+  /// Was Firebase Storage, which returned a download URL. It now returns a
+  /// key — `event_images/{uid}/{timestamp}-{name}` — because the bucket is
+  /// private and a signed URL lapses in minutes, so persisting one would
+  /// leave a booking pointing at a dead link. [MediaImage] exchanges the key
+  /// for a fresh URL whenever the picture is actually shown.
+  ///
+  /// Errors propagate. Both callers upload before writing the booking, so a
+  /// failed upload means no booking is written at all — which is the point:
+  /// a booking that silently lost its picture is worse than one not saved.
   Future<String> uploadImage(File imageFile) async {
-    try {
-      // Create a reference to the Firebase Storage location
-      Reference ref = FirebaseStorage.instance
-          .ref()
-          .child('event_images')
-          .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
-
-      // Upload the file to Firebase Storage
-      UploadTask uploadTask = ref.putFile(imageFile);
-
-      // Wait for the upload to complete
-      TaskSnapshot taskSnapshot = await uploadTask;
-
-      // Get the download URL of the uploaded file
-      String downloadURL = await taskSnapshot.ref.getDownloadURL();
-
-      return downloadURL;
-    } catch (e) {
-      print('Error uploading image: $e');
-      rethrow;
-    }
+    return EventImageApiService.instance.uploadEventImage(imageFile);
   }
 
   Stream<QuerySnapshot> getGeneratedEventsDetails(String uid) {
@@ -153,10 +147,7 @@ class EventBookingMethods {
     required String sum,
   }) async {
     try {
-      String finalImagePath = imagePath;
-      if (!imagePath.startsWith('http')) {
-        finalImagePath = await uploadImage(File(imagePath));
-      }
+      final String finalImagePath = await _storedImageRef(imagePath);
 
       Map<String, dynamic> updatedEventCredential = {
         'clientName': clientName,
@@ -186,6 +177,21 @@ class EventBookingMethods {
       print('Error updating event: $e');
       rethrow;
     }
+  }
+
+  /// What to persist for [imagePath].
+  ///
+  /// Three cases reach here and only one is an upload:
+  ///
+  ///  * `https://…`        — a legacy Firebase Storage URL, kept verbatim so
+  ///                         bookings saved before the migration still render.
+  ///  * `event_images/…`   — an R2 key this app already uploaded.
+  ///  * anything else      — a local file path from the picker.
+  Future<String> _storedImageRef(String imagePath) async {
+    if (imagePath.startsWith('http')) return imagePath;
+    if (imagePath.startsWith('$kEventImageFolder/')) return imagePath;
+
+    return uploadImage(File(imagePath));
   }
 
   Future<void> updateIsValidField(String uid, String documentId,

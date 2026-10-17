@@ -10,6 +10,7 @@ import 'package:event_master/presentation/pages/dashboard/edit_events.dart';
 import 'package:event_master/presentation/pages/dashboard/entrepreneurs.dart';
 import 'package:event_master/presentation/pages/dashboard/event_detail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:event_master/presentation/components/media/media_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -72,7 +73,9 @@ class EventPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 var document = documents[index];
                 var data = document.data() as Map<String, dynamic>;
-                String imagePath = data['imageURL'];
+                // Unguarded, a booking saved without a picture threw here
+                // and took down the whole list rather than one row.
+                final String imagePath = (data['imageURL'] as String?) ?? '';
                 String documentId = document.id;
 
                 return FutureBuilder<DocumentSnapshot?>(
@@ -143,16 +146,20 @@ class EventPage extends StatelessWidget {
                               ),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
-                                child: imagePath.startsWith('http')
-                                    ? FadeInImage.assetNetwork(
-                                        placeholder: Assigns.placeHolderImage,
-                                        image: imagePath,
-                                        fit: BoxFit.cover,
-                                      )
-                                    : Image.asset(
-                                        imagePath,
-                                        fit: BoxFit.cover,
-                                      ),
+                                // An event picture is an R2 key since the
+                                // migration. Image.asset would look for a
+                                // bundled asset called "event_images/..." and
+                                // throw; MediaImage signs the key and passes a
+                                // legacy Storage URL straight through.
+                                child: MediaImage(
+                                  imagePath: imagePath,
+                                  placeholder:
+                                      AssetImage(Assigns.placeHolderImage),
+                                  builder: (context, image) => image == null
+                                      ? Image.asset(Assigns.placeHolderImage,
+                                          fit: BoxFit.cover)
+                                      : Image(image: image, fit: BoxFit.cover),
+                                ),
                               ),
                             ),
                             SizedBox(width: 8.0),
