@@ -99,28 +99,42 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       FetchLocation event, Emitter<DashboardState> emit) async {
     emit(LocationFetchLoading());
     try {
-      bool serviceEnabled;
-      LocationPermission permission;
-
-      serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        serviceEnabled = await Geolocator.openLocationSettings();
-        if (!serviceEnabled) {
-          print('Location services are disabled.');
-          return;
-        }
+      // Services off: report it and stop. Opening the Settings app from here
+      // threw the user out of a half-filled form without being asked.
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        emit(LocationFetchFailed(
+          'Location services are turned off. Turn them on, or type the '
+          'location instead.',
+        ));
+        return;
       }
 
-      permission = await Geolocator.checkPermission();
+      LocationPermission permission = await Geolocator.checkPermission();
+
+      // Asked once, on an explicit tap. Never in a loop.
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          print('Location permissions are denied.');
-        }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        print('Location permissions are permanently denied.');
+        emit(LocationFetchFailed(
+          'Location access is off for Event Master. You can allow it in '
+          'Settings, or type the location instead.',
+          permanentlyDenied: true,
+        ));
+        return;
+      }
+
+      // Every remaining refusal. Previously execution simply fell through to
+      // getCurrentPosition(), which threw, and the catch below swallowed it
+      // while leaving the spinner up.
+      if (permission != LocationPermission.always &&
+          permission != LocationPermission.whileInUse) {
+        emit(LocationFetchFailed(
+          'Location permission was declined. You can type the location '
+          'instead.',
+        ));
+        return;
       }
 
       final position = await Geolocator.getCurrentPosition();
@@ -146,7 +160,12 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         ));
       }
     } catch (e) {
-      print("Error Occurred $e");
+      // The device can refuse a fix even with permission granted — no signal,
+      // airplane mode, a simulator with no location set. The message stays
+      // generic: the plugin's own text is not written for users.
+      emit(LocationFetchFailed(
+        'Could not get your current location. You can type it instead.',
+      ));
     }
   }
 

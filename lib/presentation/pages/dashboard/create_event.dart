@@ -72,47 +72,70 @@ class _SubmitDetailsScreenState extends State<SubmitDetailsScreen> {
 
     return Scaffold(
       appBar: CustomAppBarWithDivider(title: Assigns.submitDetails),
-      body: BlocConsumer<DashboardBloc, DashboardState>(
-        listener: (context, state) {
-          if (state is LocationFetchLoading) {
-            showDialog(
-                context: context,
-                builder: (context) => Center(
-                      child: CircularProgressIndicator(),
-                    ));
-          }
-        },
-        builder: (context, state) {
-          Color selectedColor =
-              (state is ColorThemeChanged) ? state.newColor : Colors.blue;
-          if (state is DashboardInitial) {
-            image = state.pickImage;
-            locationController.text = state.pickLocation;
-          }
+      body: SafeArea(
+        child: BlocConsumer<DashboardBloc, DashboardState>(
+          listener: (context, state) {
+            // The old listener opened a modal spinner and nothing ever closed
+            // it, so any location failure froze the screen. Progress is now
+            // shown inside the location card, and a failure is reported
+            // without taking the form away.
+            if (state is LocationFetchFailed) {
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    behavior: SnackBarBehavior.floating,
+                    backgroundColor: Colors.red.shade700,
+                    content: Text(state.message),
+                    duration: const Duration(seconds: 5),
+                  ),
+                );
+            }
+          },
+          builder: (context, state) {
+            Color selectedColor =
+                (state is ColorThemeChanged) ? state.newColor : Colors.blue;
+            if (state is DashboardInitial) {
+              image = state.pickImage;
+              // Only overwrite with a real result. Assigning unconditionally
+              // wiped a hand-typed location on the next rebuild, because the
+              // initial state carries an empty one.
+              if (state.pickLocation.isNotEmpty) {
+                locationController.text = state.pickLocation;
+              }
+            }
 
-          return SingleChildScrollView(
-            padding: EdgeInsets.all(16.0),
-            child: EventFieldsWidget(
-              EntrepreneurId: widget.EntrepreneurId,
-              screenHeight: screenHeight,
-              clientNameController: clientNameController,
-              emailController: emailController,
-              phoneNumberController: phoneNumberController,
-              locationController: locationController,
-              dateController: dateController,
-              timeController: timeController,
-              eventTypeController: eventTypeController,
-              aboutController: aboutController,
-              imagePath: imagePath,
-              image: image,
-              screenWidth: screenWidth,
-              selectedColor: selectedColor,
-              guestCountController: guestCountController,
-              widget: widget,
-              sum: sum,
-            ),
-          );
-        },
+            return SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(
+                16,
+                16,
+                16,
+                // Keep the last field clear of the keyboard.
+                16 + MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: EventFieldsWidget(
+                locating: state is LocationFetchLoading,
+                EntrepreneurId: widget.EntrepreneurId,
+                screenHeight: screenHeight,
+                clientNameController: clientNameController,
+                emailController: emailController,
+                phoneNumberController: phoneNumberController,
+                locationController: locationController,
+                dateController: dateController,
+                timeController: timeController,
+                eventTypeController: eventTypeController,
+                aboutController: aboutController,
+                imagePath: imagePath,
+                image: image,
+                screenWidth: screenWidth,
+                selectedColor: selectedColor,
+                guestCountController: guestCountController,
+                widget: widget,
+                sum: sum,
+              ),
+            );
+          },
+        ),
       ),
     );
   }

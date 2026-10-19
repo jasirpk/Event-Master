@@ -48,3 +48,19 @@ class VendorSelectionState extends DashboardState {
 }
 
 class LocationFetchLoading extends DashboardState {}
+
+/// A location lookup that ended without a location.
+///
+/// Every failure path emits this. Without it the bloc's last state stayed
+/// [LocationFetchLoading] for ever, so the spinner the screen shows while
+/// locating was never dismissed.
+class LocationFetchFailed extends DashboardState {
+  LocationFetchFailed(this.message, {this.permanentlyDenied = false});
+
+  /// Safe to show the user.
+  final String message;
+
+  /// The user said no and iOS will not ask again, so only the Settings app
+  /// can change it. The screen says so; it does not open Settings itself.
+  final bool permanentlyDenied;
+}

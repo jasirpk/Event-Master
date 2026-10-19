@@ -12,6 +12,37 @@ import 'package:http/http.dart' as http;
 /// a key — see [MediaService.getDownloadUrl].
 const String kEventImageFolder = 'event_images';
 
+/// Every folder the Media API stores objects under.
+///
+/// Mirrors the API's own lists — ALLOWED_FOLDERS, PROFILE_MEDIA_FOLDERS,
+/// VENDOR_MEDIA_FOLDER and EVENT_MEDIA_FOLDER in media.validation.ts. It is
+/// an explicit roster rather than a "looks like a path" guess, because the
+/// question it answers is whether a stored string is already in storage or is
+/// a local file still to be uploaded, and guessing wrong in either direction
+/// is a bug: a missed key gets read off disk, and a false positive silently
+/// stores a path that resolves to nothing.
+const Set<String> kMediaObjectFolders = {
+  'category_images',
+  'subcategory_images',
+  'profile_images',
+  'profile_portfolio',
+  'client_profile_images',
+  'vendor_images',
+  kEventImageFolder,
+};
+
+/// Whether [value] is an object key already held by the Media API.
+///
+/// Only the leading folder is checked; the rest of the grammar is the API's
+/// to enforce. A local file path never begins with one of these names, and a
+/// key always does.
+bool isMediaObjectKey(String value) {
+  final slash = value.indexOf('/');
+  if (slash <= 0) return false;
+
+  return kMediaObjectFolders.contains(value.substring(0, slash));
+}
+
 /// Thrown when a Media API request fails or returns an unexpected response.
 ///
 /// Never carries the Authorization header or a signed URL — only a message,

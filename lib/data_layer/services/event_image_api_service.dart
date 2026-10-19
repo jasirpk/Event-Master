@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -70,6 +71,15 @@ class EventImageApiService {
   /// Must match the API's MAX_UPLOAD_BYTES.
   static const int maxUploadBytes = 10 * 1024 * 1024;
 
+  /// Must match the API's MAX_FILE_NAME_LENGTH.
+  ///
+  /// The server measures the *trimmed* name, before it sanitizes unusual
+  /// characters — and since sanitizing replaces one character with one
+  /// underscore, the sanitized name is the same length anyway. Checking here
+  /// turns a round trip and a generic 400 into an immediate, specific
+  /// message; the server remains the authority.
+  static const int maxFileNameLength = 128;
+
   /// Matches the convention already used by this app's other API clients.
   static String get baseUrl {
     if (_configuredBaseUrl.isNotEmpty) return _configuredBaseUrl;
@@ -91,7 +101,31 @@ class EventImageApiService {
       );
     }
 
-    final bytes = await file.readAsBytes();
+    final fileName = _basename(file.path).trim();
+
+    if (fileName.isEmpty) {
+      throw EventImageApiException('Please choose an image for this event.');
+    }
+
+    if (fileName.length > maxFileNameLength) {
+      throw EventImageApiException(
+        'That image\'s file name is too long. Please rename it to under '
+        '$maxFileNameLength characters.',
+      );
+    }
+
+    final Uint8List bytes;
+
+    try {
+      bytes = await file.readAsBytes();
+    } catch (_) {
+      // The underlying error quotes the absolute path on the device, which
+      // then surfaced in a snackbar. The user cannot act on that, and it does
+      // not belong on screen.
+      throw EventImageApiException(
+        'That image could not be read. Please choose another.',
+      );
+    }
 
     if (bytes.isEmpty) {
       throw EventImageApiException('That image file appears to be empty.');
@@ -104,7 +138,7 @@ class EventImageApiService {
     }
 
     final signed = await _requestUploadUrl(
-      fileName: _basename(file.path),
+      fileName: fileName,
       contentType: contentType,
       contentLength: bytes.length,
     );

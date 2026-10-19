@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:event_master/common/assigns.dart';
+import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/dashboard/dashboard_bloc.dart';
 import 'package:event_master/presentation/components/event/add_event/custom_headline.dart';
 import 'package:event_master/presentation/components/event/add_event/custom_textfeild.dart';
@@ -30,7 +31,7 @@ class EventTypeWidget extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white30,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(14),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -41,64 +42,133 @@ class EventTypeWidget extends StatelessWidget {
               screenHeight: screenHeight,
               text: Assigns.eventOverview,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 14),
             CustomTextFieldWidget(
               controller: eventTypeController,
               readOnly: false,
+              isDense: true,
               labelText: 'Event type',
               prefixIcon: Icons.event,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 12),
             CustomTextFieldWidget(
               controller: aboutController,
               readOnly: false,
-              maxLines: 4,
+              isDense: true,
+              // Three lines rather than four: enough to read a short brief
+              // without the field dominating the section.
+              maxLines: 3,
               labelText: 'About',
             ),
-            SizedBox(height: 16),
-            // The event picture arrives as a subcategory's R2 object key
-            // ("subcategory_images/..."), which startsWith('http') pushed
-            // into AssetImage — Flutter then looked for a bundled asset of
-            // that name and threw "Unable to load asset". MediaImage signs a
-            // key and passes a legacy URL straight through.
-            //
-            // A locally picked file still wins only when no stored path is
-            // set, which is the precedence this widget already had. The
-            // placeholder stays null deliberately: this box is the image
-            // picker's tap target, and a stand-in photo would read as a
-            // chosen image rather than an empty slot.
-            MediaImage(
+            const SizedBox(height: 14),
+            _ImagePreview(
               imagePath: imagePath,
-              builder: (context, resolved) {
-                final String path = imagePath ?? '';
-                final DecorationImage? background = path.isEmpty
-                    ? (image != null
-                        ? DecorationImage(
-                            image: FileImage(image!), fit: BoxFit.cover)
-                        : null)
-                    : (resolved != null
-                        ? DecorationImage(image: resolved, fit: BoxFit.cover)
-                        : null);
-
-                return Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.grey,
-                      image: background),
-                  width: screenWidth * 0.4,
-                  height: screenHeight * 0.16,
-                  child: Center(
-                      child: IconButton(
-                          onPressed: () {
-                            context.read<DashboardBloc>().add(PickImageEvent());
-                          },
-                          icon: Icon(
-                            Icons.collections_bookmark,
-                          ))),
-                );
-              },
+              image: image,
+              onChange: () =>
+                  context.read<DashboardBloc>().add(PickImageEvent()),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The event picture, and one obvious way to replace it.
+///
+/// Three sources have to keep working and only one is local:
+///
+///  * [image]      — a file just picked on this device, which wins when set.
+///  * an R2 key    — the `subcategory_images/…` default carried in from the
+///                   template screens, or an `event_images/…` picture saved
+///                   earlier. Both need signing, which [MediaImage] does.
+///  * a legacy URL — an `https://…` Firebase Storage link on an older event,
+///                   which [MediaImage] passes straight through.
+class _ImagePreview extends StatelessWidget {
+  const _ImagePreview({
+    required this.imagePath,
+    required this.image,
+    required this.onChange,
+  });
+
+  final String? imagePath;
+  final File? image;
+  final VoidCallback onChange;
+
+  @override
+  Widget build(BuildContext context) {
+    final path = imagePath ?? '';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Expanded(
+              child: Text(
+                'Event image',
+                style: TextStyle(color: Colors.white70, fontSize: 12),
+              ),
+            ),
+            TextButton.icon(
+              onPressed: onChange,
+              style: TextButton.styleFrom(
+                foregroundColor: myColor,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                visualDensity: VisualDensity.compact,
+              ),
+              icon: const Icon(Icons.photo_library_outlined, size: 18),
+              label: Text(_hasPicture(path) ? 'Change image' : 'Add image'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: SizedBox(
+            height: 150,
+            width: double.infinity,
+            child: image != null
+                ? Image.file(image!, fit: BoxFit.cover)
+                : MediaImage(
+                    imagePath: path,
+                    builder: (context, resolved) => resolved == null
+                        ? _Empty(onTap: onChange)
+                        : Image(image: resolved, fit: BoxFit.cover),
+                  ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  bool _hasPicture(String path) => image != null || path.isNotEmpty;
+}
+
+/// Shown while a key is being signed, and when there is nothing to show.
+class _Empty extends StatelessWidget {
+  const _Empty({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        color: Colors.black.withValues(alpha: 0.18),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.collections_bookmark, color: myColor, size: 28),
+              const SizedBox(height: 6),
+              const Text(
+                'Tap to choose an image',
+                style: TextStyle(color: Colors.white70, fontSize: 13),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:event_master/bussiness_layer.dart/repos/snack_bar.dart';
 import 'dart:io';
 
@@ -6,6 +7,13 @@ import 'package:event_master/data_layer/services/event_image_api_service.dart';
 import 'package:event_master/data_layer/services/media_service.dart';
 
 class EventBookingMethods {
+  /// Injectable so the image-reference logic can be exercised without
+  /// reaching the network; defaults to the shared instance.
+  EventBookingMethods({EventImageApiService? imageApi})
+      : _imageApi = imageApi ?? EventImageApiService.instance;
+
+  final EventImageApiService _imageApi;
+
   Future<void> addEvent({
     required String uid,
     required String EntrepreneurId,
@@ -28,7 +36,7 @@ class EventBookingMethods {
       // An already-stored value is either a legacy Storage URL or an R2 key
       // from a previous save; neither needs re-uploading. Only a local file
       // path picked on this device does.
-      final String finalImagePath = await _storedImageRef(imagePath);
+      final String finalImagePath = await storedImageRef(imagePath);
 
       // Generate a unique event ID
       String eventId = FirebaseFirestore.instance
@@ -84,7 +92,7 @@ class EventBookingMethods {
   /// failed upload means no booking is written at all — which is the point:
   /// a booking that silently lost its picture is worse than one not saved.
   Future<String> uploadImage(File imageFile) async {
-    return EventImageApiService.instance.uploadEventImage(imageFile);
+    return _imageApi.uploadEventImage(imageFile);
   }
 
   Stream<QuerySnapshot> getGeneratedEventsDetails(String uid) {
@@ -147,7 +155,7 @@ class EventBookingMethods {
     required String sum,
   }) async {
     try {
-      final String finalImagePath = await _storedImageRef(imagePath);
+      final String finalImagePath = await storedImageRef(imagePath);
 
       Map<String, dynamic> updatedEventCredential = {
         'clientName': clientName,
@@ -181,15 +189,27 @@ class EventBookingMethods {
 
   /// What to persist for [imagePath].
   ///
-  /// Three cases reach here and only one is an upload:
+  /// Three kinds of value reach here and only one is an upload:
   ///
-  ///  * `https://…`        — a legacy Firebase Storage URL, kept verbatim so
-  ///                         bookings saved before the migration still render.
-  ///  * `event_images/…`   — an R2 key this app already uploaded.
-  ///  * anything else      — a local file path from the picker.
-  Future<String> _storedImageRef(String imagePath) async {
+  ///  * `https://…`          — a legacy Firebase Storage URL, kept verbatim so
+  ///                           bookings saved before the migration still
+  ///                           render.
+  ///  * a known object key   — already in storage: an `event_images/…` key
+  ///                           this app uploaded earlier, or the
+  ///                           `subcategory_images/…` default carried in from
+  ///                           the template screens. Stored as-is; the
+  ///                           resolver signs whichever endpoint owns it.
+  ///  * anything else        — a local file path from the picker.
+  @visibleForTesting
+  Future<String> storedImageRef(String imagePath) async {
     if (imagePath.startsWith('http')) return imagePath;
-    if (imagePath.startsWith('$kEventImageFolder/')) return imagePath;
+
+    // Any folder the Media API already stores objects under is a reference,
+    // not a file to upload. Checking only `event_images/` meant the default
+    // picture — a `subcategory_images/...` key carried in from the template
+    // screens — was handed to File.readAsBytes, which threw and stopped the
+    // booking being written at all.
+    if (isMediaObjectKey(imagePath)) return imagePath;
 
     return uploadImage(File(imagePath));
   }
