@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_master/bussiness_layer.dart/repos/show_diolog.dart';
-import 'package:event_master/bussiness_layer.dart/repos/snack_bar.dart';
 import 'package:event_master/common/assigns.dart';
 import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/services/create_event.dart';
@@ -110,7 +109,12 @@ class EventPage extends StatelessWidget {
 
                     var subDetailData =
                         subdetailSnapshot.data!.data() as Map<String, dynamic>;
-                    bool isConfirm = subDetailData['isValid'] ?? false;
+                    // Submitting the form now hands the event over, so this
+                    // reports what happened instead of offering a second
+                    // step. Older bookings created before that change may
+                    // still carry false, and are shown honestly as such
+                    // rather than being rewritten.
+                    final bool submitted = subDetailData['isValid'] == true;
                     return InkWell(
                       onTap: () {
                         Get.to(() => EventDetailScreen(
@@ -212,28 +216,28 @@ class EventPage extends StatelessWidget {
                                       ],
                                     ),
                                     SizedBox(height: 10.0),
-                                    GestureDetector(
-                                      onTap: () async {
-                                        await eventBookingMethods
-                                            .updateIsValidField(
-                                                user.uid, documentId,
-                                                isConfirm: true);
-                                        showCustomSnackBar('Success',
-                                            'Your Event is Hand Overed to Event Management Company');
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 4, vertical: 4),
-                                        decoration: BoxDecoration(
-                                            color: myColor,
-                                            borderRadius:
-                                                BorderRadius.circular(30)),
-                                        child: Text(
-                                          isConfirm ? 'Confirmed' : 'Confirm',
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: screenHeight * 0.010),
-                                        ),
+                                    // "Submitted", not "Confirmed": the
+                                    // company has received the event, and
+                                    // nothing here says it has accepted it.
+                                    // No acceptance workflow exists yet.
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                          color: submitted
+                                              ? myColor
+                                              : Colors.white24,
+                                          borderRadius:
+                                              BorderRadius.circular(30)),
+                                      child: Text(
+                                        submitted
+                                            ? 'Submitted'
+                                            : 'Not submitted',
+                                        style: TextStyle(
+                                            color: submitted
+                                                ? Colors.black
+                                                : Colors.white70,
+                                            fontSize: screenHeight * 0.012),
                                       ),
                                     )
                                   ],

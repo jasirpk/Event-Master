@@ -14,7 +14,13 @@ class EventBookingMethods {
 
   final EventImageApiService _imageApi;
 
-  Future<void> addEvent({
+  /// Writes the booking and returns its event id.
+  ///
+  /// The id is returned so the caller can ask the Media API to list it for
+  /// the entrepreneur. That is a second, separate step on purpose: the
+  /// booking is the system of record and is already safe once this returns,
+  /// so a listing failure must not be reported as a failed booking.
+  Future<String> addEvent({
     required String uid,
     required String EntrepreneurId,
     required String clientName,
@@ -28,7 +34,6 @@ class EventBookingMethods {
     required String imagePath,
     required String selectedColor,
     required String guestCount,
-    required bool isValid,
     required List<Map<String, dynamic>> selectedVendors,
     required String sum,
   }) async {
@@ -62,7 +67,16 @@ class EventBookingMethods {
         'selectedColor': selectedColor,
         'selectedVendors': selectedVendors,
         'sum': sum,
-        'isValid': isValid,
+
+        // Submitting the form *is* handing the event to the company, so this
+        // is written true here rather than by a second tap on the events
+        // list. The field keeps its name for compatibility: existing
+        // bookings carry it, and Admin Event Pro already filters on it.
+        //
+        // It records that the customer released the booking — not that the
+        // company accepted it. There is no acceptance workflow yet, and this
+        // flag must not be read as one.
+        'isValid': true,
       };
 
       // Add the event to Firestore
@@ -74,6 +88,8 @@ class EventBookingMethods {
           .set(eventCredential);
 
       print('Added event to Firebase');
+
+      return eventId;
     } catch (e) {
       print('Error adding to events: $e');
       rethrow;
@@ -212,20 +228,5 @@ class EventBookingMethods {
     if (isMediaObjectKey(imagePath)) return imagePath;
 
     return uploadImage(File(imagePath));
-  }
-
-  Future<void> updateIsValidField(String uid, String documentId,
-      {required bool isConfirm}) async {
-    try {
-      CollectionReference eventDetailsRef = FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .collection('events');
-      await eventDetailsRef.doc(documentId).update({'isValid': isConfirm});
-      print('IsValid Field updated successfully');
-    } catch (e) {
-      print('Error update isValid field');
-      throw Exception('Failed to update IsValid Field');
-    }
   }
 }
