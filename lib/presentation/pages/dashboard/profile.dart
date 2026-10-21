@@ -1,17 +1,14 @@
+import 'package:event_master/data_layer/dashboard/dashboard_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:event_master/common/assigns.dart';
-import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/auth_bloc/manage_bloc.dart';
 import 'package:event_master/data_layer/services/prifile.dart';
 import 'package:event_master/presentation/components/settings/menu_button.dart';
+import 'package:event_master/presentation/components/settings/user_profile.dart';
 import 'package:event_master/presentation/pages/auth/login.dart';
 import 'package:event_master/presentation/pages/dashboard/privacy_policy.dart';
-import 'package:event_master/presentation/pages/dashboard/profile_form.dart';
 import 'package:event_master/presentation/pages/dashboard/terms_of_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:event_master/presentation/components/media/media_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
@@ -41,11 +38,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
     List<Map<String, dynamic>> items = [
       {
         'icon': Icons.share,
         'text': 'Share this App',
+        'section': 'ABOUT',
         'onTap': () {
           Share.share('https://www.amazon.com/dp/B0DC59TJDZ/ref=apps_sf_sta');
         }
@@ -53,6 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       {
         'icon': Icons.preview,
         'text': 'Privacy Policy',
+        'section': 'ABOUT',
         'onTap': () {
           Get.to(() => PrivacyPolicy());
         }
@@ -60,6 +58,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       {
         'icon': Icons.info,
         'text': 'Terms of Service',
+        'section': 'ABOUT',
         'onTap': () {
           Get.to(() => TermsOfService());
         }
@@ -67,6 +66,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       {
         'icon': Icons.logout,
         'text': 'Exit Application',
+        'section': 'DANGER',
         'onTap': () {
           Get.defaultDialog(
               title: 'Exit? ⚠️',
@@ -78,6 +78,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Get.back();
               },
               onConfirm: () {
+                // The dashboard tab lives in DashboardBloc, which is provided above
+                // GetMaterialApp and so survives this route replacement. Without a
+                // reset it still holds the tab the user logged out from, and the
+                // next login lands there instead of Home.
+                context.read<DashboardBloc>().add(TabChanged(0));
+
                 Get.offAll(() => GoogleAuthScreen());
                 context.read<ManageBloc>().add(Logout());
                 context.read<ManageBloc>().add(SignOutWithGoogle());
@@ -91,7 +97,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (state is UnAuthenticated) {
           Get.off(() => GoogleAuthScreen());
         } else if (state is AuthenticatedErrors) {
-          Get.snackbar('Logout Error', state.message, snackPosition: SnackPosition.BOTTOM);
+          Get.snackbar('Logout Error', state.message,
+              snackPosition: SnackPosition.BOTTOM);
         }
       },
       child: Scaffold(
@@ -112,148 +119,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               return Center(child: CircularProgressIndicator());
             }
 
-            if (!snapshot.hasData || !snapshot.data!.exists || snapshot.hasError) {
+            if (!snapshot.hasData ||
+                !snapshot.data!.exists ||
+                snapshot.hasError) {
               return Text('No data');
             }
             var userData = snapshot.data!.data() as Map<String, dynamic>;
-            String profileImage = userData['imagePath'] ?? '';
-            print('Snapshot data: ${snapshot.data}');
-            print('User data: ${userData}');
-            return SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Stack(
-                          children: [
 
-                            Container(
-                              width: 120,
-                              height: 120,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.tealAccent,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: ClipOval(
-                                child: MediaImage(
-                                  imagePath: profileImage,
-                                  placeholder: AssetImage(Assigns.personImage),
-                                  builder: (context, image) {
-                                    return Image(
-                                      image: image ?? AssetImage(Assigns.personImage),
-                                      width: 120,
-                                      height: 120,
-                                      fit: BoxFit.cover,
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: CircleAvatar(
-                                maxRadius: 20,
-                                backgroundColor: Colors.white,
-                                child: IconButton(
-                                    onPressed: () {
-                                      Get.to(() => ProfileFormScreen(
-                                            userName: userData['userName'] ?? 'No name',
-                                            phoneNumber: userData['phoneNumber'] ?? '+91',
-                                            imagePath: profileImage,
-                                          ));
-                                    },
-                                    icon: Icon(
-                                      Icons.edit,
-                                      color: Colors.black,
-                                    )),
-                              ),
-                            )
-                          ],
-                        ),
-                        sizedBoxWidth,
-                        Text(
-                          userData['userName'] ?? 'No name',
-                          style: TextStyle(fontSize: screenHeight * 0.022, fontWeight: FontWeight.w500),
-                        )
-                      ],
-                    ),
-                    sizedbox,
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.call,
-                          color: Colors.white,
-                        ),
-                        sizedBoxWidth,
-                        Text(
-                          userData['phoneNumber'] ?? '',
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.mail,
-                          color: Colors.white,
-                        ),
-                        sizedBoxWidth,
-                        Text(
-                          userData['email'] ?? '@',
-                        ),
-                      ],
-                    ),
-                    sizedbox,
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: items.length,
-                      itemBuilder: (context, index) {
-                        var data = items[index];
-                        return GestureDetector(
-                          onTap: data['onTap'],
-                          child: Padding(
-                            padding: EdgeInsets.only(top: 12),
-                            child: Container(
-                              margin: EdgeInsets.symmetric(vertical: 4),
-                              decoration: BoxDecoration(color: Colors.white38, borderRadius: BorderRadius.circular(20)),
-                              child: ListTile(
-                                leading: Icon(
-                                  data['icon'],
-                                  color: Colors.white,
-                                ),
-                                title: Text(
-                                  data['text'],
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                trailing: IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(
-                                      CupertinoIcons.forward,
-                                      color: Colors.white,
-                                    )),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    sizedbox,
-                    Padding(
-                      padding: EdgeInsets.only(top: 60),
-                      child: Text('Version 1.0.0+2', style: TextStyle(color: Colors.white)),
-                    ),
-                  ],
-                ),
-              ),
-            );
+            return UserProfileWidget(userData: userData, items: items);
           },
         ),
       ),

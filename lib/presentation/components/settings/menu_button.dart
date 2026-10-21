@@ -1,3 +1,4 @@
+import 'package:event_master/data_layer/dashboard/dashboard_bloc.dart';
 import 'package:event_master/common/assigns.dart';
 import 'package:event_master/data_layer/auth_bloc/manage_bloc.dart';
 import 'package:event_master/presentation/pages/auth/login.dart';
@@ -29,6 +30,12 @@ class MenuButtonWidget extends StatelessWidget {
                   Get.back();
                 },
                 onConfirm: () {
+                  // The dashboard tab lives in DashboardBloc, which is provided above
+                  // GetMaterialApp and so survives this route replacement. Without a
+                  // reset it still holds the tab the user logged out from, and the
+                  // next login lands there instead of Home.
+                  context.read<DashboardBloc>().add(TabChanged(0));
+
                   Get.off(() => GoogleAuthScreen());
                   context.read<ManageBloc>().add(Logout());
                   context.read<ManageBloc>().add(SignOutWithGoogle());
