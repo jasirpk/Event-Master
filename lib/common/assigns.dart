@@ -35,7 +35,7 @@ class Assigns {
   static String eventDetail = 'Event Details';
   static String guestAndTheme = 'Guests & Theme';
   static String updateEvent = 'Update Event Details';
-  static String placeHolderImage = 'assets/images/place holder.jpg';
+  static String placeHolderImage = 'assets/images/place_holder.jpg';
   static String terms = 'Terms of Service';
   static String privacy = 'Privacy Policy';
   static String logout = 'Log Out';

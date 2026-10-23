@@ -7,11 +7,18 @@ import 'package:event_master/presentation/components/shimmer/shimmer_media.dart'
 import 'package:event_master/presentation/pages/dashboard/media_scalable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:event_master/presentation/components/media/media_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+
+/// Width the grid decodes thumbnails at.
+///
+/// Three columns on a large phone is about 400 device pixels per tile; the
+/// full-screen viewer still uses the original so zooming stays sharp.
+const int _thumbnailDecodeWidth = 400;
 
 class MediaScreen extends StatelessWidget {
   const MediaScreen({super.key});
@@ -128,36 +135,43 @@ class MediaScreen extends StatelessWidget {
                       },
                       child: Hero(
                         tag: 'imageHero_$index',
-                        child: FutureBuilder(
-                          future: _loadImage(imageUrl),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
+                        // A gallery value is an R2 object key now, which
+                        // Image.network cannot fetch: MediaImage asks the
+                        // Media API to sign it, and still renders a legacy
+                        // https:// value from the Storage era directly.
+                        child: MediaImage(
+                          imagePath: imageUrl,
+                          builder: (context, image) {
+                            if (image == null) {
                               return ShimmerMediaItem(
                                   screenHeight: screenHeight,
                                   screenWidth: screenWidth);
-                            } else if (snapshot.hasError) {
-                              return Center(
-                                child: Icon(
-                                  Icons.error,
-                                  color: Colors.red,
-                                ),
-                              );
-                            } else {
-                              return Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: Colors.black12),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    imageUrl,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              );
                             }
+
+                            return Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.black12),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                // A tile in this three-column grid is roughly
+                                // 400 device pixels wide, but these are phone
+                                // photographs: decoding one at 4000px costs
+                                // ~48 MB of image cache, so a handful of them
+                                // evict each other and every scroll re-decodes.
+                                // Decoding to tile size keeps the same bytes on
+                                // the wire but cuts the cache cost ~75x.
+                                child: Image(
+                                  image: ResizeImage(
+                                    image,
+                                    width: _thumbnailDecodeWidth,
+                                    allowUpscaling: false,
+                                  ),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            );
                           },
                         ),
                       ),
@@ -173,12 +187,39 @@ class MediaScreen extends StatelessWidget {
   }
 
   Future<void> _saveImages(List<File> images, String uid) async {
-    final mediaMethods = MediaMethods();
-    await mediaMethods.addImages(images: images, uid: uid);
-    showCustomSnackBar('Success', 'Images Uploaded');
-  }
+    if (images.isEmpty) {
+      showCustomSnackBar('Nothing to save', 'Choose an image first.');
+      return;
+    }
 
-  Future<void> _loadImage(String imageUrl) async {
-    await precacheImage(NetworkImage(imageUrl), Get.context!);
+    final result = await MediaMethods().addImages(images: images, uid: uid);
+
+    // Reports what actually happened. This used to say "Images Uploaded"
+    // regardless, so a save in which every upload failed looked successful
+    // and left the gallery empty with nothing to explain it.
+    if (result.allSaved) {
+      showCustomSnackBar(
+        'Saved',
+        images.length == 1
+            ? 'Image added to your gallery.'
+            : '${result.saved} images added to your gallery.',
+      );
+      return;
+    }
+
+    if (result.partiallyFailed) {
+      showCustomSnackBar(
+        'Partly saved',
+        '${result.saved} added, ${result.failed} could not be uploaded '
+            '(${result.reason}). The ones that failed were not saved.',
+      );
+      return;
+    }
+
+    showCustomSnackBar(
+      'Not saved',
+      'None of your images could be uploaded (${result.reason}). '
+          'Nothing was added to your gallery.',
+    );
   }
 }

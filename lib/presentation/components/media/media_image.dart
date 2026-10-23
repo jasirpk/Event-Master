@@ -1,3 +1,4 @@
+import 'package:event_master/common/assigns.dart';
 import 'package:flutter/material.dart';
 
 import 'package:event_master/data_layer/services/media_image_resolver.dart';
@@ -5,10 +6,13 @@ import 'package:event_master/data_layer/services/media_image_resolver.dart';
 /// The image shown wherever a template picture is missing, still resolving, or
 /// failed to resolve. One constant so every list, grid and detail header falls
 /// back to the same thing.
-const String kMediaPlaceholderAsset = 'assets/images/venue_decoration_img.jpg';
+///
+/// A plain grey fill, deliberately not a photo: a real venue picture here made
+/// every unresolved tile look like the same artwork, hiding the failure.
+final String kMediaPlaceholderAsset = Assigns.placeHolderImage;
 
 /// [kMediaPlaceholderAsset] as a provider, for [MediaImage.placeholder].
-const AssetImage kMediaPlaceholderImage = AssetImage(kMediaPlaceholderAsset);
+final AssetImage kMediaPlaceholderImage = AssetImage(kMediaPlaceholderAsset);
 
 /// Renders whatever a Firestore `imagePath` points at — a legacy Firebase
 /// Storage URL, a bundled asset, or an R2 objectKey that needs signing.

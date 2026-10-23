@@ -1,4 +1,8 @@
+import 'dart:async' show TimeoutException;
+import 'dart:developer' as developer;
+
 import 'package:flutter/widgets.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:event_master/data_layer/services/media_service.dart';
 
@@ -14,11 +18,21 @@ import 'package:event_master/data_layer/services/media_service.dart';
 /// until shortly before they lapse, which stops a rebuilding grid or list from
 /// re-signing the same object over and over. A signed URL is never persisted.
 class MediaImageResolver {
-  MediaImageResolver._();
+  MediaImageResolver._({MediaService? mediaService})
+      : _mediaService = mediaService ?? MediaService.instance;
 
   static final MediaImageResolver instance = MediaImageResolver._();
 
-  final MediaService _mediaService = MediaService.instance;
+  /// A resolver with a cache of its own and a supplied collaborator.
+  ///
+  /// The singleton is what the app uses; this exists so the caching, sharing
+  /// and expiry rules can be exercised without a network or a Firebase app,
+  /// and without one test's cache leaking into the next.
+  @visibleForTesting
+  factory MediaImageResolver.forTesting(MediaService mediaService) =>
+      MediaImageResolver._(mediaService: mediaService);
+
+  final MediaService _mediaService;
 
   final Map<String, _SignedUrl> _cache = {};
 
@@ -65,9 +79,48 @@ class MediaImageResolver {
 
     try {
       return NetworkImage(await _signedUrlFor(path));
-    } catch (_) {
+    } catch (error) {
+      _reportFailure(path, error);
       return null;
     }
+  }
+
+  /// Failures already logged, as `objectKey|category`, so a rebuilding list
+  /// reports each one once rather than on every frame.
+  final Set<String> _reported = {};
+
+  /// Logs why [objectKey] could not be signed: its folder, a failure category
+  /// and the HTTP status. Never the token, the signed URL or the response
+  /// body — [MediaApiException.toString] carries the body, so it is not used.
+  void _reportFailure(String objectKey, Object error) {
+    final int? status = error is MediaApiException ? error.statusCode : null;
+    final String category = _failureCategory(error);
+    if (!_reported.add('$objectKey|$category')) return;
+
+    final slash = objectKey.indexOf('/');
+    final folder = slash > 0 ? objectKey.substring(0, slash) : '(no folder)';
+    developer.log(
+      'Could not sign an image in "$folder": $category'
+      '${status != null ? ' (HTTP $status)' : ''}',
+      name: 'MediaImageResolver',
+    );
+  }
+
+  static String _failureCategory(Object error) {
+    if (error is MediaApiException) {
+      final status = error.statusCode;
+      if (status == null) return 'not-signed-in';
+      if (status == 401 || status == 403) return 'unauthorized';
+      if (status == 404) return 'not-found';
+      if (status == 200) return 'incomplete-response';
+      return 'http-error';
+    }
+    if (error is TimeoutException) return 'timeout';
+    if (error is FormatException) return 'malformed-response';
+    // On web a CORS rejection surfaces here too, indistinguishable from an
+    // unreachable host.
+    if (error is http.ClientException) return 'network';
+    return 'unexpected (${error.runtimeType})';
   }
 
   /// A live signed URL for [objectKey], reusing an in-flight request when one

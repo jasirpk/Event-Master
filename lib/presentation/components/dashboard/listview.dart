@@ -47,7 +47,7 @@ class ListViewWidget extends StatelessWidget {
             itemCount: documents.length,
             itemBuilder: (context, index) {
               var data = documents[index].data() as Map<String, dynamic>;
-              String imagePath = data['imagePath'] ?? 'assets/images/venue_decoration_img.jpg';
+              String imagePath = data['imagePath'] ?? kMediaPlaceholderAsset;
               String documentId = documents[index].id;
 
               return FutureBuilder<DocumentSnapshot>(

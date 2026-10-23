@@ -1,5 +1,6 @@
 import 'package:event_master/common/style.dart';
 import 'package:event_master/data_layer/services/medias.dart';
+import 'package:event_master/data_layer/services/media_image_resolver.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:photo_view/photo_view.dart';
@@ -52,22 +53,49 @@ class FullScreenImageView extends StatelessWidget {
         iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.black,
       ),
-      body: PhotoViewGallery.builder(
-        itemCount: imageUrls.length,
-        builder: (context, index) {
-          return PhotoViewGalleryPageOptions(
-            imageProvider: NetworkImage(imageUrls[index]),
-            minScale: PhotoViewComputedScale.contained * 0.8,
-            maxScale: PhotoViewComputedScale.covered * 2,
-            heroAttributes: PhotoViewHeroAttributes(
-                tag: 'imageHero_$index'), // Ensure unique tag
+      // PhotoViewGallery needs an ImageProvider synchronously, but a gallery
+      // value is an R2 object key that the Media API has to sign first.
+      // Resolving this page's images once up front leaves the viewer itself
+      // unchanged; a legacy https:// value resolves with no round trip.
+      body: FutureBuilder<List<ImageProvider?>>(
+        future: Future.wait(imageUrls.map(MediaImageResolver.instance.resolve)),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final providers = snapshot.data!;
+
+          return PhotoViewGallery.builder(
+            itemCount: imageUrls.length,
+            builder: (context, index) {
+              final provider = providers[index];
+
+              if (provider == null) {
+                return PhotoViewGalleryPageOptions.customChild(
+                  child: const Center(
+                    child: Icon(Icons.broken_image, color: Colors.white38),
+                  ),
+                  heroAttributes:
+                      PhotoViewHeroAttributes(tag: 'imageHero_$index'),
+                );
+              }
+
+              return PhotoViewGalleryPageOptions(
+                imageProvider: provider,
+                minScale: PhotoViewComputedScale.contained * 0.8,
+                maxScale: PhotoViewComputedScale.covered * 2,
+                heroAttributes: PhotoViewHeroAttributes(
+                    tag: 'imageHero_$index'), // Ensure unique tag
+              );
+            },
+            scrollPhysics: BouncingScrollPhysics(),
+            backgroundDecoration: BoxDecoration(
+              color: Colors.black,
+            ),
+            pageController: PageController(initialPage: initialIndex),
           );
         },
-        scrollPhysics: BouncingScrollPhysics(),
-        backgroundDecoration: BoxDecoration(
-          color: Colors.black,
-        ),
-        pageController: PageController(initialPage: initialIndex),
       ),
     );
   }

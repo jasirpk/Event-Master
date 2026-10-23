@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
@@ -11,6 +11,10 @@ import 'package:http/http.dart' as http;
 /// Named here because it is what decides which endpoint may sign a read for
 /// a key — see [MediaService.getDownloadUrl].
 const String kEventImageFolder = 'event_images';
+
+/// A person's own gallery photographs. Private to their owner, like event
+/// pictures, so they are signed by their own owner-scoped endpoint.
+const String kGalleryFolder = 'user_media';
 
 /// Every folder the Media API stores objects under.
 ///
@@ -156,10 +160,24 @@ class MediaService {
   /// owner-scoped endpoint instead, which answers 404 for somebody else's
   /// key. Sending an event key to the public endpoint would simply be
   /// refused.
+  /// Visible for tests: which endpoint may sign [objectKey].
+  @visibleForTesting
+  static String debugDownloadPathFor(String objectKey) =>
+      _downloadPathFor(objectKey);
+
   static String _downloadPathFor(String objectKey) {
-    return objectKey.startsWith('$kEventImageFolder/')
-        ? '/api/events/download-url'
-        : '/api/media/public-download-url';
+    if (objectKey.startsWith('$kEventImageFolder/')) {
+      return '/api/events/download-url';
+    }
+
+    // Gallery photographs are the same case: private to one person, kept out
+    // of the public list, and served by an endpoint that answers 404 for
+    // somebody else's key.
+    if (objectKey.startsWith('$kGalleryFolder/')) {
+      return '/api/gallery/download-url';
+    }
+
+    return '/api/media/public-download-url';
   }
 
   Future<String> _currentIdToken() async {
