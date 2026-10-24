@@ -33,12 +33,26 @@ def keystoreProperties = new Properties()
 
 android {
     namespace = "com.example.event_master"
-    compileSdk = 34
+    // 8 AAR dependencies (androidx.credentials and others) require callers
+    // to compile against 35+; AGP fails :app:checkDebugAarMetadata below
+    // that. compileSdk governs only which APIs are available at compile
+    // time — targetSdk (runtime behaviour) and minSdk (device reach) are
+    // unchanged.
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        // AGP 8 no longer accepts 1.8 here; 11 is its floor and what
+        // Flutter's own templates use.
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        // Must match compileOptions or AGP 8 fails on a JVM-target mismatch.
+        // There was no kotlinOptions block before: Kotlin defaulted to 1.8,
+        // which happened to agree with the old Java target.
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
     defaultConfig {
@@ -46,7 +60,7 @@ android {
         applicationId = "apps.client.event_master"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdk = 21
+        minSdkVersion = flutter.minSdkVersion
         targetSdk = 34
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
