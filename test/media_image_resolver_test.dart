@@ -171,6 +171,124 @@ void main() {
     });
   });
 
+  group('at most four signing calls are in flight at once', () {
+    /// A service that takes a real moment to answer, recording how many
+    /// calls overlapped. A genuine async gap is what makes the gate's effect
+    /// observable; holding requests open manually made the test, not the
+    /// gate, the thing under test.
+    ({MediaService service, int Function() peak, int Function() started})
+        slowService({int failFirst = 0, bool throwInstead = false}) {
+      var inFlight = 0;
+      var peak = 0;
+      var started = 0;
+
+      final service = MediaService(
+        tokenProvider: () async => 'test-token',
+        client: MockClient((request) async {
+          started++;
+          inFlight++;
+          if (inFlight > peak) peak = inFlight;
+
+          await Future<void>.delayed(const Duration(milliseconds: 5));
+
+          inFlight--;
+
+          if (started <= failFirst) {
+            if (throwInstead) throw http.ClientException('socket died');
+            return http.Response('{}', 500);
+          }
+
+          final key = request.url.queryParameters['objectKey'];
+          return http.Response(
+            jsonEncode({
+              'downloadUrl': 'https://r2.example/$key?X-Amz-Expires=3600',
+              'objectKey': key,
+              'expiresIn': 3600,
+            }),
+            200,
+          );
+        }),
+      );
+
+      return (service: service, peak: () => peak, started: () => started);
+    }
+
+    test('ten distinct keys never exceed four concurrent calls', () async {
+      final h = slowService();
+      final resolver = MediaImageResolver.forTesting(h.service);
+
+      await Future.wait([
+        for (var i = 0; i < 10; i++) resolver.resolve('user_media/me/$i-a.jpg'),
+      ]);
+
+      expect(h.peak(), lessThanOrEqualTo(4),
+          reason: 'the gate must never allow a fifth call');
+      expect(h.peak(), greaterThan(1),
+          reason: 'it should still run several at once, not serialise');
+      expect(h.started(), 10, reason: 'every key must eventually be signed');
+    });
+
+    test('a long queue drains completely', () async {
+      final h = slowService();
+      final resolver = MediaImageResolver.forTesting(h.service);
+
+      final providers = await Future.wait([
+        for (var i = 0; i < 20; i++) resolver.resolve('user_media/me/$i-b.jpg'),
+      ]);
+
+      expect(h.started(), 20, reason: 'the queue must drain, not stall');
+      expect(h.peak(), lessThanOrEqualTo(4));
+      expect(providers.every((p) => p != null), isTrue);
+    });
+
+    test('duplicates of one key share a single call even when queued',
+        () async {
+      final h = slowService();
+      final resolver = MediaImageResolver.forTesting(h.service);
+
+      // Fill the gate, then pile six callers onto one further key.
+      final all = <Future<ImageProvider?>>[
+        for (var i = 0; i < 4; i++)
+          resolver.resolve('user_media/me/$i-fill.jpg'),
+        for (var i = 0; i < 6; i++)
+          resolver.resolve('user_media/me/9-same.jpg'),
+      ];
+
+      final results = await Future.wait(all);
+
+      expect(h.started(), 5,
+          reason: 'four fillers plus one shared call, not ten');
+      expect(results.skip(4).map(urlOf).toSet().length, 1,
+          reason: 'every caller gets the same signed URL');
+    });
+
+    test('a failed call releases its slot', () async {
+      final h = slowService(failFirst: 4);
+      final resolver = MediaImageResolver.forTesting(h.service);
+
+      final results = await Future.wait([
+        for (var i = 0; i < 8; i++) resolver.resolve('user_media/me/$i-c.jpg'),
+      ]);
+
+      expect(h.started(), 8, reason: 'a failure must not strand its slot');
+      expect(h.peak(), lessThanOrEqualTo(4));
+      expect(results.where((p) => p == null).length, 4);
+      expect(results.where((p) => p != null).length, 4);
+    });
+
+    test('a thrown (non-HTTP) failure also releases its slot', () async {
+      final h = slowService(failFirst: 4, throwInstead: true);
+      final resolver = MediaImageResolver.forTesting(h.service);
+
+      await Future.wait([
+        for (var i = 0; i < 8; i++) resolver.resolve('user_media/me/$i-d.jpg'),
+      ]);
+
+      expect(h.started(), 8, reason: 'an exception must not block the queue');
+      expect(h.peak(), lessThanOrEqualTo(4));
+    });
+  });
+
   group('paths that need no signing never reach the API', () {
     test('a legacy https URL resolves synchronously', () async {
       final h = buildResolver();

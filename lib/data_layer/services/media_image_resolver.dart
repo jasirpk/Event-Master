@@ -1,4 +1,5 @@
-import 'dart:async' show TimeoutException;
+import 'dart:async' show Completer, TimeoutException;
+import 'dart:collection' show Queue;
 import 'dart:developer' as developer;
 
 import 'package:flutter/widgets.dart';
@@ -35,6 +36,19 @@ class MediaImageResolver {
   final MediaService _mediaService;
 
   final Map<String, _SignedUrl> _cache = {};
+
+  /// Caps how many signing calls are in flight at once.
+  ///
+  /// Opening a gallery used to fan out one request per tile with nothing
+  /// holding them back — a dozen gallery images plus avatars and category
+  /// art all at once. The shared API instance answered some with HTTP 520
+  /// and let others time out. Four at a time is a deliberately conservative
+  /// ceiling; the rest queue and go out as slots free up, so a large screen
+  /// now trickles rather than bursts.
+  ///
+  /// This is a mitigation under test, not a proven cure: the overload was
+  /// never reproduced in isolation.
+  final _ConcurrencyGate _gate = _ConcurrencyGate(maxInFlight: 4);
 
   /// Lifetime assumed when a signed URL doesn't declare one. Matches the
   /// Media API's documented 300s.
@@ -130,7 +144,11 @@ class MediaImageResolver {
     if (existing != null && existing.isLive) return existing.future;
 
     late final _SignedUrl entry;
-    final future = _mediaService.getDownloadUrl(objectKey).then(
+    // The call is gated, the cache entry is not: it is registered below
+    // before any await, so a second caller for this key joins this same
+    // future while it is still queued rather than opening a second request.
+    final future =
+        _gate.run(() => _mediaService.getDownloadUrl(objectKey)).then(
       (url) {
         entry.url = url;
         entry.expiresAt = _expiryFor(url);
@@ -173,6 +191,54 @@ class MediaImageResolver {
       path.startsWith('http://') || path.startsWith('https://');
 
   static bool _isAssetPath(String path) => path.startsWith('assets/');
+}
+
+/// Lets at most [maxInFlight] operations run at once; the rest wait in turn.
+///
+/// A slot is released in a `finally`, so success, failure, timeout and a
+/// synchronous throw all give it back. A freed slot is handed straight to the
+/// next waiter rather than decremented and re-acquired, which keeps the count
+/// exact and the queue moving.
+class _ConcurrencyGate {
+  _ConcurrencyGate({required this.maxInFlight}) : assert(maxInFlight > 0);
+
+  final int maxInFlight;
+
+  int _inFlight = 0;
+  final Queue<Completer<void>> _waiting = Queue<Completer<void>>();
+
+  /// Runs [action] once a slot is free, releasing it however [action] ends.
+  Future<T> run<T>(Future<T> Function() action) async {
+    await _acquire();
+
+    try {
+      return await action();
+    } finally {
+      _release();
+    }
+  }
+
+  Future<void> _acquire() {
+    if (_inFlight < maxInFlight) {
+      _inFlight++;
+      return Future<void>.value();
+    }
+
+    final waiter = Completer<void>();
+    _waiting.add(waiter);
+
+    return waiter.future;
+  }
+
+  void _release() {
+    if (_waiting.isEmpty) {
+      _inFlight--;
+      return;
+    }
+
+    // Pass the slot on directly: _inFlight stays as it is.
+    _waiting.removeFirst().complete();
+  }
 }
 
 /// A signed URL request: in flight, or resolved with the moment it goes stale.
