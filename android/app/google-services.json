@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "334593508928-e8j9husgjokn6s34fb0e42on8v99rql6.apps.googleusercontent.com",
+          "client_id": "334593508928-8muvgt596tuq17mmts0gvcormkhl2k06.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "apps.admin.admineventpro",
-            "certificate_hash": "0ade97a53112740bb90a4b532027e583de47cb77"
+            "certificate_hash": "b3c557506f83b26c42438b1cf840b69ec2493b66"
           }
         },
         {
@@ -28,6 +28,22 @@
           "android_info": {
             "package_name": "apps.admin.admineventpro",
             "certificate_hash": "719f6eafd5f00066d03a07658a24cf49942874f7"
+          }
+        },
+        {
+          "client_id": "334593508928-lkfdd3hrjikvpcn51uf162mvn33ctuvq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "apps.admin.admineventpro",
+            "certificate_hash": "9008e3c870197caa3a490cf60ae4d1026ada03ba"
+          }
+        },
+        {
+          "client_id": "334593508928-tto9v282nidtdrqnspmb937uqq9i7rlm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "apps.admin.admineventpro",
+            "certificate_hash": "59064e180613ed60a719727b374c84546754fc61"
           }
         },
         {
@@ -48,10 +64,10 @@
               "client_type": 3
             },
             {
-              "client_id": "334593508928-3i69ehuuuasm3pegberksb7pc0m447i5.apps.googleusercontent.com",
+              "client_id": "334593508928-4evd7mkfm4es7snb5gbkasd2b22rr7ki.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.eventMasterWeb"
+                "bundle_id": "com.example.admineventpro"
               }
             }
           ]
@@ -67,11 +83,35 @@
       },
       "oauth_client": [
         {
+          "client_id": "334593508928-ih52c29offk5em9q1t56b32p82659pol.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "apps.client.event_master",
+            "certificate_hash": "59064e180613ed60a719727b374c84546754fc61"
+          }
+        },
+        {
           "client_id": "334593508928-khlcr2sucrop6b5kp9jhf2hv9j6tb2m8.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "apps.client.event_master",
             "certificate_hash": "c03b94da24bec7c6b5d5a03cc96408793a2f950a"
+          }
+        },
+        {
+          "client_id": "334593508928-pi7gp2hckmh4bqivr5qhvbgt8723096v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "apps.client.event_master",
+            "certificate_hash": "9008e3c870197caa3a490cf60ae4d1026ada03ba"
+          }
+        },
+        {
+          "client_id": "334593508928-thsq6csmossp3d1ahehaq7keppkucuc6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "apps.client.event_master",
+            "certificate_hash": "dfad4b0122de54388f29da942d467b7aa9b3d22e"
           }
         },
         {
@@ -92,10 +132,10 @@
               "client_type": 3
             },
             {
-              "client_id": "334593508928-3i69ehuuuasm3pegberksb7pc0m447i5.apps.googleusercontent.com",
+              "client_id": "334593508928-4evd7mkfm4es7snb5gbkasd2b22rr7ki.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.eventMasterWeb"
+                "bundle_id": "com.example.admineventpro"
               }
             }
           ]
@@ -136,10 +176,10 @@
               "client_type": 3
             },
             {
-              "client_id": "334593508928-3i69ehuuuasm3pegberksb7pc0m447i5.apps.googleusercontent.com",
+              "client_id": "334593508928-4evd7mkfm4es7snb5gbkasd2b22rr7ki.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.eventMasterWeb"
+                "bundle_id": "com.example.admineventpro"
               }
             }
           ]
