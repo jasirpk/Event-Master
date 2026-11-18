@@ -1,0 +1,42 @@
+# Native launch screen for Event Master.
+#
+# Mirrors the Admin Event Pro launch screen: the same black as
+# `scaffoldBackgroundColor` in lib/main.dart, with the app's own logo centred
+# at the same size the Flutter splash draws it, so the handoff from the native
+# window to the first Flutter frame moves and recolours nothing.
+#
+# The source image is treated as the 4x asset, so 992px wide becomes 248dp —
+# the kSplashLogoWidth the Flutter splash uses. Changing one without the other
+# makes the logo jump at handoff.
+#
+# Regenerate after editing this file:
+#   fvm dart run flutter_native_splash:create
+#
+# Kept in its own file rather than in pubspec.yaml so that regenerating never
+# has to rewrite the pubspec.
+
+flutter_native_splash:
+  color: "#000000"
+  image: assets/images/event_master_splash_logo.png
+
+  # The app is black in either system theme, so dark mode gets the same
+  # treatment rather than an inverted one it would never use.
+  color_dark: "#000000"
+  image_dark: assets/images/event_master_splash_logo.png
+
+  android: true
+  ios: true
+  web: false
+
+  android_gravity: center
+  ios_content_mode: center
+
+  # Android 12+ draws its own splash window and masks the icon to a circle, so
+  # the square logo needs a copy with room around it: 1152x1152 with the
+  # artwork inside a 768px circle, per Google's spec. Pointing this at the
+  # full-bleed logo would clip its corners.
+  android_12:
+    color: "#000000"
+    color_dark: "#000000"
+    image: assets/icons/event_master_splash_android12.png
+    image_dark: assets/icons/event_master_splash_android12.png

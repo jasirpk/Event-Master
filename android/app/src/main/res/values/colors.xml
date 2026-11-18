@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Matches scaffoldBackgroundColor (Colors.black) in lib/main.dart and the
+         `color` in flutter_native_splash.yaml, so the native launch screen, the
+         window behind Flutter, and the Flutter splash are all the same colour.
+
+         flutter_native_splash paints the launch screen itself (drawable/background.png)
+         and does not touch NormalTheme, whose default ?android:colorBackground is
+         white under the Light parent theme — that is the window shown between the
+         splash being dismissed and Flutter's first frame. -->
+    <color name="splash_background">#FF000000</color>
+</resources>
