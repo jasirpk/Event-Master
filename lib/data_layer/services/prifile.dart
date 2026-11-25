@@ -38,15 +38,22 @@ class ClientProfile {
     );
   }
 
+  /// Reads `users/{uid}`.
+  ///
+  /// A document that does not exist is returned as-is, with `exists` false —
+  /// it is a state, not a failure. This used to throw, which collapsed
+  /// "this user has not filled in a profile yet" into the same channel as
+  /// "Firestore is unreachable": every caller saw `snapshot.hasError` and
+  /// showed a generic error, and the screens' own `!exists` branches could
+  /// never run.
+  ///
+  /// Genuine failures — permission denied, no network, a malformed response —
+  /// still throw, so callers can keep telling the two apart.
   Future<DocumentSnapshot> getUserProfile(String uid) async {
     try {
       final documentRef =
           FirebaseFirestore.instance.collection('users').doc(uid);
-      final documentSnapshot = await documentRef.get();
-      if (!documentSnapshot.exists) {
-        throw Exception('User profile does not exist for uid: $uid');
-      }
-      return documentSnapshot;
+      return await documentRef.get();
     } catch (e) {
       print('Error getting user profile: $e');
       throw Exception('Failed to get user profile: $e');

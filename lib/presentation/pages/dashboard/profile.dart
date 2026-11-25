@@ -119,12 +119,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
               return Center(child: CircularProgressIndicator());
             }
 
-            if (!snapshot.hasData ||
-                !snapshot.data!.exists ||
-                snapshot.hasError) {
+            // A genuine retrieval failure keeps the error state: there is
+            // something to retry, and the refresh action in the AppBar is how.
+            if (snapshot.hasError) {
               return Text('No data');
             }
-            var userData = snapshot.data!.data() as Map<String, dynamic>;
+
+            // An absent document is not a failure — it is a user who has not
+            // filled in a profile yet. UserProfileWidget already takes a
+            // nullable map and defaults every field ('No name', 'No phone
+            // number'), so passing null renders the empty-profile state with
+            // its Edit button rather than a dead end.
+            final userData = snapshot.data?.data() as Map<String, dynamic>?;
 
             return UserProfileWidget(userData: userData, items: items);
           },

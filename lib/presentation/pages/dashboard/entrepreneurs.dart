@@ -103,23 +103,31 @@ class EntrepreneursListScreen extends StatelessWidget {
                 builder: (context, state) {
                   if (state is SearchLoading) {
                     return Center(child: CircularProgressIndicator());
-                  } else if (state is SearchLoaded) {
-                    return ListOfStreamWidget(
-                      userProfile: UserProfile(),
-                      screenHeight: screenHeight,
-                      screenWidth: screenWidth,
-                      vendorRequest: VendorRequest(),
-                      searchTerm: state.searchTerm,
-                    );
-                  } else if (state is SearchError) {
+                  }
+                  if (state is SearchError) {
                     return Center(child: Text(state.message));
                   }
+                  // One construction site, deliberately.
+                  //
+                  // The searching and non-searching branches used to build
+                  // this separately, and only the second one forwarded the
+                  // sub-template the booking started from. So the moment the
+                  // user typed in the search box above, DashboardBloc moved
+                  // to SearchLoaded, this rebuilt through the other branch,
+                  // and the event name and description were dropped here —
+                  // leaving Event type and About empty by the time the chain
+                  // reached Submit details. The bloc is app-wide and nothing
+                  // resets it on entry, so a stale SearchLoaded from an
+                  // earlier visit did the same on the very first frame.
+                  //
+                  // The two branches only ever differed by the search term,
+                  // so they are one call now and cannot drift apart again.
                   return ListOfStreamWidget(
                     userProfile: UserProfile(),
                     screenHeight: screenHeight,
                     screenWidth: screenWidth,
                     vendorRequest: VendorRequest(),
-                    searchTerm: '',
+                    searchTerm: state is SearchLoaded ? state.searchTerm : '',
                     subImagePath: subImagePath,
                     subCategoryName: subCategoryName,
                     subdescripion: subdescripion,

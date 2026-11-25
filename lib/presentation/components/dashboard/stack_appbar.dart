@@ -30,13 +30,21 @@ class StackAppBar extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         }
+        // Neither an absent profile nor a failed read takes the header down
+        // with it. Everything below is the screen's navigation chrome — the
+        // cover image, the chat button and the Create event card — and the
+        // only thing the profile actually supplies is an avatar and a name,
+        // both of which have defaults. Returning a bare error Text here used
+        // to replace the whole Stack, so a user who had not filled in a
+        // profile, or who was briefly offline, lost Create event entirely.
         if (snapshot.hasError) {
-          return Text('Error loading profile');
+          debugPrint('Home profile header: ${snapshot.error}');
         }
-        if (!snapshot.hasData || !snapshot.data!.exists) {
-          return Text('Not Registered');
-        }
-        var userData = snapshot.data!.data() as Map<String, dynamic>;
+        // .data() is null both for a document that does not exist and for a
+        // snapshot that never arrived, so one null-guard covers both.
+        final userData =
+            snapshot.data?.data() as Map<String, dynamic>? ??
+                const <String, dynamic>{};
         String imagePath = userData['imagePath'] ?? '';
         return Stack(
           children: <Widget>[

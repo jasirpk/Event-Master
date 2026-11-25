@@ -40,7 +40,46 @@ dependencies:
   lottie: ^3.1.2
   pushable_button: ^0.0.4
   carousel_slider: ^5.1.2
-  firebase_core: ^4.11.0
+  # Upper-bounded, and bumped from ^4.11.0, because firebase_remote_config
+  # cannot be added without it: the oldest release, 6.5.5, declares
+  # firebase_core ^4.12.1.
+  #
+  # The bound matters more than the bump. Every firebase_* plugin declares
+  # `.package(url: firebase-ios-sdk, exact: firebaseSdkVersion)` in its
+  # Package.swift, so the whole set must name the *same* firebase-ios-sdk or
+  # Xcode cannot resolve the graph at all. 4.11.0 and 4.12.1 both pin
+  # 12.15.0 — which is what firebase_auth 6.5.4, cloud_firestore 6.6.0 and
+  # firebase_storage 13.4.3 locked here pin too — so this moves the Dart
+  # package without moving the native SDK. 4.13.0 jumps to 12.17.0 and would
+  # strand the rest of the set.
+  #
+  # Lift this bound only together with every other firebase_* package, and
+  # check the new firebaseSdkVersion matches across all of them.
+  firebase_core: '>=4.12.1 <4.13.0'
+  # Pinned exactly, and not imported anywhere — it is here only to hold a
+  # transitive package back.
+  #
+  # firebase_core 4.12.1 declares `firebase_core_platform_interface: ^8.0.0`,
+  # which is too loose for its own iOS code. 4.11.0 added `recaptchaSiteKey`
+  # as the 15th field of FirebaseOptions on both sides; 8.1.0 then *removed*
+  # it from the Dart side (14 fields) ahead of the Swift native rewrite that
+  # only ships in firebase_core 4.14.0. So Dart 8.1.1 sends 14 fields while
+  # the ObjC `+[CoreFirebaseOptions fromList:]` in 4.12.1 still reads index
+  # 14, and Firebase.initializeApp() aborts on iOS/macOS with
+  # NSRangeException "index 14 beyond bounds [0 .. 13]". Android reads 13 and
+  # is unaffected, which is why this only ever showed up on iOS.
+  #
+  # 8.0.0 still sends 15 fields, matching 4.12.1's native code. Every
+  # firebase_* plugin here accepts ^8.0.0, so nothing else moves.
+  #
+  # Deliberately a real dependency rather than a dependency_overrides entry:
+  # pub must keep *checking* this. firebase_core 4.14.0+ requires ^8.1.1, so
+  # this pin will fail resolution loudly when the set is upgraded. An
+  # override would instead force 8.0.0 silently onto 4.14.0's Swift code and
+  # reproduce the same crash in the opposite direction.
+  #
+  # Remove this pin in the same change that moves firebase_core to 4.14.0+.
+  firebase_core_platform_interface: 8.0.0
   firebase_auth: ^6.5.4
   cloud_firestore: ^6.6.0
   shared_preferences: ^2.2.3
@@ -60,6 +99,16 @@ dependencies:
   intl: ^0.20.0
   http: ^1.6.0
   flutter_dotenv: ^5.2.1
+
+  # Exact, not a caret range: 6.5.5 is the only release that pins
+  # firebase-ios-sdk 12.15.0, the version the rest of the firebase_* set
+  # above pins. 6.5.6 moves to 12.17.0, 6.6.0 to 12.18.0 and 6.7.x to
+  # 12.19.x, and any of those makes the Swift package graph unresolvable
+  # until the whole set moves with it. See the firebase_core note above.
+  firebase_remote_config: 6.5.5
+  # Already resolved at 10.1.0 as a transitive dependency of share_plus;
+  # declared here because the update check reads it directly.
+  package_info_plus: ^10.1.0
 
 
 

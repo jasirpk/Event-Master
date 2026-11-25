@@ -55,7 +55,14 @@ class FavoritePage extends StatelessWidget {
               String subCategoryId = document.id;
               return InkWell(
                 onTap: () {
-                  Get.to(() => EntrepreneursListScreen());
+                  // A favourite stores subCategoryName, imagePath and about
+                  // when it is saved, so opening one is a full event choice
+                  // and should travel like one.
+                  Get.to(() => EntrepreneursListScreen(
+                        subImagePath: subimagePath,
+                        subCategoryName: data['subCategoryName'],
+                        subdescripion: data['about'],
+                      ));
                 },
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
@@ -145,7 +152,13 @@ class FavoritePage extends StatelessWidget {
                               }),
                           IconButton(
                             onPressed: () {
-                              Get.to(() => EntrepreneursListScreen());
+                              // The forward arrow is the same choice as
+                              // tapping the card, so it carries the same data.
+                              Get.to(() => EntrepreneursListScreen(
+                                    subImagePath: subimagePath,
+                                    subCategoryName: data['subCategoryName'],
+                                    subdescripion: data['about'],
+                                  ));
                             },
                             icon: Icon(CupertinoIcons.forward),
                             color: Colors.white,

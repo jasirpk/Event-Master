@@ -74,7 +74,14 @@ class SubCategoryList extends StatelessWidget {
                       subdetailSnapshot.data!.data() as Map<String, dynamic>;
                   return InkWell(
                     onTap: () {
-                      Get.to(() => EntrepreneursListScreen());
+                      // Tapping this card is choosing an event, exactly as on
+                      // sub_templates. It carried nothing, so Submit details
+                      // reached the end of the chain with empty fields.
+                      Get.to(() => EntrepreneursListScreen(
+                            subImagePath: subimagePath,
+                            subCategoryName: subDetailData['subCategoryName'],
+                            subdescripion: subDetailData['about'],
+                          ));
                     },
                     child: Container(
                       margin: EdgeInsets.symmetric(horizontal: 5, vertical: 18),
