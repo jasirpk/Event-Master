@@ -94,8 +94,9 @@ class _Section extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white30,
-        borderRadius: BorderRadius.circular(14),
+        color: kSurface,
+        borderRadius: BorderRadius.circular(kRadiusCard),
+        border: Border.all(color: kBorder),
       ),
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -132,11 +133,11 @@ class _LocationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white24),
+        color: kSurfaceAlt,
+        borderRadius: BorderRadius.circular(kRadiusField),
+        border: Border.all(color: kBorder),
       ),
-      padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
+      padding: const EdgeInsets.fromLTRB(14, 10, 8, 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -149,18 +150,19 @@ class _LocationCard extends StatelessWidget {
               children: [
                 const Text(
                   'Event location',
-                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                  style: TextStyle(color: kTextSecondary, fontSize: 12),
                 ),
                 TextField(
                   controller: controller,
                   maxLines: 1,
-                  style: const TextStyle(color: Colors.white, fontSize: 15),
+                  style: const TextStyle(color: kTextPrimary, fontSize: 15),
+                  cursorColor: myColor,
                   decoration: const InputDecoration(
                     isDense: true,
                     contentPadding: EdgeInsets.symmetric(vertical: 4),
                     border: InputBorder.none,
                     hintText: 'Use current location, or type it',
-                    hintStyle: TextStyle(color: Colors.white38, fontSize: 14),
+                    hintStyle: TextStyle(color: kTextMuted, fontSize: 14),
                   ),
                 ),
               ],

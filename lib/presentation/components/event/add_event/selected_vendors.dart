@@ -31,8 +31,9 @@ class SelectedVendorsWidget extends StatelessWidget {
               height: screenHeight * 0.062,
               width: double.infinity,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white30,
+                borderRadius: BorderRadius.circular(kRadiusField),
+                color: kSurfaceAlt,
+                border: Border.all(color: kBorder),
               ),
               child: Padding(
                 padding: EdgeInsets.all(8.0),

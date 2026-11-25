@@ -1,4 +1,5 @@
 import 'package:event_master/common/assigns.dart';
+import 'package:event_master/common/style.dart';
 import 'package:event_master/presentation/components/event/add_event/colortheme_selector.dart';
 import 'package:event_master/presentation/components/event/add_event/custom_headline.dart';
 import 'package:event_master/presentation/components/event/add_event/custom_textfeild.dart';
@@ -18,8 +19,13 @@ class StyleAndThemeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white30,
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: kSurface,
+        borderRadius: BorderRadius.circular(kRadiusCard),
+        border: Border.all(color: kBorder),
+      ),
       child: Container(
         width: double.infinity,
         child: Padding(
@@ -39,8 +45,13 @@ class StyleAndThemeWidget extends StatelessWidget {
               SizedBox(height: 16),
               CustomTextFieldWidget(
                   controller: guestCountController,
-                  labelText: 'Number fo Guests',
+                  // Was 'Number fo Guests'. A visible typo on a production
+                  // form; the field, its controller and its validation are
+                  // untouched.
+                  labelText: 'Number of Guests',
+                  hintText: 'e.g. 120',
                   prefixIcon: Icons.numbers,
+                  isDense: true,
                   keyboardType: TextInputType.number,
                   readOnly: false),
             ],

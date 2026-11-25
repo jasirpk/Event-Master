@@ -1,6 +1,8 @@
 import 'dart:developer' as developer;
 import 'package:event_master/common/assigns.dart';
 import 'package:event_master/common/style.dart';
+import 'package:event_master/data_layer/models/entrepreneur_document.dart';
+import 'package:event_master/data_layer/models/vendor_document.dart';
 import 'package:event_master/data_layer/services/entrepreneur_profile/profile.dart';
 import 'package:event_master/presentation/components/shimmer/shimmer_all_subcategories.dart';
 import 'package:event_master/presentation/pages/dashboard/entrepreneur_detail.dart';
@@ -127,7 +129,12 @@ class FieldsWidget extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              userDetail['companyName'],
+                              // Text's first argument is a non-nullable
+                              // String, so an entrepreneur who has not saved
+                              // a company name took the whole list down with
+                              // "Null is not a subtype of String" — the same
+                              // failed cast as the View Detail one below.
+                              profileText(userDetail['companyName']),
                               // A long company name would otherwise push the
                               // column past its share of the row.
                               maxLines: 1,
@@ -139,7 +146,7 @@ class FieldsWidget extends StatelessWidget {
                             ),
                             SizedBox(height: 4.0),
                             Text(
-                              userDetail['description'],
+                              profileText(userDetail['description']),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 2,
                               style: TextStyle(fontSize: screenHeight * 0.018),
@@ -178,7 +185,10 @@ class FieldsWidget extends StatelessWidget {
                                 // text the leftover width lets it truncate.
                                 Expanded(
                                   child: Text(
-                                    vendorDetail['location'],
+                                    // From the vendor document, so the vendor
+                                    // reader; `location` is as optional there
+                                    // as the profile fields are here.
+                                    vendorText(vendorDetail['location']),
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
                                     style: TextStyle(
@@ -199,18 +209,37 @@ class FieldsWidget extends StatelessWidget {
                           color: Colors.white,
                           onSelected: (value) async {
                             if (value == 'View Detail') {
+                              // Every one of these was a raw map read handed
+                              // to a non-nullable parameter: Dart checks the
+                              // dynamic against String at the argument
+                              // boundary, and an absent field made that check
+                              // throw. Each profile field is optional — the
+                              // Media API saves only the keys a request
+                              // carries, and a cleared website is deleted
+                              // outright — so the readers narrow them here
+                              // instead.
                               Get.to(() => EntrepreneurDetailScreen(
                                     uid: documentId,
-                                    companyName: userDetail['companyName'],
-                                    about: userDetail['description'],
-                                    phoneNumber: userDetail['phoneNumber'],
-                                    bussinessEmail: userDetail['emailAddress'],
-                                    website: userDetail['website'],
+                                    companyName:
+                                        profileText(userDetail['companyName']),
+                                    about:
+                                        profileText(userDetail['description']),
+                                    // Contact details are optional, and the
+                                    // detail screen hides a row it has no
+                                    // value for rather than printing a label
+                                    // with nothing after it.
+                                    phoneNumber: profileOptionalText(
+                                        userDetail['phoneNumber']),
+                                    bussinessEmail: profileOptionalText(
+                                        userDetail['emailAddress']),
+                                    website:
+                                        profileOptionalText(userDetail['website']),
                                     imagePath: imagePath,
-                                    links: List<Map<String, dynamic>>.from(
-                                        userDetail['links']),
-                                    images: List<Map<String, dynamic>>.from(
-                                        userDetail['images']),
+                                    // List.from(null) threw too, with
+                                    // "Null is not a subtype of Iterable".
+                                    links: profileMapList(userDetail['links']),
+                                    images:
+                                        profileMapList(userDetail['images']),
                                   ));
                             }
                           },
@@ -225,8 +254,16 @@ class FieldsWidget extends StatelessWidget {
                         ),
                         IconButton(
                           onPressed: () {
+                            // The same three arguments the card's own onTap
+                            // carries. Without them this arrow reached the
+                            // booking form with no selected event, so Event
+                            // type and About arrived empty and nothing said
+                            // why — the two entry points disagreed.
                             Get.to(() => VendorListScreen(
                                   uid: documentId,
+                                  subImagePath: subImagePath,
+                                  subCategoryName: subCategoryName,
+                                  subdescripion: subdescripion,
                                 ));
                           },
                           icon: Icon(CupertinoIcons.forward),

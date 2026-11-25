@@ -17,6 +17,7 @@ class EventTypeWidget extends StatelessWidget {
     required this.imagePath,
     required this.image,
     required this.screenWidth,
+    this.selectedEventName,
   });
 
   final double screenHeight;
@@ -26,12 +27,23 @@ class EventTypeWidget extends StatelessWidget {
   final File? image;
   final double screenWidth;
 
+  /// The sub-template the booking was started from, as chosen on
+  /// `sub_templates.dart` and carried through by the screens in between.
+  ///
+  /// Null when the user reached this form without picking one — which is a
+  /// real path, not an error — so the banner is simply absent and the fields
+  /// below stand on their own.
+  final String? selectedEventName;
+
   @override
   Widget build(BuildContext context) {
+    final selected = selectedEventName?.trim() ?? '';
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white30,
-        borderRadius: BorderRadius.circular(14),
+        color: kSurface,
+        borderRadius: BorderRadius.circular(kRadiusCard),
+        border: Border.all(color: kBorder),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -42,6 +54,10 @@ class EventTypeWidget extends StatelessWidget {
               screenHeight: screenHeight,
               text: Assigns.eventOverview,
             ),
+            if (selected.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              _SelectedEventBanner(name: selected),
+            ],
             const SizedBox(height: 14),
             CustomTextFieldWidget(
               controller: eventTypeController,
@@ -69,6 +85,62 @@ class EventTypeWidget extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Says which sub-template this booking started from.
+///
+/// The selection already reached this screen — it is what seeded Event type
+/// and About in `create_event.dart`. Until now nothing said so, which left a
+/// pre-filled field indistinguishable from something the user had typed, and
+/// a dropped selection indistinguishable from a blank one.
+///
+/// Read-only on purpose: the editable value is the Event type field below,
+/// which the user may still change. This states what was chosen.
+class _SelectedEventBanner extends StatelessWidget {
+  const _SelectedEventBanner({required this.name});
+
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: myColor.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(kRadiusField),
+        border: Border.all(color: myColor.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.check_circle_outline, color: myColor, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Selected event',
+                  style: TextStyle(color: kTextSecondary, fontSize: 11),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: kTextPrimary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -107,7 +179,7 @@ class _ImagePreview extends StatelessWidget {
             const Expanded(
               child: Text(
                 'Event image',
-                style: TextStyle(color: Colors.white70, fontSize: 12),
+                style: TextStyle(color: kTextSecondary, fontSize: 12),
               ),
             ),
             TextButton.icon(
@@ -124,9 +196,9 @@ class _ImagePreview extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(kRadiusField),
           child: SizedBox(
-            height: 150,
+            height: 170,
             width: double.infinity,
             child: image != null
                 ? Image.file(image!, fit: BoxFit.cover)
@@ -156,7 +228,11 @@ class _Empty extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        color: Colors.black.withValues(alpha: 0.18),
+        decoration: BoxDecoration(
+          color: kSurfaceAlt,
+          borderRadius: BorderRadius.circular(kRadiusField),
+          border: Border.all(color: kBorder),
+        ),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -165,7 +241,7 @@ class _Empty extends StatelessWidget {
               const SizedBox(height: 6),
               const Text(
                 'Tap to choose an image',
-                style: TextStyle(color: Colors.white70, fontSize: 13),
+                style: TextStyle(color: kTextSecondary, fontSize: 13),
               ),
             ],
           ),

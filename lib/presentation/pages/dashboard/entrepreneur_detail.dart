@@ -8,12 +8,20 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+/// One entrepreneur's public profile.
+///
+/// The contact fields are nullable because the stored document's are optional:
+/// the Media API writes only the keys a save carried, and clearing a website
+/// deletes the field. Declaring them non-nullable did not make them present —
+/// it only moved the failure to the caller, as a `Null is not a subtype of
+/// String` cast at the argument list. Null here means "nothing stored", and
+/// the row for it is not drawn.
 class EntrepreneurDetailScreen extends StatelessWidget {
   final String companyName;
   final String about;
-  final String phoneNumber;
-  final String bussinessEmail;
-  final String website;
+  final String? phoneNumber;
+  final String? bussinessEmail;
+  final String? website;
   final String imagePath;
   final List<Map<String, dynamic>> links;
   final List<Map<String, dynamic>> images;

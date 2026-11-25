@@ -29,11 +29,22 @@ class DetailFieldsWidget extends StatefulWidget {
   final String companyName;
   final double screenHeight;
   final String about;
-  final String phoneNumber;
-  final String bussinessEmail;
-  final String website;
+
+  /// Null when the entrepreneur has not stored one. Each of these three is an
+  /// optional field on the profile document, so null is an ordinary value
+  /// here, not a fault — the row it belongs to is left out.
+  final String? phoneNumber;
+  final String? bussinessEmail;
+  final String? website;
+
+  /// Empty when the entrepreneur has added none.
   final List<Map<String, dynamic>> links;
   final List<Map<String, dynamic>> images;
+
+  /// True when there is at least one contact detail to show. With none, the
+  /// "More detail" heading stood over nothing.
+  bool get hasContactDetails =>
+      phoneNumber != null || bussinessEmail != null || website != null;
 
   /// Returns true when the rating was actually persisted by the backend.
   final Future<bool> Function(double) onRatingSubmit;
@@ -227,84 +238,102 @@ class _DetailFieldsWidgetState extends State<DetailFieldsWidget> {
                 ),
               ],
             ),
-            sizedbox,
-            Text(
-              Assigns.aboutUs,
-              style: TextStyle(
-                  fontSize: widget.screenHeight * 0.022,
-                  fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              widget.about,
-              style: TextStyle(
-                  fontSize: widget.screenHeight * 0.018,
-                  fontWeight: FontWeight.w300),
-            ),
-            sizedbox,
-            Text(
-              Assigns.moreDetail,
-              style: TextStyle(
-                  fontSize: widget.screenHeight * 0.022,
-                  fontWeight: FontWeight.w500),
-            ),
-            SizedBox(height: 10),
-            Text(
-              Assigns.phoneNumber,
-              style: TextStyle(
-                  fontSize: widget.screenHeight * 0.020,
-                  fontWeight: FontWeight.w300),
-            ),
-            SizedBox(height: 10),
-            Text(
-              widget.phoneNumber,
-              style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: widget.screenHeight * 0.018,
-                  fontWeight: FontWeight.w300),
-            ),
-            SizedBox(height: 10),
-            RichTextEmailWidget(widget: widget),
-            SizedBox(height: 10),
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                      text: Assigns.website,
-                      style: TextStyle(
-                          fontSize: widget.screenHeight * 0.022,
-                          fontWeight: FontWeight.w500)),
-                  TextSpan(text: ' '),
-                  TextSpan(
-                    text: widget.website,
-                    style: TextStyle(
-                        fontSize: widget.screenHeight * 0.018,
-                        fontWeight: FontWeight.w300,
-                        color: Colors.blue,
-                        decoration: TextDecoration.underline,
-                        decorationColor: Colors.blue),
-                  ),
-                ],
+            // Every section below is drawn only when it has something in it.
+            // The fields are optional on the stored document, and a heading
+            // over a blank line — "Website:" with a bare blue underline, say —
+            // reads as a loading failure rather than as "none given".
+            if (widget.about.trim().isNotEmpty) ...[
+              sizedbox,
+              Text(
+                Assigns.aboutUs,
+                style: TextStyle(
+                    fontSize: widget.screenHeight * 0.022,
+                    fontWeight: FontWeight.bold),
               ),
-            ),
-            SizedBox(height: 10),
-            Text(
-              Assigns.otherLinks,
-              style: TextStyle(
-                  fontSize: widget.screenHeight * 0.020,
-                  fontWeight: FontWeight.w300),
-            ),
-            SizedBox(height: 10),
-            LinksWidget(widget: widget),
-            sizedbox,
-            Text(
-              Assigns.media,
-              style: TextStyle(
-                  fontSize: widget.screenHeight * 0.022,
-                  fontWeight: FontWeight.w500),
-            ),
-            SizedBox(height: 10),
-            MediaWidget(widget: widget),
+              SizedBox(height: 10),
+              Text(
+                widget.about,
+                style: TextStyle(
+                    fontSize: widget.screenHeight * 0.018,
+                    fontWeight: FontWeight.w300),
+              ),
+            ],
+            if (widget.hasContactDetails) ...[
+              sizedbox,
+              Text(
+                Assigns.moreDetail,
+                style: TextStyle(
+                    fontSize: widget.screenHeight * 0.022,
+                    fontWeight: FontWeight.w500),
+              ),
+              if (widget.phoneNumber case final phoneNumber?) ...[
+                SizedBox(height: 10),
+                Text(
+                  Assigns.phoneNumber,
+                  style: TextStyle(
+                      fontSize: widget.screenHeight * 0.020,
+                      fontWeight: FontWeight.w300),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  phoneNumber,
+                  style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: widget.screenHeight * 0.018,
+                      fontWeight: FontWeight.w300),
+                ),
+              ],
+              if (widget.bussinessEmail != null) ...[
+                SizedBox(height: 10),
+                RichTextEmailWidget(widget: widget),
+              ],
+              if (widget.website case final website?) ...[
+                SizedBox(height: 10),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                          text: Assigns.website,
+                          style: TextStyle(
+                              fontSize: widget.screenHeight * 0.022,
+                              fontWeight: FontWeight.w500)),
+                      TextSpan(text: ' '),
+                      TextSpan(
+                        text: website,
+                        style: TextStyle(
+                            fontSize: widget.screenHeight * 0.018,
+                            fontWeight: FontWeight.w300,
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.blue),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+            if (widget.links.isNotEmpty) ...[
+              SizedBox(height: 10),
+              Text(
+                Assigns.otherLinks,
+                style: TextStyle(
+                    fontSize: widget.screenHeight * 0.020,
+                    fontWeight: FontWeight.w300),
+              ),
+              SizedBox(height: 10),
+              LinksWidget(widget: widget),
+            ],
+            if (widget.images.isNotEmpty) ...[
+              sizedbox,
+              Text(
+                Assigns.media,
+                style: TextStyle(
+                    fontSize: widget.screenHeight * 0.022,
+                    fontWeight: FontWeight.w500),
+              ),
+              SizedBox(height: 10),
+              MediaWidget(widget: widget),
+            ],
           ],
         ),
         Positioned(

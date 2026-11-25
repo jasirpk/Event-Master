@@ -1,3 +1,4 @@
+import 'package:event_master/data_layer/models/entrepreneur_document.dart';
 import 'package:event_master/presentation/components/entrepreneur_profile/detail/fields.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,9 @@ class LinksWidget extends StatelessWidget {
                       ),
                       SizedBox(width: 4),
                       Flexible(
-                        child: Text(data['link'],
+                        // An entry without a 'link' key threw the same failed
+                        // cast the screen as a whole used to.
+                        child: Text(profileText(data['link']),
                             style: TextStyle(
                                 fontSize: widget.screenHeight * 0.018,
                                 fontWeight: FontWeight.w300,

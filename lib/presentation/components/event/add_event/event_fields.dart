@@ -164,7 +164,11 @@ class _EventFieldsWidgetState extends State<EventFieldsWidget> {
             aboutController: aboutController,
             imagePath: imagePath,
             image: image,
-            screenWidth: screenWidth),
+            screenWidth: screenWidth,
+            // The sub-template the booking started from, straight off the
+            // screen's own arguments — not re-read from the controller, which
+            // the user may have edited by now.
+            selectedEventName: screen.subCategoryName),
         SizedBox(height: 16),
         StyleAndThemeWidget(
             screenHeight: screenHeight,
