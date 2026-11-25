@@ -4,6 +4,7 @@ import 'package:event_master/data_layer/services/entrepreneur_profile/profile.da
 import 'package:event_master/data_layer/services/rating/rating_api.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:event_master/presentation/components/entrepreneur_profile/detail/fields.dart';
+import 'package:event_master/presentation/components/ui/pushable_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -45,30 +46,30 @@ class EntrepreneurDetailScreen extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
-        leading: Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Container(
-            height: 35,
-            width: 35,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8), color: myColor),
-            child: IconButton(
-              onPressed: () {
-                Get.back();
-              },
-              icon: Icon(
-                CupertinoIcons.back,
-                color: Colors.white,
-              ),
-            ),
-          ),
+        elevation: 0,
+        // Without this the bar tints itself as content scrolls under it, which
+        // on a black scaffold shows up as a grey band that appears mid-scroll.
+        scrolledUnderElevation: 0,
+        leadingWidth: 56,
+        leading: Center(
+          // Was a 35x35 turquoise block holding a 48pt-minimum IconButton — a
+          // solid accent slab in the corner, with its own touch target
+          // overflowing the box it was drawn in. A surface tile with the
+          // accent on the glyph reads as navigation rather than as the
+          // screen's primary action, and the 40pt box matches the contact
+          // rows' icon tiles.
+          child: _BackButton(onPressed: Get.back),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(8.0),
+      body: SafeArea(
+        // The bottom inset belongs to the action bar below, not to the scroll
+        // view — claiming it here would leave a dead strip above the button.
+        bottom: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 20),
           child: DetailFieldsWidget(
             imagePath: imagePath,
             companyName: companyName,
@@ -88,6 +89,11 @@ class EntrepreneurDetailScreen extends StatelessWidget {
           ),
         ),
       ),
+      // The booking action, as a real sibling of the scroll view rather than a
+      // `Positioned` child stacked on top of it. The Scaffold lays the body out
+      // in the space that remains, so the button cannot cover content at any
+      // content length, and it stays on screen while the body scrolls.
+      bottomNavigationBar: const _BookNowBar(),
     );
   }
 
@@ -153,5 +159,68 @@ class EntrepreneurDetailScreen extends StatelessWidget {
     );
 
     return result.isSuccess;
+  }
+}
+
+/// A compact back control, sized to the 40pt tile used elsewhere on the
+/// screen. [InkResponse] keeps a comfortable tap radius around it without
+/// forcing the drawn box up to 48pt.
+class _BackButton extends StatelessWidget {
+  const _BackButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: 'Back',
+      button: true,
+      child: InkResponse(
+        onTap: onPressed,
+        radius: 24,
+        child: Container(
+          height: 40,
+          width: 40,
+          decoration: BoxDecoration(
+            color: kSurface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: kBorder),
+          ),
+          child: Icon(CupertinoIcons.back, color: myColor, size: 20),
+        ),
+      ),
+    );
+  }
+}
+
+/// The screen's bottom action area.
+///
+/// Carries its own top hairline so the bar separates from the content it sits
+/// below, and its own [SafeArea] bottom inset — `bottomNavigationBar` does not
+/// apply one, so on a device with a home indicator the button would otherwise
+/// sit under it.
+class _BookNowBar extends StatelessWidget {
+  const _BookNowBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.black,
+        border: Border(top: BorderSide(color: kBorder)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+          child: PushableButton_Widget(
+            buttonText: 'Book Now',
+            // Unchanged: booking is not wired up on this screen, and wiring it
+            // up is not part of a visual pass.
+            onpressed: () {},
+          ),
+        ),
+      ),
+    );
   }
 }

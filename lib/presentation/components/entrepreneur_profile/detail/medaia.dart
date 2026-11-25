@@ -1,7 +1,9 @@
+import 'package:event_master/common/style.dart';
 import 'package:event_master/presentation/components/entrepreneur_profile/detail/fields.dart';
 import 'package:flutter/material.dart';
 import 'package:event_master/presentation/components/media/media_image.dart';
 
+/// The entrepreneur's portfolio, three across.
 class MediaWidget extends StatelessWidget {
   const MediaWidget({
     super.key,
@@ -14,11 +16,15 @@ class MediaWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GridView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.zero,
       itemCount: widget.images.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
-        mainAxisExtent: 130,
+        // Square-ish tiles. The old fixed 130pt extent against a third of the
+        // width made portrait boxes on a narrow phone and letterboxes on a
+        // wide one.
+        childAspectRatio: 1,
         mainAxisSpacing: 8,
         crossAxisSpacing: 8,
       ),
@@ -29,17 +35,25 @@ class MediaWidget extends StatelessWidget {
         // had no 'image' field, so the value is read defensively too.
         final ref = entry['image'];
 
-        return MediaImage(
-          imagePath: ref is String ? ref : null,
-          placeholder: kMediaPlaceholderImage,
-          builder: (context, image) => Container(
-            decoration: BoxDecoration(
-              image: image == null
-                  ? null
-                  : DecorationImage(
-                      image: image,
-                      fit: BoxFit.cover,
-                    ),
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(kRadiusField),
+          child: MediaImage(
+            imagePath: ref is String ? ref : null,
+            placeholder: kMediaPlaceholderImage,
+            builder: (context, image) => Container(
+              decoration: BoxDecoration(
+                // A tile with no image is a surface, not a black hole in the
+                // grid — the card behind it is the same colour.
+                color: kSurfaceAlt,
+                border: Border.all(color: kBorder),
+                borderRadius: BorderRadius.circular(kRadiusField),
+                image: image == null
+                    ? null
+                    : DecorationImage(
+                        image: image,
+                        fit: BoxFit.cover,
+                      ),
+              ),
             ),
           ),
         );

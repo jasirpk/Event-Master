@@ -1,6 +1,7 @@
 import 'package:event_master/common/assigns.dart';
 import 'package:event_master/data_layer/models/entrepreneur_document.dart';
 import 'package:event_master/presentation/components/entrepreneur_profile/detail/fields.dart';
+import 'package:event_master/presentation/components/entrepreneur_profile/detail/linkds.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,15 +33,6 @@ Map<String, dynamic> fullProfile() => {
         {'image': 'portfolio_images/uid/one.jpg', 'text': 'Reception'},
       ],
     };
-
-/// The website and email rows are bare [RichText]s, not [Text]s, so
-/// `find.text` does not reach them — their plain text is the label and the
-/// value together.
-Finder richTextContaining(String fragment) => find.byWidgetPredicate(
-      (widget) =>
-          widget is RichText && widget.text.toPlainText().contains(fragment),
-      description: 'RichText containing "$fragment"',
-    );
 
 Future<void> pumpDetail(
   WidgetTester tester,
@@ -105,8 +97,8 @@ void main() {
 
   group('profileOptionalText', () {
     test('a stored value is trimmed and kept', () {
-      expect(profileOptionalText('  https://example.com '),
-          'https://example.com');
+      expect(
+          profileOptionalText('  https://example.com '), 'https://example.com');
     });
 
     test('an absent field is null', () {
@@ -172,10 +164,8 @@ void main() {
       expect(find.text('9876543210'), findsOneWidget);
       expect(find.text(Assigns.otherLinks), findsOneWidget);
       expect(find.text(Assigns.media), findsOneWidget);
-      expect(richTextContaining('https://tathkarah.example'),
-          findsOneWidget);
-      expect(richTextContaining('hello@tathkarah.example'),
-          findsOneWidget);
+      expect(find.text('https://tathkarah.example'), findsOneWidget);
+      expect(find.text('hello@tathkarah.example'), findsOneWidget);
     });
 
     testWidgets('a cleared website opens without throwing and hides its row',
@@ -187,7 +177,8 @@ void main() {
       await pumpDetail(tester, profile);
 
       expect(tester.takeException(), isNull);
-      expect(richTextContaining(Assigns.website), findsNothing);
+      expect(find.text('Website'), findsNothing);
+      expect(find.text('https://tathkarah.example'), findsNothing);
       // The rest of the contact block is untouched.
       expect(find.text(Assigns.moreDetail), findsOneWidget);
       expect(find.text('9876543210'), findsOneWidget);
@@ -201,8 +192,7 @@ void main() {
 
       expect(tester.takeException(), isNull);
       expect(find.text(Assigns.phoneNumber), findsNothing);
-      expect(richTextContaining('https://tathkarah.example'),
-          findsOneWidget);
+      expect(find.text('https://tathkarah.example'), findsOneWidget);
     });
 
     testWidgets('no contact details at all drops the More Details heading',
@@ -246,7 +236,7 @@ void main() {
       await pumpDetail(tester, profile);
 
       expect(tester.takeException(), isNull);
-      expect(richTextContaining('https://a.example'), findsOneWidget);
+      expect(find.text('https://a.example'), findsOneWidget);
     });
 
     testWidgets('a profile that has saved nothing still opens', (tester) async {
@@ -259,8 +249,127 @@ void main() {
       expect(find.text(Assigns.aboutUs), findsNothing);
       expect(find.text(Assigns.otherLinks), findsNothing);
       expect(find.text(Assigns.media), findsNothing);
-      // The screen is still a screen: the booking action is there.
-      expect(find.text('Book Now'), findsOneWidget);
+      // The screen is still a screen: the header card stands on its own.
+      expect(find.text('Tap a star to rate'), findsOneWidget);
+    });
+  });
+
+  _layoutTests();
+}
+
+/// The Book Now button used to be a `Positioned` child of a `Stack` wrapped
+/// around this column. A Stack sizes to its largest non-positioned child, so
+/// `bottom: 16` measured from the end of the content rather than the bottom of
+/// the screen, the column reserved no space for the button, and it was painted
+/// over the last stretch of content — the phone number, on a short profile.
+///
+/// The button is the screen's `bottomNavigationBar` now. These tests pin the
+/// property that makes overlap impossible: the scrolling content emits no
+/// overlay of its own, at any content length.
+void _layoutTests() {
+  group('book now cannot overlap content', () {
+    testWidgets('the content column emits no positioned overlay',
+        (tester) async {
+      await pumpDetail(tester, fullProfile());
+
+      expect(
+        find.descendant(
+          of: find.byType(DetailFieldsWidget),
+          matching: find.byType(Positioned),
+        ),
+        findsNothing,
+      );
+      expect(find.text('Book Now'), findsNothing);
+    });
+
+    testWidgets('still none on the short profile that showed the bug',
+        (tester) async {
+      // Phone number last, nothing after it: exactly the shape the button
+      // used to land on.
+      final profile = fullProfile()
+        ..remove('emailAddress')
+        ..remove('website')
+        ..remove('links')
+        ..remove('images');
+
+      await pumpDetail(tester, profile);
+
+      expect(
+        find.descendant(
+          of: find.byType(DetailFieldsWidget),
+          matching: find.byType(Positioned),
+        ),
+        findsNothing,
+      );
+      expect(find.text('9876543210'), findsOneWidget);
+    });
+
+    testWidgets('links no longer nest a scroll view inside the page',
+        (tester) async {
+      // LinksWidget used to put a ListView in a fixed `screenHeight * 0.1`
+      // box, so a third link hid behind a gesture that fought the page.
+      await pumpDetail(
+          tester,
+          fullProfile()
+            ..['links'] = [
+              {'link': 'https://a.example'},
+              {'link': 'https://b.example'},
+              {'link': 'https://c.example'},
+            ]);
+
+      expect(
+        find.descendant(
+          of: find.byType(LinksWidget),
+          matching: find.byType(Scrollable),
+        ),
+        findsNothing,
+      );
+      expect(find.text('https://c.example'), findsOneWidget);
+    });
+  });
+
+  group('contact rows', () {
+    testWidgets('each detail is its own tappable row', (tester) async {
+      await pumpDetail(tester, fullProfile());
+
+      // Styled as links before but inert; the whole row is the target now.
+      expect(find.bySemanticsLabel('Phone Number 9876543210'), findsOneWidget);
+      expect(find.bySemanticsLabel('Email hello@tathkarah.example'),
+          findsOneWidget);
+      expect(find.bySemanticsLabel('Website https://tathkarah.example'),
+          findsOneWidget);
+    });
+
+    testWidgets('a row is absent rather than empty when its field is',
+        (tester) async {
+      await pumpDetail(tester, fullProfile()..remove('emailAddress'));
+
+      expect(
+          find.bySemanticsLabel('Email hello@tathkarah.example'), findsNothing);
+      expect(find.text('Email'), findsNothing);
+      expect(find.bySemanticsLabel('Phone Number 9876543210'), findsOneWidget);
+    });
+
+    testWidgets('a long description wraps instead of overflowing',
+        (tester) async {
+      final profile = fullProfile()
+        ..['description'] = List.filled(60, 'elaborate celebrations').join(' ');
+
+      await pumpDetail(tester, profile);
+
+      expect(tester.takeException(), isNull);
+      expect(find.text(Assigns.aboutUs), findsOneWidget);
+    });
+
+    testWidgets('a long company name does not overflow the header',
+        (tester) async {
+      final profile = fullProfile()
+        ..['companyName'] =
+            'Tathkarah Weddings Celebrations and Corporate Hospitality';
+
+      await pumpDetail(tester, profile);
+
+      expect(tester.takeException(), isNull);
     });
   });
 }
